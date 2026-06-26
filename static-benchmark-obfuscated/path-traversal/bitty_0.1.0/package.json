@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "bitty": "0.1.0",
+    "sleep": "^6.3.0"
+  }
+}

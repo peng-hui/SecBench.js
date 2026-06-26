@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "crud-file-server": "0.7.0",
+    "sleep": "^6.3.0"
+  }
+}

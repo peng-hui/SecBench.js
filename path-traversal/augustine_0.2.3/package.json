@@ -1,7 +1,8 @@
 {
   "id": "CVE-2017-0930",
   "dependencies": {
-    "augustine": "0.2.3"
+    "augustine": "0.2.3",
+    "sleep": "^6.3.0"
   },
   "links": {
     "source1": "https://security.snyk.io/vuln/npm:augustine:20180123",

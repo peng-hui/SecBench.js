@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "is-my-json-valid": "2.20.0",
+    "sleep": "^6.3.0"
+  }
+}

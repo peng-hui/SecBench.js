@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "sleep": "^6.3.0",
+    "aso-server": "0.4.3"
+  }
+}

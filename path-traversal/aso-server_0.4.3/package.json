@@ -10,5 +10,5 @@
   },
   "fixedVersion": "n/a",
   "fixCommit": "n/a",
-  "sink": ""
+  "sink": "server.js:88:17"
 }

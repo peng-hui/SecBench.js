@@ -9,5 +9,5 @@
   },
   "fixedVersion": "3.11.5",
   "fixCommit": "https://github.com/josdejong/mathjs/compare/v3.10.3...v3.11.5",
-  "sink": ""
+  "sink": "lib/core/function/import.js:131:9"
 }

@@ -9,5 +9,5 @@
   },
   "fixedVersion": "n/a",
   "fixCommit": "n/a",
-  "sink": ""
+  "sink": "lib/func.js:62:16"
 }

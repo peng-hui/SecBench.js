@@ -1,7 +1,8 @@
 {
   "id": "CVE-2018-3733",
   "dependencies": {
-    "crud-file-server": "0.7.0"
+    "crud-file-server": "0.7.0",
+    "sleep": "^6.3.0"
   },
   "links": {
     "source1": "https://security.snyk.io/vuln/npm:crud-file-server:20180226",

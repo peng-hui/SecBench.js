@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "augustine": "0.2.3",
+    "sleep": "^6.3.0"
+  }
+}

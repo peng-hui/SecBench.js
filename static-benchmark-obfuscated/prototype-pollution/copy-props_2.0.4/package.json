@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "copy-props": "2.0.4",
+    "each-props": "2.0.0"
+  }
+}

@@ -1,0 +1,419 @@
+{
+  "results": {
+    "prototype-pollution": [
+      {
+        "module": "deep-extend_0.5.0",
+        "pkg": "deep-extend",
+        "js_files_obfuscated": 2,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "assign-deep_1.0.0",
+        "pkg": "assign-deep",
+        "js_files_obfuscated": 1,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "101_1.0.0",
+        "pkg": "101",
+        "js_files_obfuscated": 43,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "deap_1.0.0",
+        "pkg": "deap",
+        "js_files_obfuscated": 10,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "deep-defaults_1.0.5",
+        "pkg": "deep-defaults",
+        "js_files_obfuscated": 2,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "bodymen_1.0.0",
+        "pkg": "bodymen",
+        "js_files_obfuscated": 2,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "changeset_0.1.0",
+        "pkg": "changeset",
+        "js_files_obfuscated": 2,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "copy-props_2.0.4",
+        "pkg": "copy-props",
+        "js_files_obfuscated": 1,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "arr-flatten-unflatten_1.1.4",
+        "pkg": "arr-flatten-unflatten",
+        "js_files_obfuscated": 7,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "brikcss-merge_1.3.0",
+        "pkg": "@brikcss/merge",
+        "js_files_obfuscated": 4,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      }
+    ],
+    "redos": [
+      {
+        "module": "ajv_5.2.2",
+        "pkg": "ajv",
+        "js_files_obfuscated": 46,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "ansi-regex_4.1.0",
+        "pkg": "ansi-regex",
+        "js_files_obfuscated": 1,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "ansi-html_0.0.7",
+        "pkg": "ansi-html",
+        "js_files_obfuscated": 1,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "axios_0.21.0",
+        "pkg": "axios",
+        "js_files_obfuscated": 30,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "brace-expansion_1.1.6",
+        "pkg": "brace-expansion",
+        "js_files_obfuscated": 1,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "browserslist_4.16.4",
+        "pkg": "browserslist",
+        "js_files_obfuscated": 6,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "charset_1.0.0",
+        "pkg": "charset",
+        "js_files_obfuscated": 2,
+        "js_files_failed": 0,
+        "status": "FAIL",
+        "baseline": "FAIL"
+      },
+      {
+        "module": "checkit_0.7.0",
+        "pkg": "checkit",
+        "js_files_obfuscated": 12,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "clean-css_4.1.10",
+        "pkg": "clean-css",
+        "js_files_obfuscated": 95,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "amqp-match_0.0.0",
+        "pkg": "amqp-match",
+        "js_files_obfuscated": 2,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      }
+    ],
+    "command-injection": [
+      {
+        "module": "aaptjs_1.3.1",
+        "pkg": "aaptjs",
+        "js_files_obfuscated": 1,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "blamer_0.1.13",
+        "pkg": "blamer",
+        "js_files_obfuscated": 8,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "async-git_1.13.1",
+        "pkg": "async-git",
+        "js_files_obfuscated": 8,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "arpping_2.0.0",
+        "pkg": "arpping",
+        "js_files_obfuscated": 4,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "bestzip_2.1.6",
+        "pkg": "bestzip",
+        "js_files_obfuscated": 2,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "connection-tester_0.2.0",
+        "pkg": "connection-tester",
+        "js_files_obfuscated": 2,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "command-exists_1.2.2",
+        "pkg": "command-exists",
+        "js_files_obfuscated": 5,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "codecov_3.6.4",
+        "pkg": "codecov",
+        "js_files_obfuscated": 47,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "adb-driver_0.1.8",
+        "pkg": "adb-driver",
+        "js_files_obfuscated": 1,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "clamscan_1.2.0",
+        "pkg": "clamscan",
+        "js_files_obfuscated": 9,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      }
+    ],
+    "path-traversal": [
+      {
+        "module": "angular-http-server_1.0.0",
+        "pkg": "angular-http-server",
+        "js_files_obfuscated": 1,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "aso-server_0.4.3",
+        "pkg": "sleep",
+        "js_files_obfuscated": 2,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "api-proxy_0.0.2",
+        "pkg": "api-proxy",
+        "js_files_obfuscated": 4,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "asset-cache_0.0.6",
+        "pkg": "asset-cache",
+        "js_files_obfuscated": 3,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "augustine_0.2.3",
+        "pkg": "augustine",
+        "js_files_obfuscated": 5,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "basic-static_2.0.2",
+        "pkg": "basic-static",
+        "js_files_obfuscated": 1,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "canvas-designer_1.2.1",
+        "pkg": "canvas-designer",
+        "js_files_obfuscated": 25,
+        "js_files_failed": 2,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "bitty_0.1.0",
+        "pkg": "bitty",
+        "js_files_obfuscated": 1,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "crud-file-server_0.7.0",
+        "pkg": "crud-file-server",
+        "js_files_obfuscated": 1,
+        "js_files_failed": 0,
+        "status": "FAIL",
+        "baseline": "PASS"
+      },
+      {
+        "module": "atropa-ide_0.2.2-2",
+        "pkg": "atropa-ide",
+        "js_files_obfuscated": 305,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      }
+    ],
+    "code-injection": [
+      {
+        "module": "node-serialize_0.0.3",
+        "pkg": "node-serialize",
+        "js_files_obfuscated": 3,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "mathjs_3.10.3",
+        "pkg": "mathjs",
+        "js_files_obfuscated": 780,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "js-yaml_3.13.0",
+        "pkg": "js-yaml",
+        "js_files_obfuscated": 33,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "marsdb_0.6.11",
+        "pkg": "marsdb",
+        "js_files_obfuscated": 90,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "djv_2.0.0",
+        "pkg": "djv",
+        "js_files_obfuscated": 29,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "hot-formula-parser_3.0.0",
+        "pkg": "hot-formula-parser",
+        "js_files_obfuscated": 47,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "is-my-json-valid_2.20.0",
+        "pkg": "is-my-json-valid",
+        "js_files_obfuscated": 3,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "jsen_0.6.6",
+        "pkg": "jsen",
+        "js_files_obfuscated": 34,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "json-ptr_2.0.0",
+        "pkg": "json-ptr",
+        "js_files_obfuscated": 6,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      },
+      {
+        "module": "access-policy_3.1.0",
+        "pkg": "access-policy",
+        "js_files_obfuscated": 6,
+        "js_files_failed": 0,
+        "status": "PASS",
+        "baseline": "PASS"
+      }
+    ]
+  },
+  "summary": {
+    "pass": 48,
+    "fail": 2,
+    "error": 0
+  }
+}

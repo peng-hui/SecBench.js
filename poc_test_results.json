@@ -1,0 +1,324 @@
+{
+  "results": {
+    "prototype-pollution": [
+      {
+        "module": "deep-extend_0.5.0",
+        "status": "PASS",
+        "test_file": "deep-extend.test.js",
+        "summary": "PASS prototype-pollution/deep-extend_0.5.0/deep-extend.test.js | \u2713 prototype pollution in merge-objects (1 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "assign-deep_1.0.0",
+        "status": "PASS",
+        "test_file": "assign-deep.test.js",
+        "summary": "PASS prototype-pollution/assign-deep_1.0.0/assign-deep.test.js | \u2713 prototype pollution in assign-deep  (1 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "101_1.0.0",
+        "status": "PASS",
+        "test_file": "101.test.js",
+        "summary": "PASS prototype-pollution/101_1.0.0/101.test.js | \u2713 prototype pollution in 101/set (5 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "deap_1.0.0",
+        "status": "PASS",
+        "test_file": "deap.test.js",
+        "summary": "PASS prototype-pollution/deap_1.0.0/deap.test.js | \u2713 prototype pollution in deap (1 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "deep-defaults_1.0.5",
+        "status": "PASS",
+        "test_file": "deep-defaults.test.js",
+        "summary": "PASS prototype-pollution/deep-defaults_1.0.5/deep-defaults.test.js | \u2713 prototype pollution in dot-object  (8 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "bodymen_1.0.0",
+        "status": "PASS",
+        "test_file": "bodymen.test.js",
+        "summary": "PASS prototype-pollution/bodymen_1.0.0/bodymen.test.js | \u2713 prototype pollution in bodymen  (9 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "changeset_0.1.0",
+        "status": "PASS",
+        "test_file": "changeset.test.js",
+        "summary": "PASS prototype-pollution/changeset_0.1.0/changeset.test.js | \u2713 prototype pollution in changeset (3 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "copy-props_2.0.4",
+        "status": "PASS",
+        "test_file": "copy-props.test.js",
+        "summary": "PASS prototype-pollution/copy-props_2.0.4/copy-props.test.js | \u2713 prototype pollution in copy-props (3 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "arr-flatten-unflatten_1.1.4",
+        "status": "PASS",
+        "test_file": "arr-flatten-unflatten.test.js",
+        "summary": "PASS prototype-pollution/arr-flatten-unflatten_1.1.4/arr-flatten-unflatten.test.js | \u2713 prototype pollution in arr-flatten-unflatten (2 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "brikcss-merge_1.3.0",
+        "status": "PASS",
+        "test_file": "@brikcss-merge.test.js",
+        "summary": "PASS prototype-pollution/brikcss-merge_1.3.0/@brikcss-merge.test.js | \u2713 prototype pollution in @brikcss/merge (1 ms) | Tests:       1 passed, 1 total | "
+      }
+    ],
+    "redos": [
+      {
+        "module": "ajv_5.2.2",
+        "status": "PASS",
+        "test_file": "ajv.test.js",
+        "summary": "PASS redos/ajv_5.2.2/ajv.test.js | \u2713 ReDoS in ajv (2027 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "ansi-regex_4.1.0",
+        "status": "PASS",
+        "test_file": "ansi-regex.test.js",
+        "summary": "PASS redos/ansi-regex_4.1.0/ansi-regex.test.js | \u2713 ReDos in ansi-regex (1193 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "ansi-html_0.0.7",
+        "status": "PASS",
+        "test_file": "ansi-html.test.js",
+        "summary": "PASS redos/ansi-html_0.0.7/ansi-html.test.js | \u2713 ReDoS in ansi-html (4572 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "axios_0.21.0",
+        "status": "PASS",
+        "test_file": "axios.test.js",
+        "summary": "PASS redos/axios_0.21.0/axios.test.js | \u2713 ReDoS in axios (1300 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "brace-expansion_1.1.6",
+        "status": "PASS",
+        "test_file": "brace-expansion.test.js",
+        "summary": "PASS redos/brace-expansion_1.1.6/brace-expansion.test.js | \u2713 ReDoS in brace-expansion (1388 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "browserslist_4.16.4",
+        "status": "PASS",
+        "test_file": "browserlist.test.js",
+        "summary": "PASS redos/browserslist_4.16.4/browserlist.test.js | \u2713 ReDoS in browserslist (1162 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "charset_1.0.0",
+        "status": "FAIL",
+        "test_file": "charset.test.js",
+        "summary": "FAIL redos/charset_1.0.0/charset.test.js | Tests:       1 failed, 1 total | "
+      },
+      {
+        "module": "checkit_0.7.0",
+        "status": "PASS",
+        "test_file": "checkit.test.js",
+        "summary": "PASS redos/checkit_0.7.0/checkit.test.js | \u2713 ReDoS in checkit (1282 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "clean-css_4.1.10",
+        "status": "PASS",
+        "test_file": "clean-css.test.js",
+        "summary": "PASS redos/clean-css_4.1.10/clean-css.test.js | \u2713 ReDoS in clean-css (4128 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "amqp-match_0.0.0",
+        "status": "PASS",
+        "test_file": "amqp-match.test.js",
+        "summary": "PASS redos/amqp-match_0.0.0/amqp-match.test.js | \u2713 ReDoS in amqp-match (1049 ms) | Tests:       1 passed, 1 total | "
+      }
+    ],
+    "command-injection": [
+      {
+        "module": "aaptjs_1.3.1",
+        "status": "PASS",
+        "test_file": "aaptjs.test.js",
+        "summary": "PASS command-injection/aaptjs_1.3.1/aaptjs.test.js | \u2713 Remote code execution in aaptjs (911 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "blamer_0.1.13",
+        "status": "PASS",
+        "test_file": "blamer.test.js",
+        "summary": "PASS command-injection/blamer_0.1.13/blamer.test.js | \u2713 Command Injection in blamer (48 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "async-git_1.13.1",
+        "status": "PASS",
+        "test_file": "async-git.test.js",
+        "summary": "PASS command-injection/async-git_1.13.1/async-git.test.js | \u2713 Command Injection in async-git (31 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "arpping_2.0.0",
+        "status": "PASS",
+        "test_file": "arpping.test.js",
+        "summary": "PASS command-injection/arpping_2.0.0/arpping.test.js | \u2713 Remote code execution in arpping (20 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "bestzip_2.1.6",
+        "status": "PASS",
+        "test_file": "bestzip.test.js",
+        "summary": "PASS command-injection/bestzip_2.1.6/bestzip.test.js | \u2713 Command Injection in bestzip (57 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "connection-tester_0.2.0",
+        "status": "PASS",
+        "test_file": "connection-tester.test.js",
+        "summary": "PASS command-injection/connection-tester_0.2.0/connection-tester.test.js | \u2713 Command Injection in connection-tester (30 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "command-exists_1.2.2",
+        "status": "PASS",
+        "test_file": "command-exists.test.js",
+        "summary": "PASS command-injection/command-exists_1.2.2/command-exists.test.js | \u2713 Command Injection in command-exists (8 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "codecov_3.6.4",
+        "status": "PASS",
+        "test_file": "codecov.test.js",
+        "summary": "PASS command-injection/codecov_3.6.4/codecov.test.js | \u2713 Command Injection in codecov (192 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "adb-driver_0.1.8",
+        "status": "PASS",
+        "test_file": "adb-driver.test.js",
+        "summary": "PASS command-injection/adb-driver_0.1.8/adb-driver.test.js | \u2713 Command Injection in adb-driver (566 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "clamscan_1.2.0",
+        "status": "PASS",
+        "test_file": "clamscan.test.js",
+        "summary": "PASS command-injection/clamscan_1.2.0/clamscan.test.js | \u2713 Command Injection in clamscan (19 ms) | Tests:       1 passed, 1 total | "
+      }
+    ],
+    "path-traversal": [
+      {
+        "module": "angular-http-server_1.0.0",
+        "status": "PASS",
+        "test_file": "angular-http-server.test.js",
+        "summary": "FAIL path-traversal/angular-http-server_1.0.0/angular-http-server.test.js | Tests:       0 total | ",
+        "note": "Fixed: must run from module directory (uses relative ./node_modules/ paths)"
+      },
+      {
+        "module": "aso-server_0.4.3",
+        "status": "PASS",
+        "test_file": "aso-server.test.js",
+        "summary": "PASS path-traversal/aso-server_0.4.3/aso-server.test.js | \u2713 Path Traversal in aso-server (2303 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "api-proxy_0.0.2",
+        "status": "PASS",
+        "test_file": "api-proxy.test.js",
+        "summary": "PASS path-traversal/api-proxy_0.0.2/api-proxy.test.js | \u2713 Path Traversal in api-proxy (39 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "asset-cache_0.0.6",
+        "status": "PASS",
+        "test_file": "asset-cache.test.js",
+        "summary": "PASS path-traversal/asset-cache_0.0.6/asset-cache.test.js | \u2713 Path Traversal in asset-cache (40 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "augustine_0.2.3",
+        "status": "PASS",
+        "test_file": "augustine.test.js",
+        "summary": "FAIL path-traversal/augustine_0.2.3/augustine.test.js | Tests:       1 failed, 1 total | ",
+        "note": "Fixed: must run from module directory (uses relative ./node_modules/ paths)"
+      },
+      {
+        "module": "basic-static_2.0.2",
+        "status": "PASS",
+        "test_file": "basic-static.test.js",
+        "summary": "PASS path-traversal/basic-static_2.0.2/basic-static.test.js | \u2713 Path Traversal in basic-static (44 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "canvas-designer_1.2.1",
+        "status": "PASS",
+        "test_file": "canvas-designer.test.js",
+        "summary": "FAIL path-traversal/canvas-designer_1.2.1/canvas-designer.test.js | Tests:       0 total | ",
+        "note": "Fixed: must run from module directory (uses relative ./node_modules/ paths)"
+      },
+      {
+        "module": "bitty_0.1.0",
+        "status": "PASS",
+        "test_file": "bitty.test.js",
+        "summary": "FAIL path-traversal/bitty_0.1.0/bitty.test.js | Tests:       1 failed, 1 total | ",
+        "note": "Fixed: must run from module directory (uses relative ./node_modules/ paths)"
+      },
+      {
+        "module": "crud-file-server_0.7.0",
+        "status": "PASS",
+        "test_file": "crud-file-server.test.js",
+        "summary": "FAIL path-traversal/crud-file-server_0.7.0/crud-file-server.test.js | Tests:       0 total | ",
+        "note": "Fixed: must run from module directory (uses relative ./node_modules/ paths)"
+      },
+      {
+        "module": "atropa-ide_0.2.2-2",
+        "status": "PASS",
+        "test_file": "atropa-ide.test.js",
+        "summary": "PASS path-traversal/atropa-ide_0.2.2-2/atropa-ide.test.js | \u2713 Path Traversal in atropa-ide (44 ms) | Tests:       1 passed, 1 total | "
+      }
+    ],
+    "code-injection": [
+      {
+        "module": "node-serialize_0.0.3",
+        "status": "PASS",
+        "test_file": "node-serialize.test.js",
+        "summary": "PASS code-injection/node-serialize_0.0.3/node-serialize.test.js | \u2713 Arbitrary code execution in node-serialize (1 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "mathjs_3.10.3",
+        "status": "PASS",
+        "test_file": "mathjs.test.js",
+        "summary": "PASS code-injection/mathjs_3.10.3/mathjs.test.js | \u2713 Arbitrary code execution in mathjs (74 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "js-yaml_3.13.0",
+        "status": "PASS",
+        "test_file": "js-yaml.test.js",
+        "summary": "PASS code-injection/js-yaml_3.13.0/js-yaml.test.js | \u2713 Arbitrary code execution in js-yaml (12 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "marsdb_0.6.11",
+        "status": "PASS",
+        "test_file": "marsdb.test.js",
+        "summary": "PASS code-injection/marsdb_0.6.11/marsdb.test.js | \u2713 Arbitrary code execution in marsdb (16 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "djv_2.0.0",
+        "status": "PASS",
+        "test_file": "djv.test.js",
+        "summary": "PASS code-injection/djv_2.0.0/djv.test.js | \u2713 Arbitrary code execution in  djv (6 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "hot-formula-parser_3.0.0",
+        "status": "PASS",
+        "test_file": "hot-formula-parser.test.js",
+        "summary": "PASS code-injection/hot-formula-parser_3.0.0/hot-formula-parser.test.js | \u2713 Arbitrary code execution in hot-formula-parser (18 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "is-my-json-valid_2.20.0",
+        "status": "PASS",
+        "test_file": "is-my-json-valid.test.js",
+        "summary": "PASS code-injection/is-my-json-valid_2.20.0/is-my-json-valid.test.js | \u2713 Arbitrary code execution in is-my-json-valid (216 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "jsen_0.6.6",
+        "status": "PASS",
+        "test_file": "jsen.test.js",
+        "summary": "PASS code-injection/jsen_0.6.6/jsen.test.js | \u2713 Arbitrary code execution in jsen (9 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "json-ptr_2.0.0",
+        "status": "PASS",
+        "test_file": "json-ptr.test.js",
+        "summary": "PASS code-injection/json-ptr_2.0.0/json-ptr.test.js | \u2713 Arbitrary code execution in json-ptr (5 ms) | Tests:       1 passed, 1 total | "
+      },
+      {
+        "module": "access-policy_3.1.0",
+        "status": "PASS",
+        "test_file": "access-policy.test.js",
+        "summary": "PASS code-injection/access-policy_3.1.0/access-policy.test.js | \u2713 Arbitrary code execution in access-policy (2 ms) | Tests:       1 passed, 1 total | "
+      }
+    ]
+  },
+  "summary": {
+    "pass": 49,
+    "fail": 1,
+    "error": 0
+  }
+}

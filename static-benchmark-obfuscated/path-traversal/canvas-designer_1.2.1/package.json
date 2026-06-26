@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "canvas-designer": "1.2.1",
+    "sleep": "^6.3.0"
+  }
+}

@@ -9,5 +9,5 @@
   },
   "fixedVersion": "n/a",
   "fixCommit": "n/a",
-  "sink": ""
+  "sink": "node_modules/atropa-server/requestHandlers.js:120:2"
 }

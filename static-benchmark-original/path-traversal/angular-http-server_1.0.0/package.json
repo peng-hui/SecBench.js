@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "angular-http-server": "1.0.0",
+    "sleep": "^6.3.0"
+  }
+}

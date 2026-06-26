@@ -9,5 +9,5 @@
   },
   "fixedVersion": "n/a",
   "fixCommit": "https://github.com/tgriesser/checkit/pull/94",
-  "sink": ""
+  "sink": "core.js:241:12"
 }

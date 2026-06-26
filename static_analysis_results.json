@@ -1,0 +1,3031 @@
+{
+  "tasks_total": 150,
+  "tasks_done": 89,
+  "results": [
+    {
+      "module_id": "module_24",
+      "category": "path-traversal",
+      "module": "bitty_0.1.0",
+      "state": "webcrack",
+      "ground_truth_type": "Path Traversal",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 36,
+      "ground_truth_sink_apis": [
+        "fs.readFile",
+        "fs.readFileSync",
+        "fs.createReadStream"
+      ],
+      "elapsed_s": 27.9,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Path Traversal"
+      ],
+      "predicted_sink_apis": [
+        "fs.readFile"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          29
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"bitty@0.1.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Path Traversal\",\n      \"sink_api\": \"fs.readFile\",\n      \"file\": \"index.js\",\n      \"line\": 29,\n      \"description\": \"The HTTP request URL is joined directly with the working directory via path.join and passed to fs.readFile without sanitization, allowing an attacker to read arbitrary files outside the intended directory using traversal sequences like ../../etc/passwd.\",\n      \"snippet\": \"fs.readFile(_0x3f5447, function (_0x24b65f, _0x1c383c) {\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_25",
+      "category": "path-traversal",
+      "module": "augustine_0.2.3",
+      "state": "obfuscated",
+      "ground_truth_type": "Path Traversal",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 88,
+      "ground_truth_sink_apis": [
+        "fs.readFile",
+        "fs.readFileSync",
+        "fs.createReadStream"
+      ],
+      "elapsed_s": 80.3,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Path Traversal"
+      ],
+      "predicted_sink_apis": [
+        "fs.readFileSync"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"augustine@0.2.3\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Path Traversal\",\n      \"sink_api\": \"fs.readFileSync\",\n      \"file\": \"index.js\",\n      \"line\": 1,\n      \"description\": \"The HTTP server takes the URL pathname, strips the leading slash via `.slice(1)`, and passes the result directly to `fs.readFileSync` without resolving it against a safe base directory, allowing an attacker to read arbitrary files via `/../../../etc/passwd`-style requests.\",\n      \"snippet\": \"fs['readFileSync'](_0x5b26c0,{'flag':'rs+'})\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_40",
+      "category": "prototype-pollution",
+      "module": "brikcss-merge_1.3.0",
+      "state": "webcrack",
+      "ground_truth_type": "Prototype Pollution",
+      "ground_truth_file": "merge/dist/lib/merge.js",
+      "ground_truth_line": 2,
+      "ground_truth_sink_apis": [
+        "__proto__",
+        "constructor.prototype"
+      ],
+      "elapsed_s": 89.2,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "dist/lib/merge.js",
+          93
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"@brikcss/merge@1.3.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"dist/lib/merge.js\",\n      \"line\": 93,\n      \"description\": \"The `Merge.objects` function iterates source keys with `Object.keys()` without filtering `__proto__`, so a source object with a `__proto__` key (e.g. from `JSON.parse`) causes a recursive `Merge.objects(Object.prototype, attackerPayload)` call that writes attacker-controlled properties directly onto `Object.prototype`.\",\n      \"snippet\": \"_0x4cc6f3[_0x42a10a] = Merge.objects(_isObject(_0x4cc6f3[_0x42a10a]) ? _0x4cc6f3[_0x42a10a] : {}, _0x380cff, {\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_34",
+      "category": "prototype-pollution",
+      "module": "deep-extend_0.5.0",
+      "state": "webcrack",
+      "ground_truth_type": "Prototype Pollution",
+      "ground_truth_file": "lib/deep-extend.js",
+      "ground_truth_line": 117,
+      "ground_truth_sink_apis": [
+        "__proto__",
+        "constructor.prototype"
+      ],
+      "elapsed_s": 58.0,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "lib/deep-extend.js",
+          88
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"deep-extend@0.5.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"lib/deep-extend.js\",\n      \"line\": 88,\n      \"description\": \"The function iterates source object keys via Object.keys() without filtering out '__proto__', allowing an attacker to supply a payload like {\\\"__proto__\\\": {\\\"isAdmin\\\": true}} to pollute Object.prototype via bracket-notation assignment.\",\n      \"snippet\": \"_0x19ae64[_0x36689c] = _0x2fa6c7;\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_09",
+      "category": "code-injection",
+      "module": "json-ptr_2.0.0",
+      "state": "obfuscated",
+      "ground_truth_type": "Arbitrary Code Injection",
+      "ground_truth_file": "src/util.ts",
+      "ground_truth_line": 155,
+      "ground_truth_sink_apis": [
+        "eval",
+        "new Function",
+        "vm.runInNewContext",
+        "vm.runInThisContext"
+      ],
+      "elapsed_s": 99.4,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Arbitrary Code Injection"
+      ],
+      "predicted_sink_apis": [
+        "new Function"
+      ],
+      "predicted_locations": [
+        [
+          "dist/util.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"json-ptr@2.0.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Arbitrary Code Injection\",\n      \"sink_api\": \"new Function\",\n      \"file\": \"dist/util.js\",\n      \"line\": 1,\n      \"description\": \"The `compilePointerDereference` function builds a JS function body by interpolating JSON pointer path segments into a string template delimited by single quotes, then passes it to `new Function`; only backslashes are escaped so a path segment containing a single quote breaks out of the string literal and allows arbitrary code execution.\",\n      \"snippet\": \"new Function('it',_0xf96c27)\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_21",
+      "category": "redos",
+      "module": "ansi-html_0.0.7",
+      "state": "webcrack",
+      "ground_truth_type": "ReDoS",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 62,
+      "ground_truth_sink_apis": [
+        "RegExp.exec",
+        "RegExp.test",
+        "String.match",
+        "String.replace",
+        "String.search",
+        "String.split"
+      ],
+      "elapsed_s": 96.0,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "ReDoS"
+      ],
+      "predicted_sink_apis": [
+        "RegExp.prototype.test"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          48
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"ansi-html@0.0.7\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"ReDoS\",\n      \"sink_api\": \"RegExp.prototype.test\",\n      \"file\": \"index.js\",\n      \"line\": 48,\n      \"description\": \"The regex /\\\\033\\\\[(\\\\d+)*m/g contains the catastrophic backtracking pattern (\\\\d+)*, which causes exponential backtracking when user-supplied input contains a long sequence of digits not followed by 'm'.\",\n      \"snippet\": \"var _0x1ba198 = _0x11f200.replace(/\\\\033\\\\[(\\\\d+)*m/g, function (_0xad1f57, _0x349d2a) {\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_01",
+      "category": "command-injection",
+      "module": "codecov_3.6.4",
+      "state": "original",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "lib/codecov.js",
+      "ground_truth_line": 419,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 49.6,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.execSync"
+      ],
+      "predicted_locations": [
+        [
+          "lib/codecov.js",
+          419
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"codecov@3.6.4\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.execSync\",\n      \"file\": \"lib/codecov.js\",\n      \"line\": 419,\n      \"description\": \"The `--gcov-root` CLI option is concatenated directly into a shell command string without sanitization (line 397: `'find ' + (args.options['gcov-root'] || root)`), allowing an attacker to inject arbitrary shell commands executed via execSync.\",\n      \"snippet\": \"      execSync(gcov)\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_44",
+      "category": "command-injection",
+      "module": "arpping_2.0.0",
+      "state": "original",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 120,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 35.8,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Command Injection",
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.exec",
+        "child_process.exec"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          120
+        ],
+        [
+          "index.js",
+          145
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"arpping@2.0.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"index.js\",\n      \"line\": 120,\n      \"description\": \"User-supplied IP addresses from the `range` array are interpolated directly into a shell command without sanitization, allowing shell metacharacters (e.g. `;`, `$(...)`, `&&`) to inject arbitrary commands.\",\n      \"snippet\": \"exec(`ping ${flag} ${this.timeout} ${ip}`, (err, stdout, stderr) => {\"\n    },\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"index.js\",\n      \"line\": 145,\n      \"description\": \"User-supplied IP addresses from the `range` array are interpolated directly into a shell `arp` command without sanitization, allowing shell metacharacters to inject arbitrary commands.\",\n      \"snippet\": \"exec(`arp ${ip}`, (err, stdout, stderr) => {\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_49",
+      "category": "path-traversal",
+      "module": "aso-server_0.4.3",
+      "state": "obfuscated",
+      "ground_truth_type": "Path Traversal",
+      "ground_truth_file": "server.js",
+      "ground_truth_line": 88,
+      "ground_truth_sink_apis": [
+        "fs.readFile",
+        "fs.readFileSync",
+        "fs.createReadStream"
+      ],
+      "elapsed_s": 28.7,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Path Traversal"
+      ],
+      "predicted_sink_apis": [
+        "fs.readFileSync"
+      ],
+      "predicted_locations": [
+        [
+          "server.js",
+          88
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"aso-server@0.4.3\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Path Traversal\",\n      \"sink_api\": \"fs.readFileSync\",\n      \"file\": \"server.js\",\n      \"line\": 88,\n      \"description\": \"User-supplied URL path (e.g. /f/../../../etc/passwd) is decoded and passed directly to fs.readFileSync without any sanitization or path normalization, allowing an attacker to read arbitrary files on the server.\",\n      \"snippet\": \"let contents = fs.readFileSync(path);\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_35",
+      "category": "code-injection",
+      "module": "mathjs_3.10.3",
+      "state": "webcrack",
+      "ground_truth_type": "Arbitrary Code Injection",
+      "ground_truth_file": "lib/core/function/import.js",
+      "ground_truth_line": 131,
+      "ground_truth_sink_apis": [
+        "eval",
+        "new Function",
+        "vm.runInNewContext",
+        "vm.runInThisContext"
+      ],
+      "elapsed_s": 58.4,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Arbitrary Code Injection"
+      ],
+      "predicted_sink_apis": [
+        "new Function"
+      ],
+      "predicted_locations": [
+        [
+          "lib/expression/node/Node.js",
+          33
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"mathjs@3.10.3\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Arbitrary Code Injection\",\n      \"sink_api\": \"new Function\",\n      \"file\": \"lib/expression/node/Node.js\",\n      \"line\": 33,\n      \"description\": \"User-supplied math expressions are compiled into a string and passed directly to `new Function()` without adequate sandboxing, allowing an attacker to break out of the expression context and execute arbitrary JavaScript.\",\n      \"snippet\": \"var _0x2ff184 = new Function(\\\"defs\\\", _0xc40764);\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_10",
+      "category": "command-injection",
+      "module": "clamscan_1.2.0",
+      "state": "obfuscated",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 495,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 135.7,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.exec"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\"package\":\"clamscan@1.2.0\",\"vulnerable\":true,\"vulnerabilities\":[{\"type\":\"Command Injection\",\"sink_api\":\"child_process.exec\",\"file\":\"index.js\",\"line\":1,\"description\":\"The user-controlled `path` setting (e.g. `settings.clamdscan.path`) is concatenated with a version flag string and passed directly to `cp_exec` (which is `promisify(exec)`, a shell-spawning call) without any sanitization, allowing an attacker who controls the configuration to inject arbitrary shell commands.\",\"snippet\":\"const {stdout:_0x4ca7bf}=await cp_exec(_0x29c773[_0x1b1eb0]);\"}]}\n```\n"
+    },
+    {
+      "module_id": "module_35",
+      "category": "code-injection",
+      "module": "mathjs_3.10.3",
+      "state": "original",
+      "ground_truth_type": "Arbitrary Code Injection",
+      "ground_truth_file": "lib/core/function/import.js",
+      "ground_truth_line": 131,
+      "ground_truth_sink_apis": [
+        "eval",
+        "new Function",
+        "vm.runInNewContext",
+        "vm.runInThisContext"
+      ],
+      "elapsed_s": 68.0,
+      "vulnerable_detected": true,
+      "type_correct": false,
+      "sink_api_correct": false,
+      "location_correct": false,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "lib/utils/object.js",
+          86
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "Now I have enough information. The `deepExtend` function in `lib/utils/object.js` is vulnerable to Prototype Pollution: it iterates `for...in` with a `hasOwnProperty` guard but never checks if `prop === '__proto__'`. When `b` is a JSON-parsed object with a `__proto__` key, `hasOwnProperty` returns `true` for that key, and line 86 calls `deepExtend(a['__proto__'], b['__proto__'])` \u2014 which is `deepExtend(Object.prototype, attacker_payload)`, polluting `Object.prototype`.\n\n```json\n{\n  \"package\": \"mathjs@3.10.3\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"lib/utils/object.js\",\n      \"line\": 86,\n      \"description\": \"deepExtend does not guard against the '__proto__' key, so an attacker-controlled object with a '__proto__' property causes a recursive call into Object.prototype, polluting it with arbitrary properties.\",\n      \"snippet\": \"          deepExtend(a[prop], b[prop]);\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_06",
+      "category": "prototype-pollution",
+      "module": "deep-defaults_1.0.5",
+      "state": "original",
+      "ground_truth_type": "Prototype Pollution",
+      "ground_truth_file": "lib/index.js",
+      "ground_truth_line": 16,
+      "ground_truth_sink_apis": [
+        "__proto__",
+        "constructor.prototype"
+      ],
+      "elapsed_s": 64.5,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "lib/index.js",
+          16
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"deep-defaults@1.0.5\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"lib/index.js\",\n      \"line\": 16,\n      \"description\": \"The function recursively merges src into dest without filtering __proto__, so passing src={\\\"__proto__\\\":{\\\"polluted\\\":\\\"yes\\\"}} causes _deepDefaults to be called with Object.prototype as dest and then assigns arbitrary properties onto it at line 16.\",\n      \"snippet\": \"dest[k] = v;\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_11",
+      "category": "prototype-pollution",
+      "module": "deap_1.0.0",
+      "state": "obfuscated",
+      "ground_truth_type": "Prototype Pollution",
+      "ground_truth_file": "lib/connie-lang.js",
+      "ground_truth_line": 35,
+      "ground_truth_sink_apis": [
+        "__proto__",
+        "constructor.prototype"
+      ],
+      "elapsed_s": 76.9,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "lib/deap.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "Now I have enough information to analyze the vulnerability. The files are obfuscated but the logic is clear.\n\n```json\n{\n  \"package\": \"deap@1.0.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"lib/deap.js\",\n      \"line\": 1,\n      \"description\": \"The deepExtend function iterates source keys via Object.keys() without filtering __proto__, so when a JSON-parsed object containing a __proto__ key is passed, it recursively merges into Object.prototype, polluting the global prototype.\",\n      \"snippet\": \"if(typeOf(_0x45dfa4[_0x5b80e])===_0x29deac(0x1d3)&&typeOf(_0x2e9add[_0x5b80e])===_0x29deac(0x1d3))deepExtend(_0x2e9add[_0x5b80e],_0x45dfa4[_0x5b80e]);else _0x2e9add[_0x5b80e]=deepClone(_0x45dfa4[_0x5b80e]);\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_20",
+      "category": "command-injection",
+      "module": "aaptjs_1.3.1",
+      "state": "webcrack",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 18,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 15.7,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "exec"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          15
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"aaptjs@1.3.1\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"exec\",\n      \"file\": \"index.js\",\n      \"line\": 15,\n      \"description\": \"User-supplied arguments (file paths, flags) are concatenated directly into shell commands passed to shelljs exec without any sanitization, allowing arbitrary command injection.\",\n      \"snippet\": \"exec(_0xae8c95, (_0x1f7c4b, _0x2936e6, _0x557ccf) => {\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_07",
+      "category": "code-injection",
+      "module": "node-serialize_0.0.3",
+      "state": "original",
+      "ground_truth_type": "Arbitrary Code Injection",
+      "ground_truth_file": "lib/serialize.js",
+      "ground_truth_line": 75,
+      "ground_truth_sink_apis": [
+        "eval",
+        "new Function",
+        "vm.runInNewContext",
+        "vm.runInThisContext"
+      ],
+      "elapsed_s": 18.7,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Arbitrary Code Injection"
+      ],
+      "predicted_sink_apis": [
+        "eval"
+      ],
+      "predicted_locations": [
+        [
+          "lib/serialize.js",
+          75
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"node-serialize@0.0.3\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Arbitrary Code Injection\",\n      \"sink_api\": \"eval\",\n      \"file\": \"lib/serialize.js\",\n      \"line\": 75,\n      \"description\": \"The unserialize function passes attacker-controlled function strings directly to eval, allowing arbitrary JavaScript execution when deserializing untrusted input (including IIFEs that execute immediately upon deserialization).\",\n      \"snippet\": \"obj[key] = eval('(' + obj[key].substring(FUNCFLAG.length) + ')');\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_36",
+      "category": "redos",
+      "module": "charset_1.0.0",
+      "state": "original",
+      "ground_truth_type": "ReDoS",
+      "ground_truth_file": "charset.js",
+      "ground_truth_line": 59,
+      "ground_truth_sink_apis": [
+        "RegExp.exec",
+        "RegExp.test",
+        "String.match",
+        "String.replace",
+        "String.search",
+        "String.split"
+      ],
+      "elapsed_s": 81.8,
+      "vulnerable_detected": false,
+      "type_correct": false,
+      "sink_api_correct": false,
+      "location_correct": false,
+      "predicted_types": [],
+      "predicted_sink_apis": [],
+      "predicted_locations": [],
+      "parse_error": false,
+      "raw_output": "{\"package\": \"charset@1.0.0\", \"vulnerable\": false, \"vulnerabilities\": []}\n"
+    },
+    {
+      "module_id": "module_38",
+      "category": "path-traversal",
+      "module": "asset-cache_0.0.6",
+      "state": "obfuscated",
+      "ground_truth_type": "Path Traversal",
+      "ground_truth_file": "lib/asset-cache.js",
+      "ground_truth_line": 31,
+      "ground_truth_sink_apis": [
+        "fs.readFile",
+        "fs.readFileSync",
+        "fs.createReadStream"
+      ],
+      "elapsed_s": 113.2,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Path Traversal"
+      ],
+      "predicted_sink_apis": [
+        "fs.readFile"
+      ],
+      "predicted_locations": [
+        [
+          "lib/asset-cache.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "Now I have all the mappings. The deobfuscated logic is:\n- `req.url` \u2192 `path.join(config.dir, url)` \u2192 `fs.readFile` with no path sanitization\n\nThis is a classic Path Traversal: user-controlled URL is joined with a base dir and read directly, allowing `../` sequences to escape the directory.\n\n```json\n{\n  \"package\": \"asset-cache@0.0.6\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Path Traversal\",\n      \"sink_api\": \"fs.readFile\",\n      \"file\": \"lib/asset-cache.js\",\n      \"line\": 1,\n      \"description\": \"The HTTP handler passes the raw request URL directly to path.join(config.dir, url) with no sanitization, then reads the resulting path with fs.readFile, allowing '../' sequences to escape the base directory and read arbitrary files.\",\n      \"snippet\": \"fs[_0x2e0cc5(0x1c4)](_0xf31cdb,function(_0xfb4c71,_0x53cede){_0x39bea4(_0xfb4c71,_0xfb4c71?null:_0x53cede,![],_0x452e6f);})\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_17",
+      "category": "command-injection",
+      "module": "async-git_1.13.1",
+      "state": "original",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "lib/reset/index.js",
+      "ground_truth_line": 11,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 46.3,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.exec"
+      ],
+      "predicted_locations": [
+        [
+          "lib/modified/index.js",
+          21
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"async-git@1.13.1\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"lib/modified/index.js\",\n      \"line\": 21,\n      \"description\": \"The user-supplied `path` string is interpolated directly into a shell command without sanitization, allowing an attacker to inject arbitrary shell commands (e.g. `foo; rm -rf /`).\",\n      \"snippet\": \"const ts = await exec(`git log -1 --format=\\\"%at\\\" -- ${path}`);\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_22",
+      "category": "path-traversal",
+      "module": "canvas-designer_1.2.1",
+      "state": "webcrack",
+      "ground_truth_type": "Path Traversal",
+      "ground_truth_file": "server.js",
+      "ground_truth_line": 36,
+      "ground_truth_sink_apis": [
+        "fs.readFile",
+        "fs.readFileSync",
+        "fs.createReadStream"
+      ],
+      "elapsed_s": 31.5,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Path Traversal"
+      ],
+      "predicted_sink_apis": [
+        "fs.readFile"
+      ],
+      "predicted_locations": [
+        [
+          "server.js",
+          28
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "The `server.js` file clearly shows the vulnerability. The pathname from the HTTP request URL is joined with `process.cwd()` and passed directly to `fs.readFile` without any check that the resolved path stays within the web root.\n\n```json\n{\n  \"package\": \"canvas-designer@1.2.1\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Path Traversal\",\n      \"sink_api\": \"fs.readFile\",\n      \"file\": \"server.js\",\n      \"line\": 28,\n      \"description\": \"The URL pathname is joined with the current working directory and passed directly to fs.readFile without validating that the resolved path stays within the intended directory, allowing an attacker to read arbitrary files via ../ sequences.\",\n      \"snippet\": \"fs.readFile(_0x3a9f70, \\\"binary\\\", function (_0x4c7dbc, _0x1f6a7e) {\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_15",
+      "category": "code-injection",
+      "module": "js-yaml_3.13.0",
+      "state": "original",
+      "ground_truth_type": "Arbitrary Code Injection",
+      "ground_truth_file": "lib/js-yaml/type/js/function.js",
+      "ground_truth_line": 70,
+      "ground_truth_sink_apis": [
+        "eval",
+        "new Function",
+        "vm.runInNewContext",
+        "vm.runInThisContext"
+      ],
+      "elapsed_s": 35.7,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Arbitrary Code Injection"
+      ],
+      "predicted_sink_apis": [
+        "Function"
+      ],
+      "predicted_locations": [
+        [
+          "lib/js-yaml/type/js/function.js",
+          70
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"js-yaml@3.13.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Arbitrary Code Injection\",\n      \"sink_api\": \"Function\",\n      \"file\": \"lib/js-yaml/type/js/function.js\",\n      \"line\": 70,\n      \"description\": \"The !!js/function YAML tag causes yaml.load() to invoke new Function() with attacker-controlled source, enabling arbitrary JavaScript execution when parsing untrusted input with the default (full) schema.\",\n      \"snippet\": \"    return new Function(params, source.slice(body[0] + 1, body[1] - 1));\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_14",
+      "category": "redos",
+      "module": "brace-expansion_1.1.6",
+      "state": "webcrack",
+      "ground_truth_type": "ReDoS",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 109,
+      "ground_truth_sink_apis": [
+        "RegExp.exec",
+        "RegExp.test",
+        "String.match",
+        "String.replace",
+        "String.search",
+        "String.split"
+      ],
+      "elapsed_s": 64.6,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "ReDoS"
+      ],
+      "predicted_sink_apis": [
+        "RegExp.test"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          77
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"brace-expansion@1.1.6\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"ReDoS\",\n      \"sink_api\": \"RegExp.test\",\n      \"file\": \"index.js\",\n      \"line\": 77,\n      \"description\": \"The regex /^(.*,)+(.+)?$/ is applied to user-controlled brace-expression body content; the nested quantifier (.*,)+ causes catastrophic backtracking when given a string of many commas, enabling denial of service.\",\n      \"snippet\": \"var _0x30414e = /^(.*,)+(.+)?$/.test(_0x3e0677.body);\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_38",
+      "category": "path-traversal",
+      "module": "asset-cache_0.0.6",
+      "state": "webcrack",
+      "ground_truth_type": "Path Traversal",
+      "ground_truth_file": "lib/asset-cache.js",
+      "ground_truth_line": 31,
+      "ground_truth_sink_apis": [
+        "fs.readFile",
+        "fs.readFileSync",
+        "fs.createReadStream"
+      ],
+      "elapsed_s": 37.4,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Path Traversal"
+      ],
+      "predicted_sink_apis": [
+        "fs.readFile"
+      ],
+      "predicted_locations": [
+        [
+          "lib/asset-cache.js",
+          22
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"asset-cache@0.0.6\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Path Traversal\",\n      \"sink_api\": \"fs.readFile\",\n      \"file\": \"lib/asset-cache.js\",\n      \"line\": 22,\n      \"description\": \"The HTTP request URL is passed directly to path.join and then to fs.readFile without validating the resolved path stays within the configured directory, allowing an attacker to read arbitrary files via '../' sequences (e.g. GET /../../../etc/passwd).\",\n      \"snippet\": \"fs.readFile(_0xf31cdb, function (_0xfb4c71, _0x53cede) {\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_41",
+      "category": "command-injection",
+      "module": "blamer_0.1.13",
+      "state": "webcrack",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "src/vcs/git.js",
+      "ground_truth_line": 24,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 43.2,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Command Injection",
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.exec",
+        "child_process.exec"
+      ],
+      "predicted_locations": [
+        [
+          "src/vcs/git.js",
+          21
+        ],
+        [
+          "src/vcs/svn.js",
+          34
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"blamer@0.1.13\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"src/vcs/git.js\",\n      \"line\": 21,\n      \"description\": \"The user-controlled `args` parameter (_0x51db82) is directly concatenated into a shell command string passed to exec without any sanitization, allowing arbitrary command injection.\",\n      \"snippet\": \"exec(\\\"git blame \\\" + _0x51db82 + \\\" \\\" + _0x3d1a38, {\"\n    },\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"src/vcs/svn.js\",\n      \"line\": 34,\n      \"description\": \"The user-controlled `args` parameter (_0x4642ca) is directly concatenated into a shell command string passed to exec without any sanitization, allowing arbitrary command injection.\",\n      \"snippet\": \"exec(\\\"svn blame \\\" + _0x292556 + \\\" \\\" + _0x4642ca, {\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_34",
+      "category": "prototype-pollution",
+      "module": "deep-extend_0.5.0",
+      "state": "obfuscated",
+      "ground_truth_type": "Prototype Pollution",
+      "ground_truth_file": "lib/deep-extend.js",
+      "ground_truth_line": 117,
+      "ground_truth_sink_apis": [
+        "__proto__",
+        "constructor.prototype"
+      ],
+      "elapsed_s": 38.4,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "lib/deep-extend.js",
+          27
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"deep-extend@0.5.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"lib/deep-extend.js\",\n      \"line\": 27,\n      \"description\": \"The deepExtend function iterates over source object keys using Object.keys and assigns values to the destination object without checking if the key is '__proto__', 'constructor', or 'prototype', allowing an attacker to pollute Object.prototype by passing a crafted object such as {\\\"__proto__\\\": {\\\"polluted\\\": true}}.\",\n      \"snippet\": \"_0x19ae64[_0x36689c]=_0x2fa6c7;\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_39",
+      "category": "command-injection",
+      "module": "adb-driver_0.1.8",
+      "state": "obfuscated",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "build/AdbDriver.js",
+      "ground_truth_line": 26,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 61.1,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.exec"
+      ],
+      "predicted_locations": [
+        [
+          "build/AdbDriver.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"adb-driver@0.1.8\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"build/AdbDriver.js\",\n      \"line\": 1,\n      \"description\": \"The execADBCommand function passes the caller-supplied command string directly to child_process.exec without any sanitization, allowing an attacker who controls the input to inject arbitrary shell commands.\",\n      \"snippet\": \"child_process_1['exec'](_0x1175e2,_0x4360bc||{'stdio':'inherit'},(_0xfc3776,_0x4f76e2,_0x405ac0)=>{_0xfc3776&&_0x447349(_0xfc3776),_0x1eec9a(_0x4f76e2);})\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_28",
+      "category": "path-traversal",
+      "module": "angular-http-server_1.0.0",
+      "state": "original",
+      "ground_truth_type": "Path Traversal",
+      "ground_truth_file": "angular-http-server.js",
+      "ground_truth_line": 16,
+      "ground_truth_sink_apis": [
+        "fs.readFile",
+        "fs.readFileSync",
+        "fs.createReadStream"
+      ],
+      "elapsed_s": 16.2,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Path Traversal"
+      ],
+      "predicted_sink_apis": [
+        "fs.readFileSync"
+      ],
+      "predicted_locations": [
+        [
+          "angular-http-server.js",
+          16
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"angular-http-server@1.0.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Path Traversal\",\n      \"sink_api\": \"fs.readFileSync\",\n      \"file\": \"angular-http-server.js\",\n      \"line\": 16,\n      \"description\": \"The request URL is used directly as a file path without sanitization, allowing an attacker to read arbitrary files on the server via path traversal (e.g. /../../../etc/passwd).\",\n      \"snippet\": \"fileBuffer = fs.readFileSync(possibleFilename);\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_01",
+      "category": "command-injection",
+      "module": "codecov_3.6.4",
+      "state": "webcrack",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "lib/codecov.js",
+      "ground_truth_line": 419,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 55.1,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.execSync"
+      ],
+      "predicted_locations": [
+        [
+          "lib/codecov.js",
+          174
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"codecov@3.6.4\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.execSync\",\n      \"file\": \"lib/codecov.js\",\n      \"line\": 174,\n      \"description\": \"The user-supplied `--gcov-root` option is interpolated directly into a shell command string without sanitization (unlike `gcov-exec` and `gcov-args` which are passed through `validator.escape`), allowing an attacker to inject arbitrary shell commands.\",\n      \"snippet\": \"execSync(_0x46e228);\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_48",
+      "category": "path-traversal",
+      "module": "atropa-ide_0.2.2-2",
+      "state": "obfuscated",
+      "ground_truth_type": "Path Traversal",
+      "ground_truth_file": "node_modules/atropa-server/requestHandlers.js",
+      "ground_truth_line": 120,
+      "ground_truth_sink_apis": [
+        "fs.readFile",
+        "fs.readFileSync",
+        "fs.createReadStream"
+      ],
+      "elapsed_s": 78.3,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Path Traversal"
+      ],
+      "predicted_sink_apis": [
+        "fs.readFileSync"
+      ],
+      "predicted_locations": [
+        [
+          "getFileContents.jsn",
+          86
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"atropa-ide@0.2.2-2\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Path Traversal\",\n      \"sink_api\": \"fs.readFileSync\",\n      \"file\": \"getFileContents.jsn\",\n      \"line\": 86,\n      \"description\": \"User-controlled `fileLocation` parameter from the request body or query string is passed directly to `fs.readFileSync` without path sanitization, allowing an attacker to read arbitrary files on the server.\",\n      \"snippet\": \"outputFile = fs.readFileSync(body.fileLocation, 'utf8');\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "module_id": "module_17",
+      "category": "command-injection",
+      "module": "async-git_1.13.1",
+      "state": "obfuscated",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "lib/reset/index.js",
+      "ground_truth_line": 11,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 151.1,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.exec"
+      ],
+      "predicted_locations": [
+        [
+          "lib/reset/index.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "Now I have enough information to identify the vulnerability. The `async-execute` package wraps `child_process.exec`, which runs commands through a shell. In `lib/reset/index.js`, the destination argument is passed through `JSON.stringify` as a quoting mechanism, but `JSON.stringify` only escapes JSON-special characters (`\"`, `\\`, control chars) \u2014 it does not escape shell metacharacters like `$()` or backticks, which remain active inside double-quoted shell strings.\n\n```json\n{\n  \"package\": \"async-git@1.13.1\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"lib/reset/index.js\",\n      \"line\": 1,\n      \"description\": \"The reset function wraps the user-supplied destination in JSON.stringify (adding double-quotes) before passing it to exec, but JSON.stringify does not escape shell metacharacters such as $() or backticks, so an attacker can pass a value like '$(id)' to achieve arbitrary command execution.\",\n      \"snippet\": \"exec('git reset ' + JSON['stringify'](_0x241c46) + ' ' + (hard ? '--hard' : ''))\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_40",
+      "category": "prototype-pollution",
+      "module": "brikcss-merge_1.3.0",
+      "state": "obfuscated",
+      "ground_truth_type": "Prototype Pollution",
+      "ground_truth_file": "merge/dist/lib/merge.js",
+      "ground_truth_line": 2,
+      "ground_truth_sink_apis": [
+        "__proto__",
+        "constructor.prototype"
+      ],
+      "elapsed_s": 193.5,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "dist/lib/merge.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "Confirmed \u2014 prototype pollution is exploitable. `Object.prototype` is polluted by merging a JSON-parsed object with a `__proto__` key.\n\n```json\n{\n  \"package\": \"@brikcss/merge@1.3.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"dist/lib/merge.js\",\n      \"line\": 1,\n      \"description\": \"The Merge.objects function iterates source keys via Object.keys() without sanitizing '__proto__', so merging a JSON-parsed object with a '__proto__' key causes Merge.objects to recurse into Object.prototype and write attacker-controlled properties onto it.\",\n      \"snippet\": \"_0x4cc6f3[_0x42a10a]=Merge[_0x1e08d4(0xca)](_isObject(_0x4cc6f3[_0x42a10a])?_0x4cc6f3[_0x42a10a]:{},_0x380cff,{'arrayStrategy':_0x563290,'ignore':_0x5bcc5e,'parent':_0x1c1dfa})\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_38",
+      "category": "path-traversal",
+      "module": "asset-cache_0.0.6",
+      "state": "original",
+      "ground_truth_type": "Path Traversal",
+      "ground_truth_file": "lib/asset-cache.js",
+      "ground_truth_line": 31,
+      "ground_truth_sink_apis": [
+        "fs.readFile",
+        "fs.readFileSync",
+        "fs.createReadStream"
+      ],
+      "elapsed_s": 25.3,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Path Traversal"
+      ],
+      "predicted_sink_apis": [
+        "fs.readFile"
+      ],
+      "predicted_locations": [
+        [
+          "lib/asset-cache.js",
+          31
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"asset-cache@0.0.6\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Path Traversal\",\n      \"sink_api\": \"fs.readFile\",\n      \"file\": \"lib/asset-cache.js\",\n      \"line\": 31,\n      \"description\": \"User-controlled req.url is passed directly to path.join and then to fs.readFile without sanitization, allowing an attacker to traverse outside the intended directory using sequences like '../../../etc/passwd'.\",\n      \"snippet\": \"    fs.readFile(file, function(err, data) {\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_14",
+      "category": "redos",
+      "module": "brace-expansion_1.1.6",
+      "state": "original",
+      "ground_truth_type": "ReDoS",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 109,
+      "ground_truth_sink_apis": [
+        "RegExp.exec",
+        "RegExp.test",
+        "String.match",
+        "String.replace",
+        "String.search",
+        "String.split"
+      ],
+      "elapsed_s": 29.7,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "ReDoS"
+      ],
+      "predicted_sink_apis": [
+        "RegExp.test"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          109
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"brace-expansion@1.1.6\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"ReDoS\",\n      \"sink_api\": \"RegExp.test\",\n      \"file\": \"index.js\",\n      \"line\": 109,\n      \"description\": \"The regex /^(.*,)+(.+)?$/ contains nested quantifiers that cause catastrophic backtracking on inputs with many commas followed by no valid ending, allowing a user-controlled string (m.body) to trigger exponential regex evaluation time.\",\n      \"snippet\": \"var isOptions = /^(.*,)+(.+)?$/.test(m.body);\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_13",
+      "category": "redos",
+      "module": "clean-css_4.1.10",
+      "state": "webcrack",
+      "ground_truth_type": "ReDoS",
+      "ground_truth_file": "validator.js",
+      "ground_truth_line": 418,
+      "ground_truth_sink_apis": [
+        "RegExp.exec",
+        "RegExp.test",
+        "String.match",
+        "String.replace",
+        "String.search",
+        "String.split"
+      ],
+      "elapsed_s": 110.7,
+      "vulnerable_detected": true,
+      "type_correct": false,
+      "sink_api_correct": false,
+      "location_correct": false,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "lib/options/compatibility.js",
+          115
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "I've found the vulnerability. The `calculateSource` function in `lib/options/compatibility.js` parses a user-supplied compatibility string and writes keys/values without sanitizing `__proto__`.\n\n```json\n{\n  \"package\": \"clean-css@4.1.10\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"lib/options/compatibility.js\",\n      \"line\": 115,\n      \"description\": \"User-controlled compatibility string is split on '.' and written to obj[key][subKey] without sanitizing '__proto__', so a crafted input like '+__proto__.polluted' causes Object.prototype.polluted to be set to true.\",\n      \"snippet\": \"_0x1124ea[_0x2d5012][_0x2360f7] = _0x4c6581;\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_40",
+      "category": "prototype-pollution",
+      "module": "brikcss-merge_1.3.0",
+      "state": "original",
+      "ground_truth_type": "Prototype Pollution",
+      "ground_truth_file": "merge/dist/lib/merge.js",
+      "ground_truth_line": 2,
+      "ground_truth_sink_apis": [
+        "__proto__",
+        "constructor.prototype"
+      ],
+      "elapsed_s": 76.2,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "dist/lib/merge.js",
+          2
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"@brikcss/merge@1.3.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"dist/lib/merge.js\",\n      \"line\": 2,\n      \"description\": \"Merge.objects iterates over Object.keys() of the source object, so when a JSON-parsed object contains '__proto__' as an own enumerable key, e[\\\"__proto__\\\"] resolves via the accessor to Object.prototype, and the recursive Merge.objects call then writes attacker-controlled keys directly onto Object.prototype.\",\n      \"snippet\": \"e[a]=Merge.objects(_isObject(e[a])?e[a]:{},s,{arrayStrategy:t,ignore:n,parent:o})\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_43",
+      "category": "prototype-pollution",
+      "module": "copy-props_2.0.4",
+      "state": "webcrack",
+      "ground_truth_type": "Prototype Pollution",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 197,
+      "ground_truth_sink_apis": [
+        "__proto__",
+        "constructor.prototype"
+      ],
+      "elapsed_s": 93.2,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          167
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"copy-props@2.0.4\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"index.js\",\n      \"line\": 167,\n      \"description\": \"The _setDeep function splits dot-separated key chains and traverses object properties without sanitizing '__proto__', so a source object with a key path like '__proto__.polluted' causes the function to recurse into Object.prototype and write arbitrary properties onto it.\",\n      \"snippet\": \"_0xa055ab[_0x2a174a] = _0x1ac59f;\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_31",
+      "category": "redos",
+      "module": "browserslist_4.16.4",
+      "state": "original",
+      "ground_truth_type": "ReDoS",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 333,
+      "ground_truth_sink_apis": [
+        "RegExp.exec",
+        "RegExp.test",
+        "String.match",
+        "String.replace",
+        "String.search",
+        "String.split"
+      ],
+      "elapsed_s": 98.4,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "ReDoS"
+      ],
+      "predicted_sink_apis": [
+        "RegExp.exec"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          784
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\"package\":\"browserslist@4.16.4\",\"vulnerable\":true,\"vulnerabilities\":[{\"type\":\"ReDoS\",\"sink_api\":\"RegExp.exec\",\"file\":\"index.js\",\"line\":784,\"description\":\"The regex /^last\\\\s+(\\\\d*.?\\\\d+)\\\\s+years?$/i used to match 'last N years' queries contains a catastrophically backtracking pattern (\\\\d*.?\\\\d+) that allows an attacker to cause denial of service by supplying a long numeric string that fails to match.\",\"snippet\":\"regexp: /^last\\\\s+(\\\\d*.?\\\\d+)\\\\s+years?$/i,\"}]}\n```"
+    },
+    {
+      "module_id": "module_07",
+      "category": "code-injection",
+      "module": "node-serialize_0.0.3",
+      "state": "webcrack",
+      "ground_truth_type": "Arbitrary Code Injection",
+      "ground_truth_file": "lib/serialize.js",
+      "ground_truth_line": 75,
+      "ground_truth_sink_apis": [
+        "eval",
+        "new Function",
+        "vm.runInNewContext",
+        "vm.runInThisContext"
+      ],
+      "elapsed_s": 17.8,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Arbitrary Code Injection"
+      ],
+      "predicted_sink_apis": [
+        "eval"
+      ],
+      "predicted_locations": [
+        [
+          "lib/serialize.js",
+          73
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"node-serialize@0.0.3\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Arbitrary Code Injection\",\n      \"sink_api\": \"eval\",\n      \"file\": \"lib/serialize.js\",\n      \"line\": 73,\n      \"description\": \"The unserialize function passes attacker-controlled function strings directly to eval, allowing remote code execution when deserializing untrusted input containing the _$$ND_FUNC$$_ prefix.\",\n      \"snippet\": \"_0x573e4f[_0x41be7d] = eval(\\\"(\\\" + _0x573e4f[_0x41be7d].substring(FUNCFLAG.length) + \\\")\\\");\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_21",
+      "category": "redos",
+      "module": "ansi-html_0.0.7",
+      "state": "obfuscated",
+      "ground_truth_type": "ReDoS",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 62,
+      "ground_truth_sink_apis": [
+        "RegExp.exec",
+        "RegExp.test",
+        "String.match",
+        "String.replace",
+        "String.search",
+        "String.split"
+      ],
+      "elapsed_s": 127.1,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "ReDoS"
+      ],
+      "predicted_sink_apis": [
+        "String.replace"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"ansi-html@0.0.7\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"ReDoS\",\n      \"sink_api\": \"String.replace\",\n      \"file\": \"index.js\",\n      \"line\": 1,\n      \"description\": \"The regex /\\\\033\\\\[(\\\\d+)*m/g uses the catastrophically backtracking pattern (\\\\d+)* which causes exponential backtracking when processing an ANSI escape sequence followed by many digits but no terminating 'm' character.\",\n      \"snippet\": \"var _0x2c9641=[],_0x1ba198=_0x11f200[_0x35688f(0x133)](/\\\\033\\\\[(\\\\d+)*m/g,function(_0xad1f57,_0x349d2a){\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_43",
+      "category": "prototype-pollution",
+      "module": "copy-props_2.0.4",
+      "state": "original",
+      "ground_truth_type": "Prototype Pollution",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 197,
+      "ground_truth_sink_apis": [
+        "__proto__",
+        "constructor.prototype"
+      ],
+      "elapsed_s": 84.4,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          197
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"copy-props@2.0.4\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"index.js\",\n      \"line\": 197,\n      \"description\": \"The `_setDeep` function assigns user-controlled key chains (e.g. `__proto__.x`) to object properties without sanitizing reserved keys, allowing an attacker to pollute the prototype of any object passed as destination.\",\n      \"snippet\": \"    obj[key] = value;\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_08",
+      "category": "redos",
+      "module": "ajv_5.2.2",
+      "state": "webcrack",
+      "ground_truth_type": "ReDoS",
+      "ground_truth_file": "util.js",
+      "ground_truth_line": 143,
+      "ground_truth_sink_apis": [
+        "RegExp.exec",
+        "RegExp.test",
+        "String.match",
+        "String.replace",
+        "String.search",
+        "String.split"
+      ],
+      "elapsed_s": 103.8,
+      "vulnerable_detected": true,
+      "type_correct": false,
+      "sink_api_correct": false,
+      "location_correct": false,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "lib/dotjs/validate.js",
+          315
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "Now I have enough to identify the vulnerability. The critical finding is in `lib/dotjs/validate.js` at line 315, where the `useDefaults` code generator writes property assignments without sanitizing the property name \u2014 if the schema contains `__proto__` as a property key with a default, the generated code becomes `data[\"__proto__\"] = <default>`, polluting `Object.prototype`.\n\n```json\n{\n  \"package\": \"ajv@5.2.2\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"lib/dotjs/validate.js\",\n      \"line\": 315,\n      \"description\": \"When useDefaults is enabled, property names from schema.properties (including '__proto__') are used unsanitized to generate assignment code, allowing a crafted schema to produce 'data[\\\"__proto__\\\"] = <default>' which pollutes Object.prototype at validator runtime.\",\n      \"snippet\": \"_0x326bbf += \\\"  if (\\\" + _0x134d1c + \\\" === undefined) \\\" + _0x134d1c + \\\" = \\\";\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_20",
+      "category": "command-injection",
+      "module": "aaptjs_1.3.1",
+      "state": "obfuscated",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 18,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 51.6,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "exec"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "The code is obfuscated but the vulnerability is clear. The file uses `require('shelljs/global')` which injects `exec` into the global scope, and the `promistify` function passes shell commands built by concatenating unsanitized user input directly to `exec`.\n\n```json\n{\n  \"package\": \"aaptjs@1.3.1\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"exec\",\n      \"file\": \"index.js\",\n      \"line\": 1,\n      \"description\": \"User-supplied file path arguments (e.g. apkPath in list/dump/add/remove) are concatenated directly into shell command strings and passed to shelljs exec() without any sanitization or escaping, allowing arbitrary command execution.\",\n      \"snippet\": \"exec(_0xae8c95,(_0x1f7c4b,_0x2936e6,_0x557ccf)=>{_0x1f7c4b!==0x0?(_0x6bcea(_0x557ccf),_0x594497(_0x557ccf,null)):(_0x2d1f80(_0x2936e6),_0x594497(null,_0x2936e6));})\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_18",
+      "category": "redos",
+      "module": "axios_0.21.0",
+      "state": "original",
+      "ground_truth_type": "ReDoS",
+      "ground_truth_file": "utils.js",
+      "ground_truth_line": 190,
+      "ground_truth_sink_apis": [
+        "RegExp.exec",
+        "RegExp.test",
+        "String.match",
+        "String.replace",
+        "String.search",
+        "String.split"
+      ],
+      "elapsed_s": 188.7,
+      "vulnerable_detected": true,
+      "type_correct": false,
+      "sink_api_correct": false,
+      "location_correct": false,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "lib/utils.js",
+          280
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"axios@0.21.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"lib/utils.js\",\n      \"line\": 280,\n      \"description\": \"The merge() function assigns to result[key] without sanitizing key, so when key is '__proto__' the prototype of the result object is overwritten, enabling prototype pollution (CVE-2021-3749).\",\n      \"snippet\": \"result[key] = merge(result[key], val);\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_18",
+      "category": "redos",
+      "module": "axios_0.21.0",
+      "state": "obfuscated",
+      "ground_truth_type": "ReDoS",
+      "ground_truth_file": "utils.js",
+      "ground_truth_line": 190,
+      "ground_truth_sink_apis": [
+        "RegExp.exec",
+        "RegExp.test",
+        "String.match",
+        "String.replace",
+        "String.search",
+        "String.split"
+      ],
+      "elapsed_s": 70.7,
+      "vulnerable_detected": true,
+      "type_correct": false,
+      "sink_api_correct": false,
+      "location_correct": false,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "lib/utils.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"axios@0.21.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"lib/utils.js\",\n      \"line\": 1,\n      \"description\": \"The `merge` function assigns user-controlled object keys directly to the result object without sanitizing against reserved keys like `__proto__`, so passing an object with a `__proto__` key (e.g. from a JSON-parsed payload) pollutes Object.prototype.\",\n      \"snippet\": \"if(isPlainObject(_0x201d2c))_0x9f3412[_0x44070f]=merge({},_0x201d2c)\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_04",
+      "category": "command-injection",
+      "module": "connection-tester_0.2.0",
+      "state": "webcrack",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 15,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 24.2,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.execSync"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          12
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"connection-tester@0.2.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.execSync\",\n      \"file\": \"index.js\",\n      \"line\": 12,\n      \"description\": \"User-supplied host, port, and timeout parameters are interpolated unsanitized into a shell command string that is executed via execSync, allowing arbitrary command injection.\",\n      \"snippet\": \"const _0x1a23af = shell.execSync(_0x4380dd).toString();\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_33",
+      "category": "code-injection",
+      "module": "jsen_0.6.6",
+      "state": "obfuscated",
+      "ground_truth_type": "Arbitrary Code Injection",
+      "ground_truth_file": "lib/func.js",
+      "ground_truth_line": 62,
+      "ground_truth_sink_apis": [
+        "eval",
+        "new Function",
+        "vm.runInNewContext",
+        "vm.runInThisContext"
+      ],
+      "elapsed_s": 243.7,
+      "vulnerable_detected": true,
+      "type_correct": false,
+      "sink_api_correct": false,
+      "location_correct": false,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "lib/jsen.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"jsen@0.6.6\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"lib/jsen.js\",\n      \"line\": 1,\n      \"description\": \"The `build` function iterates `Object.keys(schema.properties)` and assigns values to the data object using bracket notation without sanitizing the key, allowing a schema with a `__proto__` property (created via JSON.parse) to pollute Object.prototype when `validator.build()` is called.\",\n      \"snippet\": \"_0x23f34d!==undefined&&(_0x1d58ef[_0x4803da]=_0x23f34d)\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_45",
+      "category": "prototype-pollution",
+      "module": "assign-deep_1.0.0",
+      "state": "webcrack",
+      "ground_truth_type": "Prototype Pollution",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 22,
+      "ground_truth_sink_apis": [
+        "__proto__",
+        "constructor.prototype"
+      ],
+      "elapsed_s": 60.4,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          17
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"assign-deep@1.0.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"index.js\",\n      \"line\": 17,\n      \"description\": \"When a source object contains a `__proto__` key (e.g. via JSON.parse('{\\\"__proto__\\\":{\\\"polluted\\\":true}}')), Object.keys() returns it and the code recursively calls assign(Object.prototype, source.__proto__), writing attacker-controlled properties onto the global prototype.\",\n      \"snippet\": \"assign(_0x17ef2d[_0x18ad2c], _0x775089[_0xfb3782][_0x18ad2c]);\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_13",
+      "category": "redos",
+      "module": "clean-css_4.1.10",
+      "state": "obfuscated",
+      "ground_truth_type": "ReDoS",
+      "ground_truth_file": "validator.js",
+      "ground_truth_line": 418,
+      "ground_truth_sink_apis": [
+        "RegExp.exec",
+        "RegExp.test",
+        "String.match",
+        "String.replace",
+        "String.search",
+        "String.split"
+      ],
+      "elapsed_s": 101.1,
+      "vulnerable_detected": true,
+      "type_correct": false,
+      "sink_api_correct": false,
+      "location_correct": false,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "lib/options/compatibility.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "The vulnerability is clear. The `calculateSource` function in `compatibility.js` parses a user-supplied compatibility string by splitting on `.` to extract a category (`_0x2d5012`) and property (`_0x2360f7`), then writes to `_0x1124ea[_0x2d5012][_0x2360f7]`. If the category is `__proto__`, this pollutes `Object.prototype`. The entire file is one obfuscated line (line 1).\n\n```json\n{\n  \"package\": \"clean-css@4.1.10\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"lib/options/compatibility.js\",\n      \"line\": 1,\n      \"description\": \"The calculateSource function splits a user-supplied compatibility string on '.' to derive an object key (_0x2d5012) and sub-key (_0x2360f7) without sanitizing for '__proto__', so a value like '+__proto__.polluted' causes the assignment _0x1124ea['__proto__']['polluted']=true which writes to Object.prototype.\",\n      \"snippet\": \"_0x1124ea[_0x2d5012]=_0x1124ea[_0x2d5012]||{},_0x1124ea[_0x2d5012][_0x2360f7]=_0x4c6581;\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_06",
+      "category": "prototype-pollution",
+      "module": "deep-defaults_1.0.5",
+      "state": "obfuscated",
+      "ground_truth_type": "Prototype Pollution",
+      "ground_truth_file": "lib/index.js",
+      "ground_truth_line": 16,
+      "ground_truth_sink_apis": [
+        "__proto__",
+        "constructor.prototype"
+      ],
+      "elapsed_s": 113.4,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "lib/index.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "The vulnerability is confirmed. The entire file is on line 1 (minified). The sink is the property assignment `_0x1fb745[_0xa3bd72]=_0x89445a` where `_0xa3bd72` is a user-controlled key (e.g. `__proto__`) from the `defaults` argument, and `_0x1fb745` is the target object \u2014 allowing an attacker to write to `Object.prototype`.\n\n```json\n{\n  \"package\": \"deep-defaults@1.0.5\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"lib/index.js\",\n      \"line\": 1,\n      \"description\": \"The recursive merge assigns user-supplied keys (including __proto__) directly onto target objects without sanitization, allowing an attacker to pollute Object.prototype by passing a crafted defaults argument such as {\\\"__proto__\\\": {\\\"polluted\\\": true}}.\",\n      \"snippet\": \"_0x1fb745[_0xa3bd72]=_0x89445a;\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_04",
+      "category": "command-injection",
+      "module": "connection-tester_0.2.0",
+      "state": "original",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 15,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 18.0,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.execSync"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          15
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"connection-tester@0.2.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.execSync\",\n      \"file\": \"index.js\",\n      \"line\": 15,\n      \"description\": \"User-controlled `host`, `port`, and `connectTimeout` values are interpolated directly into a shell command string via `util.format` and executed with `execSync`, allowing an attacker to inject arbitrary shell commands.\",\n      \"snippet\": \"const shellOut = shell.execSync(cmd).toString();\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_25",
+      "category": "path-traversal",
+      "module": "augustine_0.2.3",
+      "state": "webcrack",
+      "ground_truth_type": "Path Traversal",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 88,
+      "ground_truth_sink_apis": [
+        "fs.readFile",
+        "fs.readFileSync",
+        "fs.createReadStream"
+      ],
+      "elapsed_s": 30.3,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Path Traversal"
+      ],
+      "predicted_sink_apis": [
+        "fs.readFileSync"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          79
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"augustine@0.2.3\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Path Traversal\",\n      \"sink_api\": \"fs.readFileSync\",\n      \"file\": \"index.js\",\n      \"line\": 79,\n      \"description\": \"The HTTP request URL pathname is sliced and used directly as a filesystem path without sanitizing `../` sequences, allowing an attacker to read arbitrary files outside the web root.\",\n      \"snippet\": \"  _0x1d7cf5.write(fs.readFileSync(_0x5b26c0, {\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_35",
+      "category": "code-injection",
+      "module": "mathjs_3.10.3",
+      "state": "obfuscated",
+      "ground_truth_type": "Arbitrary Code Injection",
+      "ground_truth_file": "lib/core/function/import.js",
+      "ground_truth_line": 131,
+      "ground_truth_sink_apis": [
+        "eval",
+        "new Function",
+        "vm.runInNewContext",
+        "vm.runInThisContext"
+      ],
+      "elapsed_s": 115.7,
+      "vulnerable_detected": true,
+      "type_correct": false,
+      "sink_api_correct": false,
+      "location_correct": false,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "lib/utils/object.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "Now I have enough information to identify the vulnerability. The `lib/utils/object.js` file is a single obfuscated line containing `deepExtend` which doesn't sanitize `__proto__` keys, and since `hasOwnProperty('__proto__')` returns true for objects parsed from JSON, the recursive call `deepExtend(target['__proto__'], source['__proto__'])` mutates `Object.prototype` directly.\n\n```json\n{\n  \"package\": \"mathjs@3.10.3\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"lib/utils/object.js\",\n      \"line\": 1,\n      \"description\": \"The deepExtend function iterates over source object keys with only a hasOwnProperty check but no __proto__ guard; passing a JSON-parsed object with a __proto__ key causes deepExtend to recursively merge into Object.prototype, polluting all objects.\",\n      \"snippet\": \"_0x476159[_0x291c5c]===undefined&&(_0x476159[_0x291c5c]={}),_0x476159[_0x291c5c]['constructor']===Object?deepExtend(_0x476159[_0x291c5c],_0x14fefc[_0x291c5c]):_0x476159[_0x291c5c]=_0x14fefc[_0x291c5c];\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_46",
+      "category": "prototype-pollution",
+      "module": "changeset_0.1.0",
+      "state": "obfuscated",
+      "ground_truth_type": "Prototype Pollution",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 81,
+      "ground_truth_sink_apis": [
+        "__proto__",
+        "constructor.prototype"
+      ],
+      "elapsed_s": 99.9,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"changeset@0.1.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"index.js\",\n      \"line\": 1,\n      \"description\": \"The `apply` function traverses user-supplied key arrays without sanitizing `__proto__` or `constructor`, so a changeset like `{type:'put', key:['__proto__','polluted'], value:true}` causes `cur = cur['__proto__']` to move to `Object.prototype` and then sets an arbitrary property on it.\",\n      \"snippet\": \"_0x37d756?_0x1cda13[_0x312438(0x147)](function(_0xdff4fd,_0x2d59dd){!(_0xdff4fd in _0x30903b)&&(_0x30903b[_0xdff4fd]={}),_0x2d59dd<_0x37d756-0x1?_0x30903b=_0x30903b[_0xdff4fd]:_0x30903b[_0xdff4fd]=_0x2d8cc0['value'];})\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_05",
+      "category": "command-injection",
+      "module": "command-exists_1.2.2",
+      "state": "webcrack",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "lib/command-exists.js",
+      "ground_truth_line": 78,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 23.3,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Command Injection",
+        "Command Injection",
+        "Command Injection",
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.exec",
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.execSync"
+      ],
+      "predicted_locations": [
+        [
+          "lib/command-exists.js",
+          39
+        ],
+        [
+          "lib/command-exists.js",
+          48
+        ],
+        [
+          "lib/command-exists.js",
+          59
+        ],
+        [
+          "lib/command-exists.js",
+          69
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"command-exists@1.2.2\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"lib/command-exists.js\",\n      \"line\": 39,\n      \"description\": \"User-supplied command name is concatenated directly into a shell string passed to exec() without any sanitization, allowing an attacker to inject arbitrary shell commands.\",\n      \"snippet\": \"var _0x57867b = exec(\\\"command -v \\\" + _0x582c4b + \\\" 2>/dev/null && { echo >&1 '\\\" + _0x582c4b + \\\" found'; exit 0; }\\\", function (_0x4de1a5, _0xd629d4, _0x4dc9ef) {\"\n    },\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"lib/command-exists.js\",\n      \"line\": 48,\n      \"description\": \"User-supplied command name is concatenated directly into a shell string passed to exec() on Windows without any sanitization, allowing arbitrary command injection.\",\n      \"snippet\": \"var _0x86dece = exec(\\\"where \\\" + _0x5f5b3b, function (_0x52d7cf) {\"\n    },\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.execSync\",\n      \"file\": \"lib/command-exists.js\",\n      \"line\": 59,\n      \"description\": \"User-supplied command name is concatenated directly into a shell string passed to execSync() without any sanitization, allowing arbitrary command injection.\",\n      \"snippet\": \"var _0x4917b5 = execSync(\\\"command -v \\\" + _0x286bcb + \\\" 2>/dev/null && { echo >&1 '\\\" + _0x286bcb + \\\" found'; exit 0; }\\\");\"\n    },\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.execSync\",\n      \"file\": \"lib/command-exists.js\",\n      \"line\": 69,\n      \"description\": \"User-supplied command name is concatenated directly into a shell string passed to execSync() on Windows without any sanitization, allowing arbitrary command injection.\",\n      \"snippet\": \"var _0xeb1147 = execSync(\\\"where \\\" + _0x232b3a);\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_31",
+      "category": "redos",
+      "module": "browserslist_4.16.4",
+      "state": "webcrack",
+      "ground_truth_type": "ReDoS",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 333,
+      "ground_truth_sink_apis": [
+        "RegExp.exec",
+        "RegExp.test",
+        "String.match",
+        "String.replace",
+        "String.search",
+        "String.split"
+      ],
+      "elapsed_s": 5816.7,
+      "vulnerable_detected": false,
+      "type_correct": false,
+      "sink_api_correct": false,
+      "location_correct": false,
+      "predicted_types": [],
+      "predicted_sink_apis": [],
+      "predicted_locations": [],
+      "parse_error": true,
+      "raw_output": "Request timed out"
+    },
+    {
+      "module_id": "module_37",
+      "category": "redos",
+      "module": "checkit_0.7.0",
+      "state": "original",
+      "ground_truth_type": "ReDoS",
+      "elapsed_s": 180,
+      "vulnerable_detected": false,
+      "type_correct": false,
+      "predicted_types": [],
+      "parse_error": false,
+      "timeout": true,
+      "raw_output": ""
+    },
+    {
+      "module_id": "module_14",
+      "category": "redos",
+      "module": "brace-expansion_1.1.6",
+      "state": "obfuscated",
+      "ground_truth_type": "ReDoS",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 109,
+      "ground_truth_sink_apis": [
+        "RegExp.exec",
+        "RegExp.test",
+        "String.match",
+        "String.replace",
+        "String.search",
+        "String.split"
+      ],
+      "elapsed_s": 2108.0,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "ReDoS"
+      ],
+      "predicted_sink_apis": [
+        "RegExp.test"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"brace-expansion@1.1.6\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"ReDoS\",\n      \"sink_api\": \"RegExp.test\",\n      \"file\": \"index.js\",\n      \"line\": 1,\n      \"description\": \"The regex /^(.*,)+(.+)?$/ applied to untrusted brace-expansion input causes catastrophic backtracking when the body contains many commas with no closing brace match, allowing an attacker to stall the event loop.\",\n      \"snippet\": \"_0x30414e=/^(.*,)+(.+)?$/[_0x4efbb9(0x10c)](_0x3e0677[_0x4efbb9(0x105)])\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_21",
+      "category": "redos",
+      "module": "ansi-html_0.0.7",
+      "state": "original",
+      "ground_truth_type": "ReDoS",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 62,
+      "ground_truth_sink_apis": [
+        "RegExp.exec",
+        "RegExp.test",
+        "String.match",
+        "String.replace",
+        "String.search",
+        "String.split"
+      ],
+      "elapsed_s": 624.7,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "ReDoS"
+      ],
+      "predicted_sink_apis": [
+        "String.prototype.replace"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          62
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"ansi-html@0.0.7\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"ReDoS\",\n      \"sink_api\": \"String.prototype.replace\",\n      \"file\": \"index.js\",\n      \"line\": 62,\n      \"description\": \"The regex /\\\\033\\\\[(\\\\d+)*m/g uses a nested quantifier (\\\\d+)* that causes catastrophic backtracking when processing input containing an ANSI-like escape sequence with many digits but no closing 'm' (e.g., \\\\x1b[1m\\\\x1b[111111111111111111111111).\",\n      \"snippet\": \"var ret = text.replace(/\\\\033\\\\[(\\\\d+)*m/g, function (match, seq) {\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_20",
+      "category": "command-injection",
+      "module": "aaptjs_1.3.1",
+      "state": "original",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 18,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 60.8,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Command Injection",
+        "Command Injection",
+        "Command Injection",
+        "Command Injection",
+        "Command Injection",
+        "Command Injection",
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "exec",
+        "exec",
+        "exec",
+        "exec",
+        "exec",
+        "exec",
+        "exec"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          31
+        ],
+        [
+          "index.js",
+          35
+        ],
+        [
+          "index.js",
+          39
+        ],
+        [
+          "index.js",
+          47
+        ],
+        [
+          "index.js",
+          55
+        ],
+        [
+          "index.js",
+          63
+        ],
+        [
+          "index.js",
+          67
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"aaptjs@1.3.1\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"exec\",\n      \"file\": \"index.js\",\n      \"line\": 31,\n      \"description\": \"The `list` function interpolates user-supplied `apkfilePath` directly into a shell command without sanitization, allowing arbitrary command injection.\",\n      \"snippet\": \"return promistify(`${aapt} l ${apkfilePath}`, callback);\"\n    },\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"exec\",\n      \"file\": \"index.js\",\n      \"line\": 35,\n      \"description\": \"The `dump` function interpolates user-supplied `what` and `apkfilePath` directly into a shell command without sanitization, allowing arbitrary command injection.\",\n      \"snippet\": \"return promistify(`${aapt} d ${what} ${apkfilePath}`, callback);\"\n    },\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"exec\",\n      \"file\": \"index.js\",\n      \"line\": 39,\n      \"description\": \"The `packageCmd` function interpolates user-supplied `command` directly into a shell command without sanitization, allowing arbitrary command injection.\",\n      \"snippet\": \"return promistify(`${aapt} p ${command}`, callback);\"\n    },\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"exec\",\n      \"file\": \"index.js\",\n      \"line\": 47,\n      \"description\": \"The `remove` function interpolates user-supplied `apkfilePath` and `files` directly into a shell command without sanitization, allowing arbitrary command injection.\",\n      \"snippet\": \"return promistify(`${aapt} r ${apkfilePath} ${removeFiles}`, callback);\"\n    },\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"exec\",\n      \"file\": \"index.js\",\n      \"line\": 55,\n      \"description\": \"The `add` function interpolates user-supplied `apkfilePath` and `files` directly into a shell command without sanitization, allowing arbitrary command injection.\",\n      \"snippet\": \"return promistify(`${aapt} a ${apkfilePath} ${addFiles}`, callback);\"\n    },\n  "
+    },
+    {
+      "module_id": "module_24",
+      "category": "path-traversal",
+      "module": "bitty_0.1.0",
+      "state": "original",
+      "ground_truth_type": "Path Traversal",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 36,
+      "ground_truth_sink_apis": [
+        "fs.readFile",
+        "fs.readFileSync",
+        "fs.createReadStream"
+      ],
+      "elapsed_s": 805.3,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Path Traversal"
+      ],
+      "predicted_sink_apis": [
+        "fs.readFile"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          36
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"bitty@0.1.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Path Traversal\",\n      \"sink_api\": \"fs.readFile\",\n      \"file\": \"index.js\",\n      \"line\": 36,\n      \"description\": \"The HTTP request URL (req.url) is joined with the base directory using path.join and passed directly to fs.readFile without sanitization, allowing an attacker to traverse outside the intended directory by requesting paths like ../../etc/passwd.\",\n      \"snippet\": \"fs.readFile(filepath, function(error, buffer) {\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_26",
+      "category": "path-traversal",
+      "module": "api-proxy_0.0.2",
+      "state": "original",
+      "ground_truth_type": "Path Traversal",
+      "ground_truth_file": "lib/static.js",
+      "ground_truth_line": 40,
+      "ground_truth_sink_apis": [
+        "fs.readFile",
+        "fs.readFileSync",
+        "fs.createReadStream"
+      ],
+      "elapsed_s": 39.6,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Path Traversal"
+      ],
+      "predicted_sink_apis": [
+        "fs.readFile"
+      ],
+      "predicted_locations": [
+        [
+          "lib/static.js",
+          40
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"api-proxy@0.0.2\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Path Traversal\",\n      \"sink_api\": \"fs.readFile\",\n      \"file\": \"lib/static.js\",\n      \"line\": 40,\n      \"description\": \"User-supplied URL is sanitized only for query/hash fragments and then joined with the root path via Path.join without verifying the result stays within the root directory, allowing `../` sequences to escape the www root and read arbitrary files.\",\n      \"snippet\": \"FS.readFile(filepath,'binary',\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_08",
+      "category": "redos",
+      "module": "ajv_5.2.2",
+      "state": "original",
+      "ground_truth_type": "ReDoS",
+      "elapsed_s": 180,
+      "vulnerable_detected": false,
+      "type_correct": false,
+      "predicted_types": [],
+      "parse_error": false,
+      "timeout": true,
+      "raw_output": ""
+    },
+    {
+      "module_id": "module_44",
+      "category": "command-injection",
+      "module": "arpping_2.0.0",
+      "state": "obfuscated",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 120,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 106.9,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Command Injection",
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.exec",
+        "child_process.exec"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          1
+        ],
+        [
+          "index.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"arpping@2.0.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"index.js\",\n      \"line\": 1,\n      \"description\": \"User-supplied IP addresses are concatenated directly into shell commands passed to exec() in both the ping and arp methods without any sanitization, allowing arbitrary command injection via crafted IP strings.\",\n      \"snippet\": \"exec(_0x12a30a(0x1e6)+flag+'\\\\x20'+this['timeout']+'\\\\x20'+_0x5a28e5,(_0x244d08,_0x3912e3,_0x35c6bf)=>{\"\n    },\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"index.js\",\n      \"line\": 1,\n      \"description\": \"User-supplied IP addresses passed to the arp() method are concatenated unsanitized into an arp shell command, enabling arbitrary command injection.\",\n      \"snippet\": \"exec(_0x41622d(0x1d7)+_0x1d12b2,(_0x3e3a3b,_0x21617e,_0x376533)=>{\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_29",
+      "category": "prototype-pollution",
+      "module": "bodymen_1.0.0",
+      "state": "webcrack",
+      "ground_truth_type": "Prototype Pollution",
+      "ground_truth_file": "dist/index.js",
+      "ground_truth_line": 44,
+      "ground_truth_sink_apis": [
+        "__proto__",
+        "constructor.prototype"
+      ],
+      "elapsed_s": 76.8,
+      "vulnerable_detected": true,
+      "type_correct": false,
+      "sink_api_correct": false,
+      "location_correct": false,
+      "predicted_types": [
+        "ReDoS"
+      ],
+      "predicted_sink_apis": [
+        "RegExp"
+      ],
+      "predicted_locations": [
+        [
+          "node_modules/rich-param/dist/index.js",
+          231
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"bodymen@1.0.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"ReDoS\",\n      \"sink_api\": \"RegExp\",\n      \"file\": \"node_modules/rich-param/dist/index.js\",\n      \"line\": 231,\n      \"description\": \"User-supplied request body input is passed directly to `new RegExp()` without sanitization when the schema param type is RegExp, allowing an attacker to supply a catastrophically backtracking pattern and exhaust CPU.\",\n      \"snippet\": \"_value = new RegExp(_value, \\\"i\\\");\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_32",
+      "category": "code-injection",
+      "module": "djv_2.0.0",
+      "state": "webcrack",
+      "ground_truth_type": "Arbitrary Code Injection",
+      "ground_truth_file": "lib/utils/template.js",
+      "ground_truth_line": 110,
+      "ground_truth_sink_apis": [
+        "eval",
+        "new Function",
+        "vm.runInNewContext",
+        "vm.runInThisContext"
+      ],
+      "elapsed_s": 35.3,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Arbitrary Code Injection"
+      ],
+      "predicted_sink_apis": [
+        "new Function()"
+      ],
+      "predicted_locations": [
+        [
+          "lib/utils/template.js",
+          51
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"djv@2.0.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Arbitrary Code Injection\",\n      \"sink_api\": \"new Function()\",\n      \"file\": \"lib/utils/template.js\",\n      \"line\": 51,\n      \"description\": \"The `restore` function passes an attacker-controlled string (the `fn` field from user-supplied JSON in `env.import()`) directly to the `Function` constructor, enabling arbitrary code execution.\",\n      \"snippet\": \"const _0x364174 = new Function(\\\"schema\\\", _0x112b77)(_0x21fa4c);\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_46",
+      "category": "prototype-pollution",
+      "module": "changeset_0.1.0",
+      "state": "original",
+      "ground_truth_type": "Prototype Pollution",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 81,
+      "ground_truth_sink_apis": [
+        "__proto__",
+        "constructor.prototype"
+      ],
+      "elapsed_s": 46.6,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          81
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"changeset@0.1.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"index.js\",\n      \"line\": 81,\n      \"description\": \"The apply function iterates over attacker-controlled key arrays without sanitizing '__proto__', allowing traversal to Object.prototype at line 79 and writing arbitrary properties to it at line 81.\",\n      \"snippet\": \"ptr[prop] = ch.value;\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_09",
+      "category": "code-injection",
+      "module": "json-ptr_2.0.0",
+      "state": "webcrack",
+      "ground_truth_type": "Arbitrary Code Injection",
+      "ground_truth_file": "src/util.ts",
+      "ground_truth_line": 155,
+      "ground_truth_sink_apis": [
+        "eval",
+        "new Function",
+        "vm.runInNewContext",
+        "vm.runInThisContext"
+      ],
+      "elapsed_s": 30.9,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Arbitrary Code Injection"
+      ],
+      "predicted_sink_apis": [
+        "new Function"
+      ],
+      "predicted_locations": [
+        [
+          "dist/util.js",
+          160
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"json-ptr@2.0.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Arbitrary Code Injection\",\n      \"sink_api\": \"new Function\",\n      \"file\": \"dist/util.js\",\n      \"line\": 160,\n      \"description\": \"Path segments from a JSON pointer are interpolated into a dynamically-constructed function body string with only backslash escaping, leaving single quotes unescaped, so an attacker-controlled path segment containing a single quote can break out of the string literal and inject arbitrary JavaScript executed via new Function().\",\n      \"snippet\": \"return new Function(\\\"it\\\", _0xf96c27);\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_47",
+      "category": "code-injection",
+      "module": "marsdb_0.6.11",
+      "state": "obfuscated",
+      "ground_truth_type": "Arbitrary Code Injection",
+      "ground_truth_file": "dist/DocumentMatcher.js",
+      "ground_truth_line": 419,
+      "ground_truth_sink_apis": [
+        "eval",
+        "new Function",
+        "vm.runInNewContext",
+        "vm.runInThisContext"
+      ],
+      "elapsed_s": 74.1,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Arbitrary Code Injection"
+      ],
+      "predicted_sink_apis": [
+        "Function"
+      ],
+      "predicted_locations": [
+        [
+          "lib/DocumentMatcher.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"marsdb@0.6.11\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Arbitrary Code Injection\",\n      \"sink_api\": \"Function\",\n      \"file\": \"lib/DocumentMatcher.js\",\n      \"line\": 1,\n      \"description\": \"The `$where` query operator passes unsanitized user-supplied strings directly to the `Function()` constructor (equivalent to `eval`), allowing arbitrary JavaScript execution when a string is provided as a `$where` selector.\",\n      \"snippet\": \"!(_0x16bc7e instanceof Function)&&(_0x16bc7e=Function(_0xb4f0b6(0xcf),_0xb4f0b6(0x10f)+_0x16bc7e))\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_30",
+      "category": "code-injection",
+      "module": "is-my-json-valid_2.20.0",
+      "state": "webcrack",
+      "ground_truth_type": "Arbitrary Code Injection",
+      "elapsed_s": 180,
+      "vulnerable_detected": false,
+      "type_correct": false,
+      "predicted_types": [],
+      "parse_error": false,
+      "timeout": true,
+      "raw_output": ""
+    },
+    {
+      "module_id": "module_24",
+      "category": "path-traversal",
+      "module": "bitty_0.1.0",
+      "state": "obfuscated",
+      "ground_truth_type": "Path Traversal",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 36,
+      "ground_truth_sink_apis": [
+        "fs.readFile",
+        "fs.readFileSync",
+        "fs.createReadStream"
+      ],
+      "elapsed_s": 190.6,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Path Traversal",
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "fs.readFile",
+        "child_process.exec"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          3
+        ],
+        [
+          "index.js",
+          3
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "The string lookups are confirmed. Now I have the full picture \u2014 both vulnerabilities are on line 3 (the entire body is one minified line). Let me output the result.\n\n```json\n{\n  \"package\": \"bitty@0.1.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Path Traversal\",\n      \"sink_api\": \"fs.readFile\",\n      \"file\": \"index.js\",\n      \"line\": 3,\n      \"description\": \"The HTTP request URL is joined to the serve directory with path.join() and then passed directly to fs.readFile() without validating that the resolved path stays within the intended directory, allowing an attacker to read arbitrary files via ../../ sequences.\",\n      \"snippet\": \"var _0x3f5447=path['join'](program[_0x219f44(0x1fb)],_0x419f5d['url']);fs['exists'](_0x3f5447,function(_0x577f29){var _0x15e654=_0x219f44;_0x577f29?fs[_0x15e654(0x1cd)](_0x3f5447,function(_0x24b65f,_0x1c383c){\"\n    },\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"index.js\",\n      \"line\": 3,\n      \"description\": \"User-supplied CLI positional arguments (<entries>) are concatenated without sanitization into program.bundler and passed directly to child_process.exec(), allowing shell metacharacter injection.\",\n      \"snippet\": \"var _0x4e2ee1=child[_0xf32492(0x1ec)](program['bundler'],function(_0x3c7ebe,_0x12c477,_0xf98076){\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_13",
+      "category": "redos",
+      "module": "clean-css_4.1.10",
+      "state": "original",
+      "ground_truth_type": "ReDoS",
+      "ground_truth_file": "validator.js",
+      "ground_truth_line": 418,
+      "ground_truth_sink_apis": [
+        "RegExp.exec",
+        "RegExp.test",
+        "String.match",
+        "String.replace",
+        "String.search",
+        "String.split"
+      ],
+      "elapsed_s": 85.3,
+      "vulnerable_detected": true,
+      "type_correct": false,
+      "sink_api_correct": false,
+      "location_correct": false,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "lib/options/compatibility.js",
+          177
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"clean-css@4.1.10\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"lib/options/compatibility.js\",\n      \"line\": 177,\n      \"description\": \"The `calculateSource` function splits a user-controlled compatibility string and uses the extracted `group` segment as a key on a plain object without sanitization; when `group` is `__proto__`, the assignment `source[group][option] = isAdd` writes directly to `Object.prototype`, polluting the prototype chain for all objects in the process.\",\n      \"snippet\": \"source[group][option] = isAdd;\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_17",
+      "category": "command-injection",
+      "module": "async-git_1.13.1",
+      "state": "webcrack",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "lib/reset/index.js",
+      "ground_truth_line": 11,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 1950.4,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.exec"
+      ],
+      "predicted_locations": [
+        [
+          "lib/modified/index.js",
+          14
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"async-git@1.13.1\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"lib/modified/index.js\",\n      \"line\": 14,\n      \"description\": \"The user-supplied file path `_0xf080d4` is concatenated directly into a shell command without sanitization, allowing an attacker to inject arbitrary shell commands via the file path argument.\",\n      \"snippet\": \"const _0x46f41f = await exec(\\\"git log -1 --format=\\\\\\\"%at\\\\\\\" -- \\\" + _0xf080d4);\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_44",
+      "category": "command-injection",
+      "module": "arpping_2.0.0",
+      "state": "webcrack",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 120,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 3258.6,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Command Injection",
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.exec",
+        "child_process.exec"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          124
+        ],
+        [
+          "index.js",
+          157
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"arpping@2.0.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"index.js\",\n      \"line\": 124,\n      \"description\": \"User-supplied IP address strings from the input array are concatenated directly into a shell command without sanitization, allowing an attacker to inject arbitrary shell commands by passing a value like '127.0.0.1; rm -rf /'.\",\n      \"snippet\": \"exec(\\\"ping \\\" + flag + \\\" \\\" + this.timeout + \\\" \\\" + _0x5a28e5, (_0x244d08, _0x3912e3, _0x35c6bf) => {\"\n    },\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"index.js\",\n      \"line\": 157,\n      \"description\": \"User-supplied IP address strings passed to the arp() method are concatenated directly into a shell command without sanitization, allowing arbitrary command execution.\",\n      \"snippet\": \"exec(\\\"arp \\\" + _0x1d12b2, (_0x3e3a3b, _0x21617e, _0x376533) => {\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_42",
+      "category": "command-injection",
+      "module": "bestzip_2.1.6",
+      "state": "webcrack",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "lib/bestzip.js",
+      "ground_truth_line": 27,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 2135.8,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.exec"
+      ],
+      "predicted_locations": [
+        [
+          "lib/bestzip.js",
+          18
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"bestzip@2.1.6\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"lib/bestzip.js\",\n      \"line\": 18,\n      \"description\": \"User-controlled `destination` and `source` values are concatenated unsanitized into a shell command string and passed to `cp.exec()`, allowing arbitrary command injection via shell metacharacters.\",\n      \"snippet\": \"  const _0x363c0e = cp.exec(_0x470fc7, {\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_10",
+      "category": "command-injection",
+      "module": "clamscan_1.2.0",
+      "state": "original",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 495,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 36.3,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.exec"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          495
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"clamscan@1.2.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"index.js\",\n      \"line\": 495,\n      \"description\": \"User-controlled `path` from settings is interpolated unsanitized into a shell command string passed to `exec`, allowing shell metacharacter injection (e.g., a path like `/usr/bin/clamscan; id` executes arbitrary commands).\",\n      \"snippet\": \"const {stdout} = await cp_exec(version_cmds[scanner]);\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_01",
+      "category": "command-injection",
+      "module": "codecov_3.6.4",
+      "state": "obfuscated",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "lib/codecov.js",
+      "ground_truth_line": 419,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 198.7,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.execSync"
+      ],
+      "predicted_locations": [
+        [
+          "lib/codecov.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"codecov@3.6.4\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.execSync\",\n      \"file\": \"lib/codecov.js\",\n      \"line\": 1,\n      \"description\": \"The `gcov-root` option value is concatenated unsanitized into a shell command string passed to execSync, allowing arbitrary command execution (e.g. a value like `'. && id #'` injects additional shell commands).\",\n      \"snippet\": \"!isWindows?_0x46e228=_0x2a984a(0x105)+(_0x4e1e9f[_0x2a984a(0x115)][_0x2a984a(0x124)]||_0x2f45bd)+'\\\\x20-type\\\\x20f\\\\x20-name\\\\x20\\\\x27*.gcno\\\\x27\\\\x20'+_0x2bdbdb+_0x2a984a(0xf5)+(validator[_0x2a984a(0xd9)](_0x4e1e9f[_0x2a984a(0x115)][_0x2a984a(0xbb)])||_0x2a984a(0xdb))+'\\\\x20'+(validator['escape'](_0x4e1e9f[_0x2a984a(0x115)][_0x2a984a(0xa6)])||'')+_0x2a984a(0xc5):...,_0x2d5d03[_0x2a984a(0xd4)](_0x46e228),console['log'](_0x2a984a(0xac)+_0x46e228),execSync(_0x46e228);\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_43",
+      "category": "prototype-pollution",
+      "module": "copy-props_2.0.4",
+      "state": "obfuscated",
+      "ground_truth_type": "Prototype Pollution",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 197,
+      "ground_truth_sink_apis": [
+        "__proto__",
+        "constructor.prototype"
+      ],
+      "elapsed_s": 76.8,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"copy-props@2.0.4\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"index.js\",\n      \"line\": 1,\n      \"description\": \"The _setDeep function splits a dot-delimited key chain and recursively traverses it with bracket notation, with no sanitization of keys like __proto__ or constructor, allowing an attacker to pollute Object.prototype by supplying a source object with a __proto__ key.\",\n      \"snippet\": \"_0xa055ab[_0x2a174a]=_0x1ac59f;\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_41",
+      "category": "command-injection",
+      "module": "blamer_0.1.13",
+      "state": "original",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "src/vcs/git.js",
+      "ground_truth_line": 24,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 26.0,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Command Injection",
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.exec",
+        "child_process.exec"
+      ],
+      "predicted_locations": [
+        [
+          "src/vcs/git.js",
+          24
+        ],
+        [
+          "src/vcs/svn.js",
+          38
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"blamer@0.1.13\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"src/vcs/git.js\",\n      \"line\": 24,\n      \"description\": \"The `file` argument is passed unsanitized into a shell command via `path.basename`, allowing an attacker to inject arbitrary shell commands through a crafted filename.\",\n      \"snippet\": \"    exec('git blame ' + args + ' ' + realFile, {\"\n    },\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"src/vcs/svn.js\",\n      \"line\": 38,\n      \"description\": \"The `file` argument is passed unsanitized into a shell command via `path.basename`, allowing an attacker to inject arbitrary shell commands through a crafted filename.\",\n      \"snippet\": \"    exec('svn blame ' + realFile + ' ' + args, {\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_26",
+      "category": "path-traversal",
+      "module": "api-proxy_0.0.2",
+      "state": "webcrack",
+      "ground_truth_type": "Path Traversal",
+      "ground_truth_file": "lib/static.js",
+      "ground_truth_line": 40,
+      "ground_truth_sink_apis": [
+        "fs.readFile",
+        "fs.readFileSync",
+        "fs.createReadStream"
+      ],
+      "elapsed_s": 42.6,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Path Traversal"
+      ],
+      "predicted_sink_apis": [
+        "FS.readFile"
+      ],
+      "predicted_locations": [
+        [
+          "lib/static.js",
+          35
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"api-proxy@0.0.2\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Path Traversal\",\n      \"sink_api\": \"FS.readFile\",\n      \"file\": \"lib/static.js\",\n      \"line\": 35,\n      \"description\": \"User-controlled URL path is joined with the static directory base using Path.join without verifying the result stays within the www directory, allowing an attacker to read arbitrary files on the server (e.g. requesting ../../etc/passwd).\",\n      \"snippet\": \"  FS.readFile(_0x1138ba, \\\"binary\\\", function (_0x12e099, _0x385c9e) {\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_32",
+      "category": "code-injection",
+      "module": "djv_2.0.0",
+      "state": "original",
+      "ground_truth_type": "Arbitrary Code Injection",
+      "ground_truth_file": "lib/utils/template.js",
+      "ground_truth_line": 110,
+      "ground_truth_sink_apis": [
+        "eval",
+        "new Function",
+        "vm.runInNewContext",
+        "vm.runInThisContext"
+      ],
+      "elapsed_s": 41.5,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Arbitrary Code Injection"
+      ],
+      "predicted_sink_apis": [
+        "new Function"
+      ],
+      "predicted_locations": [
+        [
+          "lib/utils/template.js",
+          110
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "The vulnerability is clear. In `template.js` line 110, `restore()` uses `new Function` to execute a user-controlled string passed through `env.import()`.\n\n```json\n{\n  \"package\": \"djv@2.0.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Arbitrary Code Injection\",\n      \"sink_api\": \"new Function\",\n      \"file\": \"lib/utils/template.js\",\n      \"line\": 110,\n      \"description\": \"The `restore` function passes an attacker-controlled string (from the `fn` field of JSON supplied to `env.import()`) directly into `new Function`, allowing arbitrary JavaScript execution.\",\n      \"snippet\": \"const tpl = new Function('schema', source)(schema);\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_39",
+      "category": "command-injection",
+      "module": "adb-driver_0.1.8",
+      "state": "webcrack",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "build/AdbDriver.js",
+      "ground_truth_line": 26,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 33.7,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.exec"
+      ],
+      "predicted_locations": [
+        [
+          "build/AdbDriver.js",
+          31
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"adb-driver@0.1.8\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"build/AdbDriver.js\",\n      \"line\": 31,\n      \"description\": \"The execADBCommand function passes unsanitized user-supplied input directly to child_process.exec as a shell command string, allowing arbitrary command injection.\",\n      \"snippet\": \"child_process_1.exec(_0x1175e2, _0x4360bc || {\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_18",
+      "category": "redos",
+      "module": "axios_0.21.0",
+      "state": "webcrack",
+      "ground_truth_type": "ReDoS",
+      "ground_truth_file": "utils.js",
+      "ground_truth_line": 190,
+      "ground_truth_sink_apis": [
+        "RegExp.exec",
+        "RegExp.test",
+        "String.match",
+        "String.replace",
+        "String.search",
+        "String.split"
+      ],
+      "elapsed_s": 279.1,
+      "vulnerable_detected": true,
+      "type_correct": false,
+      "sink_api_correct": false,
+      "location_correct": false,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "lib/utils.js",
+          95
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"axios@0.21.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"lib/utils.js\",\n      \"line\": 95,\n      \"description\": \"The merge() function iterates over all own properties of user-supplied objects (including __proto__ from JSON.parse'd input) without filtering, and assigns them back via bracket notation \u2014 when the key is __proto__, the assignment mutates the accumulator object's internal prototype, injecting attacker-controlled properties into its prototype chain.\",\n      \"snippet\": \"_0x9f3412[_0x44070f] = merge(_0x9f3412[_0x44070f], _0x201d2c);\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_22",
+      "category": "path-traversal",
+      "module": "canvas-designer_1.2.1",
+      "state": "obfuscated",
+      "ground_truth_type": "Path Traversal",
+      "ground_truth_file": "server.js",
+      "ground_truth_line": 36,
+      "ground_truth_sink_apis": [
+        "fs.readFile",
+        "fs.readFileSync",
+        "fs.createReadStream"
+      ],
+      "elapsed_s": 116.6,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Path Traversal"
+      ],
+      "predicted_sink_apis": [
+        "fs.readFile"
+      ],
+      "predicted_locations": [
+        [
+          "server.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"canvas-designer@1.2.1\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Path Traversal\",\n      \"sink_api\": \"fs.readFile\",\n      \"file\": \"server.js\",\n      \"line\": 1,\n      \"description\": \"The HTTP server constructs a file path by joining process.cwd() with the raw URL pathname from the request (via url.parse) without validating that the resolved path stays within the working directory, allowing an attacker to request a URL like /../../../etc/passwd to read arbitrary files from the filesystem.\",\n      \"snippet\": \"fs[_0x3a951d(0x69)](_0x3a9f70,_0x3a951d(0x74),function(_0x4c7dbc,_0x1f6a7e){...})\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_05",
+      "category": "command-injection",
+      "module": "command-exists_1.2.2",
+      "state": "original",
+      "ground_truth_type": "Command Injection",
+      "ground_truth_file": "lib/command-exists.js",
+      "ground_truth_line": 78,
+      "ground_truth_sink_apis": [
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.spawn",
+        "child_process.spawnSync"
+      ],
+      "elapsed_s": 23.3,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Command Injection",
+        "Command Injection",
+        "Command Injection",
+        "Command Injection"
+      ],
+      "predicted_sink_apis": [
+        "child_process.exec",
+        "child_process.exec",
+        "child_process.execSync",
+        "child_process.execSync"
+      ],
+      "predicted_locations": [
+        [
+          "lib/command-exists.js",
+          49
+        ],
+        [
+          "lib/command-exists.js",
+          64
+        ],
+        [
+          "lib/command-exists.js",
+          78
+        ],
+        [
+          "lib/command-exists.js",
+          94
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"command-exists@1.2.2\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"lib/command-exists.js\",\n      \"line\": 49,\n      \"description\": \"The commandName parameter is concatenated directly into a shell command string without sanitization, allowing an attacker to inject arbitrary shell commands.\",\n      \"snippet\": \"var child = exec('command -v ' + commandName +\"\n    },\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.exec\",\n      \"file\": \"lib/command-exists.js\",\n      \"line\": 64,\n      \"description\": \"On Windows, commandName is concatenated directly into a 'where' shell command without sanitization, allowing command injection.\",\n      \"snippet\": \"var child = exec('where ' + commandName,\"\n    },\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.execSync\",\n      \"file\": \"lib/command-exists.js\",\n      \"line\": 78,\n      \"description\": \"The commandName parameter is concatenated directly into a shell command string without sanitization in the synchronous Unix variant, allowing command injection.\",\n      \"snippet\": \"var stdout = execSync('command -v ' + commandName +\"\n    },\n    {\n      \"type\": \"Command Injection\",\n      \"sink_api\": \"child_process.execSync\",\n      \"file\": \"lib/command-exists.js\",\n      \"line\": 94,\n      \"description\": \"On Windows, commandName is concatenated directly into a 'where' shell command without sanitization in the synchronous variant, allowing command injection.\",\n      \"snippet\": \"var stdout = execSync('where ' + commandName);\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_23",
+      "category": "code-injection",
+      "module": "hot-formula-parser_3.0.0",
+      "state": "original",
+      "ground_truth_type": "Arbitrary Code Injection",
+      "ground_truth_file": "lib/grammar-parser/grammar-parser.js",
+      "ground_truth_line": 258,
+      "ground_truth_sink_apis": [
+        "eval",
+        "new Function",
+        "vm.runInNewContext",
+        "vm.runInThisContext"
+      ],
+      "elapsed_s": 218.6,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": true,
+      "predicted_types": [
+        "Arbitrary Code Injection"
+      ],
+      "predicted_sink_apis": [
+        "eval"
+      ],
+      "predicted_locations": [
+        [
+          "lib/grammar-parser/grammar-parser.js",
+          258
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\"package\":\"hot-formula-parser@3.0.0\",\"vulnerable\":true,\"vulnerabilities\":[{\"type\":\"Arbitrary Code Injection\",\"sink_api\":\"eval\",\"file\":\"lib/grammar-parser/grammar-parser.js\",\"line\":258,\"description\":\"User-controlled formula input is passed directly into eval() via the yytext lexer token when parsing bracket array syntax, allowing arbitrary JavaScript code execution.\",\"snippet\":\"var arr = eval(\\\"[\\\" + yytext + \\\"]\\\");\"}]}\n```"
+    },
+    {
+      "module_id": "module_36",
+      "category": "redos",
+      "module": "charset_1.0.0",
+      "state": "obfuscated",
+      "ground_truth_type": "ReDoS",
+      "ground_truth_file": "charset.js",
+      "ground_truth_line": 59,
+      "ground_truth_sink_apis": [
+        "RegExp.exec",
+        "RegExp.test",
+        "String.match",
+        "String.replace",
+        "String.search",
+        "String.split"
+      ],
+      "elapsed_s": 312.7,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "ReDoS"
+      ],
+      "predicted_sink_apis": [
+        "RegExp.exec"
+      ],
+      "predicted_locations": [
+        [
+          "lib/charset.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "```json\n{\n  \"package\": \"charset@1.0.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"ReDoS\",\n      \"sink_api\": \"RegExp.exec\",\n      \"file\": \"lib/charset.js\",\n      \"line\": 1,\n      \"description\": \"The regex /(?:charset|encoding)\\\\s*=\\\\s*['\\\"']? *([\\\\w\\\\-]+)/i is applied to user-controlled Content-Type header or response body; the overlapping quantifiers \\\\s*=\\\\s*['\\\"']? * cause super-linear (near-quadratic) backtracking when the input contains 'charset=' followed by many spaces and a non-word character, allowing denial of service.\",\n      \"snippet\": \"CHARTSET_RE[_0x176e72(0x1e8)](_0x7612bf)\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_37",
+      "category": "redos",
+      "module": "checkit_0.7.0",
+      "state": "webcrack",
+      "ground_truth_type": "ReDoS",
+      "elapsed_s": 180,
+      "vulnerable_detected": false,
+      "type_correct": false,
+      "predicted_types": [],
+      "parse_error": false,
+      "timeout": true,
+      "raw_output": ""
+    },
+    {
+      "module_id": "module_45",
+      "category": "prototype-pollution",
+      "module": "assign-deep_1.0.0",
+      "state": "obfuscated",
+      "ground_truth_type": "Prototype Pollution",
+      "ground_truth_file": "index.js",
+      "ground_truth_line": 22,
+      "ground_truth_sink_apis": [
+        "__proto__",
+        "constructor.prototype"
+      ],
+      "elapsed_s": 77.1,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "Prototype Pollution"
+      ],
+      "predicted_sink_apis": [
+        "__proto__"
+      ],
+      "predicted_locations": [
+        [
+          "index.js",
+          1
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "Now I have the full picture. The deobfuscated core loop is:\n\n```javascript\nfor (const key of Object.keys(source)) {\n    isObject(target[key]) && isObject(source[key])\n        ? assign(target[key], source[key])          // recursive merge into target[key]\n        : target[key] = source[key];\n}\n```\n\nWhen `key === '__proto__'`, `target['__proto__']` resolves to `Object.prototype`, so the recursive call becomes `assign(Object.prototype, source['__proto__'])` \u2014 classic prototype pollution.\n\n```json\n{\n  \"package\": \"assign-deep@1.0.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"Prototype Pollution\",\n      \"sink_api\": \"__proto__\",\n      \"file\": \"index.js\",\n      \"line\": 1,\n      \"description\": \"Object.keys() on a JSON-parsed source can return '__proto__' as an own key; the recursive merge then calls assign(target['__proto__'], source['__proto__']), which is assign(Object.prototype, attacker-controlled object), polluting the global prototype.\",\n      \"snippet\": \"isObject(_0x17ef2d[_0x18ad2c])&&isObject(_0x775089[_0xfb3782][_0x18ad2c])?assign(_0x17ef2d[_0x18ad2c],_0x775089[_0xfb3782][_0x18ad2c]):_0x17ef2d[_0x18ad2c]=_0x775089[_0xfb3782][_0x18ad2c];\"\n    }\n  ]\n}\n```"
+    },
+    {
+      "module_id": "module_36",
+      "category": "redos",
+      "module": "charset_1.0.0",
+      "state": "webcrack",
+      "ground_truth_type": "ReDoS",
+      "ground_truth_file": "charset.js",
+      "ground_truth_line": 59,
+      "ground_truth_sink_apis": [
+        "RegExp.exec",
+        "RegExp.test",
+        "String.match",
+        "String.replace",
+        "String.search",
+        "String.split"
+      ],
+      "elapsed_s": 121.5,
+      "vulnerable_detected": true,
+      "type_correct": true,
+      "sink_api_correct": true,
+      "location_correct": false,
+      "predicted_types": [
+        "ReDoS"
+      ],
+      "predicted_sink_apis": [
+        "RegExp.exec"
+      ],
+      "predicted_locations": [
+        [
+          "lib/charset.js",
+          21
+        ]
+      ],
+      "parse_error": false,
+      "raw_output": "The regex on line 3 \u2014 `/(?:charset|encoding)\\s*=\\s*['\"]? *([\\w\\-]+)/i` \u2014 has overlapping quantifiers: `\\s*` and ` *` both match space characters. For a crafted Content-Type header like `charset=` followed by N spaces and a non-word character, the regex engine explores O(N\u00b2) backtracking states (each split of spaces between `\\s*` and ` *` is tried). The sink is the `.exec()` at line 21, which runs against the unbound header string.\n\n```json\n{\n  \"package\": \"charset@1.0.0\",\n  \"vulnerable\": true,\n  \"vulnerabilities\": [\n    {\n      \"type\": \"ReDoS\",\n      \"sink_api\": \"RegExp.exec\",\n      \"file\": \"lib/charset.js\",\n      \"line\": 21,\n      \"description\": \"The regex CHARTSET_RE contains overlapping quantifiers (\\\\s* and space*) that both match space characters, causing quadratic backtracking when a crafted Content-Type header contains many spaces followed by a non-word character, enabling denial of service.\",\n      \"snippet\": \"_0x972837 = CHARTSET_RE.exec(_0x7612bf);\"\n    }\n  ]\n}\n```"
+    }
+  ]
+}
