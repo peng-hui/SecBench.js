@@ -184,11 +184,11 @@ def main():
                     help="Print per-category breakdown in addition to overall table")
     args = ap.parse_args()
 
-    static_idx   = load_static()
-    poc_baseline = load_poc_baseline()
-    poc_obf      = load_poc_condition("poc_obfuscated_results.json")
-    poc_webcrack = load_poc_condition("poc_webcrack_results.json")
-    poc_deobf    = load_poc_condition("poc_deobfuscated_results.json")
+    static_idx   = load_static("results/static_analysis_results.json")
+    poc_baseline = load_poc_baseline("results/poc_test_results.json")
+    poc_obf      = load_poc_condition("results/poc_obfuscated_results.json")
+    poc_webcrack = load_poc_condition("results/poc_webcrack_results.json")
+    poc_deobf    = load_poc_condition("results/poc_deobfuscated_results.json")
 
     # ── Overall table ─────────────────────────────────────────────────────
     header = (
@@ -230,7 +230,7 @@ def main():
     print(f"  FP rate  = PoC triggers on both versions (FALSE_POSITIVE)")
 
     # ── Anonymous PoC results (evaluate_anon.py) ─────────────────────────────
-    anon_idx = load_anon_poc("eval_anon_results.json")
+    anon_idx = load_anon_poc("results/eval_anon_results.json")
     if anon_idx:
         print(f"\n{'='*len(header)}")
         print("LLM-GENERATED PoC — ANONYMOUS BENCHMARK (no CVE/sink hints given)")

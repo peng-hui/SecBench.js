@@ -27,7 +27,7 @@ ROOT = Path(__file__).parent
 
 GT_ORIG  = ROOT / "oracle" / "ground_truth.json"
 GT_OBF   = ROOT / "oracle" / "obfuscated_ground_truth.json"
-OBF_DIR  = ROOT / "static-benchmark-obfuscated"
+OBF_DIR  = ROOT / "static-benchmark" / "obfuscated"
 
 # API patterns to search for per category.
 # Each entry is (call_regex, string_literal_regex).

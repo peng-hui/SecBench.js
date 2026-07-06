@@ -22,46 +22,48 @@ This repository extends the original benchmark with an **LLM evaluation study** 
 
 ```
 SecBench.js/
-├── prototype-pollution/      # Original benchmark modules (full CVE metadata + PoC tests)
-├── redos/
-├── command-injection/
-├── path-traversal/
-├── code-injection/
+├── benchmark/                     # Full original benchmark (600 modules)
+│   ├── prototype-pollution/       # CVE metadata + PoC Jest tests per module
+│   ├── redos/
+│   ├── command-injection/
+│   ├── path-traversal/
+│   └── code-injection/
 │
-├── static-benchmark-original/   # Cleaned modules for LLM static analysis (no CVE/sink hints)
-│   ├── prototype-pollution/
-│   └── ...
-├── static-benchmark-obfuscated/ # Obfuscated library source (javascript-obfuscator default)
-│   ├── prototype-pollution/
-│   └── ...
+├── evaluation/                    # LLM study infrastructure
+│   ├── static-benchmark/          # 50-module anonymized sample (3 tiers)
+│   │   ├── original/              # module_01 … module_50  (cleaned, no CVE hints)
+│   │   ├── obfuscated/            # javascript-obfuscator applied to library source
+│   │   └── webcrack/              # obfuscated → webcrack deobfuscated
+│   │
+│   ├── oracle/
+│   │   ├── ground_truth.json      # 50-module GT: category, sink file/line, sink APIs
+│   │   ├── obfuscated_ground_truth.json   # Projected sink positions in obfuscated source
+│   │   ├── harness.js             # Dynamic oracle (behavioral hooks per category)
+│   │   ├── run.js                 # Oracle entry point
+│   │   └── *.js                   # Per-category hook implementations
+│   │
+│   ├── results/
+│   │   ├── static_analysis_results.json   # Static analysis (original + obfuscated + webcrack)
+│   │   ├── poc_test_results.json          # Dynamic PoC — original library
+│   │   ├── poc_obfuscated_results.json    # Dynamic PoC — obfuscated library
+│   │   ├── poc_webcrack_results.json      # Dynamic PoC — webcrack-deobfuscated
+│   │   └── poc_deobfuscated_results.json  # Dynamic PoC — synchrony-deobfuscated
+│   │
+│   ├── setup_benchmark.py         # Build static-benchmark/ tiers (sample or full)
+│   ├── run_static_analysis_agent.py       # Static analysis via Claude CLI (all 3 conditions)
+│   ├── evaluate_anon.py           # Anonymous dynamic PoC evaluation (no hints)
+│   ├── evaluate.py                # Dynamic PoC evaluation (with CVE/sink hints)
+│   ├── run_obfuscated_poc_tests.py
+│   ├── run_deobfuscated_poc_tests.py
+│   ├── run_deobfuscated_webcrack_poc_tests.py
+│   ├── project_obfuscated_sinks.py        # Derive obfuscated sink positions (regex scan)
+│   ├── aggregate_results.py       # Read all result JSONs, print metrics table
+│   └── GOALS.md                   # Research plan, oracle design, metrics definitions
 │
-├── oracle/
-│   ├── ground_truth.json          # 50-module ground truth: category, sink file/line, sink APIs
-│   ├── obfuscated_ground_truth.json  # Projected sink positions for obfuscated source
-│   ├── harness.js                 # Dynamic oracle runner (behavioral hooks per category)
-│   ├── run.js                     # Oracle entry point
-│   ├── prototype-pollution.js     # Per-category hook implementations
-│   ├── redos.js
-│   ├── command-injection.js
-│   ├── path-traversal.js
-│   └── code-injection.js
-│
-├── evaluate.py                    # Dynamic PoC evaluation (with CVE/sink hints)
-├── evaluate_anon.py               # Dynamic PoC evaluation (no hints — anonymous benchmark)
-├── run_static_analysis_agent.py   # Static analysis via Claude CLI (all three conditions)
-├── run_obfuscated_poc_tests.py    # Obfuscate library in-place, run original PoC
-├── run_deobfuscated_poc_tests.py  # Deobfuscate with synchrony, run PoC
-├── run_deobfuscated_webcrack_poc_tests.py  # Deobfuscate with webcrack, run PoC
-├── setup_anonymous_benchmark.py   # Build /tmp/js-eval-{original,obfuscated,webcrack}/
-├── project_obfuscated_sinks.py    # Derive obfuscated sink positions (AST scan)
-├── aggregate_results.py           # Read all result JSONs, print metrics table
-│
-├── static_analysis_results.json   # Static analysis results (original + obfuscated + webcrack)
-├── poc_test_results.json          # Dynamic PoC results (original library)
-├── poc_obfuscated_results.json    # Dynamic PoC results (obfuscated library)
-├── poc_webcrack_results.json      # Dynamic PoC results (webcrack-deobfuscated library)
-├── poc_deobfuscated_results.json  # Dynamic PoC results (synchrony-deobfuscated library)
-└── GOALS.md                       # Detailed research plan, oracle design, metrics definitions
+└── tools/                         # Original SecBench.js tooling
+    ├── scripts/                   # Module creation and processing scripts
+    ├── analyses/                  # Sink extraction analysis
+    └── *.py / *.js                # Misc utilities
 ```
 
 ---
