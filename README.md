@@ -105,15 +105,33 @@ npm install -g javascript-obfuscator webcrack jest
 
 ## Running the Evaluation
 
-### Step 1: Set up anonymous benchmark directories
+### Step 1: Install benchmark dependencies (one time)
 
 ```bash
-python3 setup_anonymous_benchmark.py
+cd evaluation
+python3 install_all.py          # install node_modules for all 600 modules in benchmark/
+# or just the 50-module sample:
+python3 install_all.py --category prototype-pollution  # repeat per category as needed
 ```
 
-Creates `/tmp/js-eval-original/`, `/tmp/js-eval-obfuscated/`, `/tmp/js-eval-webcrack/` — each contains 50 `module_XX/` directories with anonymized module IDs (no category hint in the name).
+This installs `node_modules` into each `benchmark/<category>/<module>/` directory once. After this, `setup_benchmark.py` copies pre-installed deps into the tier dirs without ever calling `npm install` again — much faster and leaves the benchmark source pristine.
 
-### Step 2: Run static analysis (all three conditions)
+### Step 2: Build the three-tier anonymous benchmark
+
+```bash
+python3 setup_benchmark.py            # 50-module sample → static-benchmark/
+python3 setup_benchmark.py --mode full  # all ~600 modules → static-benchmark-full/
+python3 setup_benchmark.py --seed 42 --resume  # reproducible IDs, skip existing
+```
+
+Each module in `benchmark/` is copied into three tiers under `static-benchmark/`:
+- `original/` — clean library source, no CVE/sink hints
+- `obfuscated/` — `javascript-obfuscator` applied to library files
+- `webcrack/` — obfuscated then run through `webcrack` deobfuscator
+
+Module IDs are randomized (no category in the name) so the LLM gets no hints.
+
+### Step 3a: Run static analysis (all three conditions)
 
 ```bash
 python3 run_static_analysis_agent.py
@@ -123,7 +141,7 @@ python3 run_static_analysis_agent.py --wait-for-limit
 
 Runs Claude on all 150 tasks (50 modules × 3 conditions), saves results to `static_analysis_results.json`. Resumes automatically if interrupted.
 
-### Step 3: Run dynamic PoC evaluation
+### Step 3b: Run dynamic PoC evaluation
 
 **With CVE/sink hints** (upper bound — oracle-assisted):
 ```bash

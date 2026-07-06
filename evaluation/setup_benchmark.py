@@ -22,6 +22,9 @@ oracle/ground_truth.json        (sample mode)
 oracle/ground_truth_full.json   (full mode)
   module_XX → category, sink, CVE, etc.  (never in agent dirs)
 
+Prerequisites:
+  python3 install_all.py        # install node_modules for all benchmark modules (once)
+
 Usage:
   python3 setup_benchmark.py                   # fresh run (shuffles module IDs)
   python3 setup_benchmark.py --mode full       # all ~600 modules
@@ -137,21 +140,6 @@ def load_metadata(category, module):
         "sink_line":     sink_line,
         "sink_col":      sink_col,
     }
-
-
-def npm_install(module_dir, pkg_name):
-    """Install (or reinstall) the package from package.json."""
-    pkg_dir = os.path.join(module_dir, "node_modules", pkg_name)
-    if os.path.isdir(pkg_dir):
-        shutil.rmtree(pkg_dir)
-    for extra in (["--prefer-offline"], []):
-        r = subprocess.run(
-            ["npm", "install", "--legacy-peer-deps"] + extra,
-            cwd=module_dir, capture_output=True, text=True, timeout=120,
-        )
-        if r.returncode == 0:
-            return True
-    return False
 
 
 def find_js_files(pkg_dir):
@@ -327,37 +315,28 @@ def main():
             failed += 1
             continue
 
-        pkg_dir_src = os.path.join(src, "node_modules", pkg_name)
-
-        # 1. Reinstall original source
-        print("  install...", end="", flush=True)
-        if not npm_install(src, pkg_name):
-            print("  INSTALL FAILED")
+        # Require node_modules to be pre-installed by install_all.py
+        src_nm = os.path.join(src, "node_modules", pkg_name)
+        if not os.path.isdir(src_nm):
+            print(f"  SKIP (node_modules missing — run install_all.py first)")
             failed += 1
             continue
 
-        # 2. Copy → original tier
+        # 1. Copy benchmark source → original tier (node_modules included)
         copy_module(src, t_orig, pkg_name)
         print("  orig✓", end="", flush=True)
 
-        # 3. Obfuscate library in-place (in src — will be restored after)
-        n_ok, n_total = obfuscate_pkg(pkg_dir_src)
-        print(f"  obf({n_ok}/{n_total})...", end="", flush=True)
-
-        # 4. Copy → obfuscated tier
+        # 2. Copy → obfuscated tier, then obfuscate in-place (BENCH_ROOT untouched)
         copy_module(src, t_obf, pkg_name)
-        print("  obf✓", end="", flush=True)
+        n_ok, n_total = obfuscate_pkg(os.path.join(t_obf, "node_modules", pkg_name))
+        print(f"  obf({n_ok}/{n_total})✓", end="", flush=True)
 
-        # 5. Copy obfuscated → webcrack tier, then run webcrack in-place
+        # 3. Copy → webcrack tier (from original, not obfuscated), then obfuscate +
+        #    webcrack in-place so the webcrack tier is: obfuscated → deobfuscated
         copy_module(src, t_wck, pkg_name)
-        wck_ok, wck_fail = webcrack_pkg(
-            os.path.join(t_wck, "node_modules", pkg_name)
-        )
-        print(f"  wck({wck_ok}/{wck_ok+wck_fail})✓", end="", flush=True)
-
-        # 6. Reinstall → restore original source in src dir
-        npm_install(src, pkg_name)
-        print("  restored")
+        obfuscate_pkg(os.path.join(t_wck, "node_modules", pkg_name))
+        wck_ok, wck_fail = webcrack_pkg(os.path.join(t_wck, "node_modules", pkg_name))
+        print(f"  wck({wck_ok}/{wck_ok+wck_fail})✓")
 
         ok += 1
 
