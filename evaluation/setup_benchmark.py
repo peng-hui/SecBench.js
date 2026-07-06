@@ -26,10 +26,12 @@ Prerequisites:
   python3 install_all.py        # install node_modules for all benchmark modules (once)
 
 Usage:
-  python3 setup_benchmark.py                   # fresh run (shuffles module IDs)
-  python3 setup_benchmark.py --mode full       # all ~600 modules
-  python3 setup_benchmark.py --resume          # skip modules that already exist in all 3 tiers
-  python3 setup_benchmark.py --seed 42         # fixed shuffle (reproducible IDs)
+  python3 setup_benchmark.py                         # fresh run (all 3 tiers)
+  python3 setup_benchmark.py --tiers original        # original tier only
+  python3 setup_benchmark.py --tiers obfuscated webcrack  # remaining tiers
+  python3 setup_benchmark.py --mode full             # all ~595 modules
+  python3 setup_benchmark.py --resume                # skip already-built modules
+  python3 setup_benchmark.py --seed 42               # fixed shuffle (reproducible IDs)
 """
 
 import argparse
@@ -230,11 +232,15 @@ def main():
     ap.add_argument("--mode",   choices=["sample", "full"], default="sample",
                     help="'sample' = 50-module stratified set (default); "
                          "'full' = all modules in benchmark/")
+    ap.add_argument("--tiers", nargs="+", choices=TIERS, default=TIERS,
+                    help="Which tiers to build (default: all three). "
+                         "E.g. --tiers original")
     ap.add_argument("--seed",   type=int, default=None,
                     help="Random seed for module ID shuffle (omit for random)")
     ap.add_argument("--resume", action="store_true",
-                    help="Skip modules that already exist in all 3 tiers")
+                    help="Skip modules where all requested tiers already exist")
     args = ap.parse_args()
+    tiers = args.tiers
 
     if args.mode == "full":
         bench_dir = os.path.join(ROOT, "static-benchmark-full")
@@ -285,11 +291,11 @@ def main():
                 **meta,
             }
 
-    # Create tier directories
-    for tier in TIERS:
+    # Create requested tier directories
+    for tier in tiers:
         os.makedirs(os.path.join(bench_dir, tier), exist_ok=True)
 
-    print(f"Mode: {args.mode}  |  {len(mapping)} modules × {len(TIERS)} tiers\n")
+    print(f"Mode: {args.mode}  |  {len(mapping)} modules  |  tiers: {', '.join(tiers)}\n")
     ok = failed = skipped = 0
 
     for mid, info in sorted(mapping.items()):
@@ -297,11 +303,9 @@ def main():
         mod = info["module"]
         src = src_dir(cat, mod)
 
-        t_orig = tier_dir(bench_dir, "original",   mid)
-        t_obf  = tier_dir(bench_dir, "obfuscated", mid)
-        t_wck  = tier_dir(bench_dir, "webcrack",   mid)
+        tier_paths = {t: tier_dir(bench_dir, t, mid) for t in tiers}
 
-        if args.resume and all(os.path.isdir(t) for t in [t_orig, t_obf, t_wck]):
+        if args.resume and all(os.path.isdir(p) for p in tier_paths.values()):
             print(f"  {mid}  [{cat}/{mod}]  SKIP (exists)")
             skipped += 1
             continue
@@ -322,22 +326,25 @@ def main():
             failed += 1
             continue
 
-        # 1. Copy benchmark source → original tier (node_modules included)
-        copy_module(src, t_orig, pkg_name)
-        print("  orig✓", end="", flush=True)
+        if "original" in tiers:
+            copy_module(src, tier_paths["original"], pkg_name)
+            print("  orig✓", end="", flush=True)
 
-        # 2. Copy → obfuscated tier, then obfuscate in-place (BENCH_ROOT untouched)
-        copy_module(src, t_obf, pkg_name)
-        n_ok, n_total = obfuscate_pkg(os.path.join(t_obf, "node_modules", pkg_name))
-        print(f"  obf({n_ok}/{n_total})✓", end="", flush=True)
+        if "obfuscated" in tiers:
+            copy_module(src, tier_paths["obfuscated"], pkg_name)
+            n_ok, n_total = obfuscate_pkg(
+                os.path.join(tier_paths["obfuscated"], "node_modules", pkg_name))
+            print(f"  obf({n_ok}/{n_total})✓", end="", flush=True)
 
-        # 3. Copy → webcrack tier (from original, not obfuscated), then obfuscate +
-        #    webcrack in-place so the webcrack tier is: obfuscated → deobfuscated
-        copy_module(src, t_wck, pkg_name)
-        obfuscate_pkg(os.path.join(t_wck, "node_modules", pkg_name))
-        wck_ok, wck_fail = webcrack_pkg(os.path.join(t_wck, "node_modules", pkg_name))
-        print(f"  wck({wck_ok}/{wck_ok+wck_fail})✓")
+        if "webcrack" in tiers:
+            # webcrack tier = obfuscated → webcrack; copy from src (clean), then obf+wck
+            copy_module(src, tier_paths["webcrack"], pkg_name)
+            obfuscate_pkg(os.path.join(tier_paths["webcrack"], "node_modules", pkg_name))
+            wck_ok, wck_fail = webcrack_pkg(
+                os.path.join(tier_paths["webcrack"], "node_modules", pkg_name))
+            print(f"  wck({wck_ok}/{wck_ok+wck_fail})✓", end="", flush=True)
 
+        print()
         ok += 1
 
     # Save ground truth
@@ -349,7 +356,7 @@ def main():
     print(f"\n{'='*60}")
     print(f"Done: {ok} built, {skipped} skipped, {failed} failed")
     print(f"\nOutput:")
-    for tier in TIERS:
+    for tier in tiers:
         n = sum(1 for mid in mapping if os.path.isdir(tier_dir(bench_dir, tier, mid)))
         print(f"  {bench_name}/{tier}/   ({n} modules)")
     print(f"  oracle/{os.path.basename(gt_path)}")
