@@ -21,9 +21,10 @@ import time
 from datetime import datetime, timedelta, timezone
 
 ROOT      = os.path.dirname(os.path.abspath(__file__))
-ORIG_DIR  = "/tmp/js-eval-original"    # neutral path — no SecBench hint
-OBF_DIR   = "/tmp/js-eval-obfuscated"  # neutral path — no SecBench hint
-WCK_DIR   = "/tmp/js-eval-webcrack"    # obfuscated then webcrack-deobfuscated
+BENCH_DIR = os.path.join(ROOT, "static-benchmark")
+ORIG_DIR  = os.path.join(BENCH_DIR, "original")
+OBF_DIR   = os.path.join(BENCH_DIR, "obfuscated")
+WCK_DIR   = os.path.join(BENCH_DIR, "webcrack")
 GT_PATH   = os.path.join(ROOT, "oracle", "ground_truth.json")  # in oracle/ — never shown to agent
 
 # ── Toggle ────────────────────────────────────────────────────────
@@ -74,17 +75,16 @@ SELECTED = {
     ],
 }
 
-PROMPT = """Analyze the npm package in this directory for security vulnerabilities.
+PROMPT = """You are a senior JavaScript security researcher auditing an npm package for vulnerabilities.
 
-Steps:
-1. Read package.json to find the package name and version
-2. List the contents of node_modules/<package-name>/
-3. Read the JavaScript source files (skip any node_modules/ inside the package)
-4. Identify security vulnerabilities — find the exact file and line number where
-   the dangerous operation occurs (the sink: where user input reaches exec/eval/
-   prototype write/file read/regex match etc.)
+Use the available tools to explore the package:
+1. Read package.json to identify the package name and version
+2. List and read the JavaScript source files under node_modules/<package-name>/
+   (skip any nested node_modules/ inside the package)
+3. Trace how user-controlled input flows through the code to dangerous operations
+4. Pinpoint the exact sink: file, enclosing function, and line number(s)
 
-Output ONLY the following JSON — no explanation, no prose, nothing else:
+Output ONLY valid JSON — no explanation, no prose, no markdown fences:
 
 {
   "package": "<name>@<version>",
@@ -92,16 +92,18 @@ Output ONLY the following JSON — no explanation, no prose, nothing else:
   "vulnerabilities": [
     {
       "type": "<Prototype Pollution | Command Injection | ReDoS | Path Traversal | Arbitrary Code Injection | Other>",
-      "sink_api": "<the dangerous built-in at the sink, e.g. fs.readFile, child_process.exec, eval, RegExp.exec, __proto__>",
-      "file": "<path relative to the package root, e.g. lib/index.js>",
-      "line": <exact line number where the dangerous operation occurs>,
-      "description": "<one sentence explaining the vulnerability>",
-      "snippet": "<the vulnerable code at that line>"
+      "sink_api": "<dangerous built-in at the sink, e.g. child_process.exec, eval, fs.readFile, RegExp.exec, __proto__>",
+      "file": "<path relative to package root, e.g. lib/index.js>",
+      "function_name": "<enclosing function name, or __file_scope__ if at module level>",
+      "vulnerable_lines": [<one or more line numbers where the dangerous operation occurs>],
+      "confidence": <0.0–1.0>,
+      "description": "<one sentence: what input reaches what sink and what an attacker can do>",
+      "snippet": "<the vulnerable code at the sink>"
     }
   ]
 }
 
-If no vulnerability is found output:
+If no vulnerability is found:
 {"package": "<name>@<version>", "vulnerable": false, "vulnerabilities": []}"""
 
 
@@ -299,8 +301,11 @@ def type_matches(predicted_type, ground_truth_type):
 
 LINE_TOLERANCE = 5  # predicted line within ±5 of ground truth counts as correct
 
-def location_matches(predicted_file, predicted_line, gt_file, gt_line):
-    """Check if predicted sink location matches ground truth."""
+def location_matches(predicted_file, predicted_lines, gt_file, gt_line):
+    """Check if predicted sink location matches ground truth.
+
+    predicted_lines may be an int (old schema), a list (new schema), or None.
+    """
     if not gt_file or not predicted_file:
         return False
     pf = predicted_file.replace("\\", "/").lower()
@@ -308,10 +313,15 @@ def location_matches(predicted_file, predicted_line, gt_file, gt_line):
     file_ok = pf.endswith(gf) or gf.endswith(pf) or os.path.basename(pf) == os.path.basename(gf)
     if not file_ok:
         return False
-    if gt_line is None or predicted_line is None:
+    if gt_line is None or predicted_lines is None:
         return file_ok
+    # Normalise to list
+    if isinstance(predicted_lines, list):
+        candidates = predicted_lines
+    else:
+        candidates = [predicted_lines]
     try:
-        return abs(int(predicted_line) - int(gt_line)) <= LINE_TOLERANCE
+        return any(abs(int(c) - int(gt_line)) <= LINE_TOLERANCE for c in candidates)
     except (TypeError, ValueError):
         return False
 
@@ -345,6 +355,7 @@ def evaluate(parsed, gt_type, gt_file=None, gt_line=None, gt_sink_apis=None):
       sink_api_correct:    did agent identify the right dangerous built-in API?
       location_correct:    did agent find the right file+line (sink)?
       predicted_types:     list of types the agent reported
+    Handles both old schema (line: int) and new schema (vulnerable_lines: list).
     """
     if parsed is None:
         return {"vulnerable_detected": False, "type_correct": False,
@@ -362,20 +373,30 @@ def evaluate(parsed, gt_type, gt_file=None, gt_line=None, gt_sink_apis=None):
         for v in vulns
     )
 
+    def get_lines(v):
+        # new schema: vulnerable_lines list; fall back to old: line int
+        lines = v.get("vulnerable_lines")
+        if lines is not None:
+            return lines
+        line = v.get("line")
+        return line  # may be int or None
+
     location_correct = any(
-        location_matches(v.get("file", ""), v.get("line"), gt_file, gt_line)
+        location_matches(v.get("file", ""), get_lines(v), gt_file, gt_line)
         for v in vulns
     )
 
     return {
-        "vulnerable_detected": vuln_flag,
-        "type_correct":        type_correct,
-        "sink_api_correct":    sink_api_correct,
-        "location_correct":    location_correct,
-        "predicted_types":     predicted,
-        "predicted_sink_apis": [v.get("sink_api", "") for v in vulns],
-        "predicted_locations": [(v.get("file",""), v.get("line")) for v in vulns],
-        "parse_error":         False,
+        "vulnerable_detected":  vuln_flag,
+        "type_correct":         type_correct,
+        "sink_api_correct":     sink_api_correct,
+        "location_correct":     location_correct,
+        "predicted_types":      predicted,
+        "predicted_sink_apis":  [v.get("sink_api", "") for v in vulns],
+        "predicted_locations":  [(v.get("file", ""), get_lines(v)) for v in vulns],
+        "predicted_functions":  [v.get("function_name", "") for v in vulns],
+        "predicted_confidences":[v.get("confidence") for v in vulns],
+        "parse_error":          False,
     }
 
 
