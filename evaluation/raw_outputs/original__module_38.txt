@@ -1,0 +1,16 @@
+{
+  "package": "asset-cache@0.0.6",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.readFile",
+      "file": "lib/asset-cache.js",
+      "function_name": "loadFile",
+      "vulnerable_lines": [21, 22, 31],
+      "confidence": 0.95,
+      "description": "The raw incoming req.url is passed as 'file' into loadFile and joined with the server's base directory via path.join without sanitizing '../' sequences, letting an attacker request paths like '/../../etc/passwd' to read arbitrary files outside config.dir via fs.readFile.",
+      "snippet": "var loadFile = function(file, ifNoneMatch, callback) {\n  file = path.join(config.dir, file);\n  fs.stat(file, function(err, stat) {\n    ...\n    fs.readFile(file, function(err, data) {\n      callback(err, err ? null : data, false, thisEtag);\n    });\n  });\n};"
+    }
+  ]
+}

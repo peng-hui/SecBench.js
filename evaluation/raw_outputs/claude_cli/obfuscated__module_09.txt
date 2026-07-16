@@ -1,0 +1,20 @@
+Everything is on line 1 (minified/obfuscated, entire file is one line). That's sufficient — I have full confirmation via dynamic PoC. Now output the final JSON.
+
+```json
+{
+  "package": "json-ptr@2.0.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Arbitrary Code Injection",
+      "sink_api": "new Function",
+      "file": "dist/util.js",
+      "function_name": "compilePointerDereference",
+      "vulnerable_lines": [1],
+      "confidence": 0.98,
+      "description": "compilePointerDereference builds JavaScript source by string-concatenating each JSON Pointer path segment into a template that is passed to `new Function('it', code)`, escaping only backslashes and not single quotes, so an attacker-controlled pointer segment (e.g. via JsonPointer.get/JsonPointer.create with untrusted input) can break out of the string literal and inject arbitrary JavaScript that executes when the compiled dereference function is invoked (verified via PoC: a crafted segment ran `require('child_process').execSync(...)`).",
+      "snippet": "function compilePointerDereference(path){let code='if (typeof(it) !== \\'undefined\\'';if(path.length===0)return it=>it;code=path.reduce((acc,seg,i)=>acc+' && \\n\\ttypeof((it = it[\\''+replace(path[i]+'','\\\\','\\\\\\\\')+'\\']))'+' !== \\'undefined\\'','if (typeof(it) !== \\'undefined\\''); code+=') {\\n\\treturn it;\\n }'; return new Function('it', code); }"
+    }
+  ]
+}
+```

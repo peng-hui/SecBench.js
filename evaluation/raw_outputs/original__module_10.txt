@@ -1,0 +1,18 @@
+```json
+{
+  "package": "clamscan@1.2.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.execFile",
+      "file": "index.js",
+      "function_name": "scan_files.local_scan",
+      "vulnerable_lines": [1154, 1157, 1162],
+      "confidence": 0.75,
+      "description": "File paths passed by callers to scan_files() (per the package's own purpose of scanning untrusted/uploaded files) are only space-escaped via file.replace(/ /g,'\\\\ '), then string-concatenated with the configured binary path and CLI flags into a single command string that is handed to execFile(), so any filename containing shell metacharacters (;, |, &, $(), backticks) is not neutralized before being built into an executable command line.",
+      "snippet": "const items = files.map(file => file.replace(/ /g,'\\\\ '));\nconst command = `${self.settings[self.scanner].path} ${self._build_clam_args(items).join(' ')}`;\nexecFile(command, (err, stdout, stderr) => { ... });"
+    }
+  ]
+}
+```

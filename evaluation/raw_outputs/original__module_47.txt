@@ -1,0 +1,18 @@
+```json
+{
+  "package": "marsdb@0.6.11",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "lib/DocumentModifier.js",
+      "function_name": "findModTarget",
+      "vulnerable_lines": [175, 233, 237, 241, 242, 247, 248, 250, 278, 289],
+      "confidence": 0.97,
+      "description": "In DocumentModifier._modifyDocument, an attacker-controlled update modifier (e.g. Collection.update(query, {$set: {'__proto__.polluted': 'yes'}})) is split on '.' into keyparts and walked by findModTarget without ever blocking the '__proto__' key; because '__proto__' is already 'in' every plain object, findModTarget skips its own-property creation guard and instead does doc = doc['__proto__'], returning Object.prototype itself as the modifier target, so the subsequent MODIFIERS.$set (target[field] = arg) writes directly onto Object.prototype, polluting every object in the process.",
+      "snippet": "if (!(keypart in doc)) { ... if (!last) { doc[keypart] = {}; } }\nif (last) { return doc; }\ndoc = doc[keypart];\n// ... $set: function(target, field, arg) { ... target[field] = arg; }"
+    }
+  ]
+}
+```

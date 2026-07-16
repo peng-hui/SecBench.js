@@ -1,0 +1,18 @@
+```json
+{
+  "package": "axios@0.21.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Other",
+      "sink_api": "http.request (via follow-redirects transport)",
+      "file": "lib/adapters/http.js",
+      "function_name": "httpAdapter",
+      "vulnerable_lines": [1],
+      "confidence": 0.8,
+      "description": "httpAdapter builds the outgoing request options (including proxy host/port/auth) only from the initial request's baseURL/url and hands them to follow-redirects (httpFollow/httpsFollow) for the request; proxy settings are not re-applied on subsequent redirect hops, so a remote/attacker-controlled server can respond with a 3xx redirect (e.g. Location: http://169.254.169.254/...) and axios will connect directly to that host, bypassing the configured proxy and enabling SSRF (CVE-2020-28168).",
+      "snippet": "config.maxRedirects===0?transport=isHttpsProxy?https:http:(config.maxRedirects&&(options.maxRedirects=config.maxRedirects),transport=isHttpsProxy?httpsFollow:httpFollow); config.maxBodyLength>-1&&(options.maxBodyLength=config.maxBodyLength); var req=transport['request'](options,function(res){...})"
+    }
+  ]
+}
+```

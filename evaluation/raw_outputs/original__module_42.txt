@@ -1,0 +1,18 @@
+```json
+{
+  "package": "bestzip@2.1.6",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.exec",
+      "file": "lib/bestzip.js",
+      "function_name": "nativeZip",
+      "vulnerable_lines": [21, 22, 23, 24, 25, 26, 27],
+      "confidence": 0.95,
+      "description": "options.destination and options.source (which flow from CLI arguments/user input) are concatenated unsanitized into a shell command string executed via child_process.exec, allowing shell metacharacters in a filename/path to inject arbitrary commands.",
+      "snippet": "const command = `zip --quiet --recurse-paths ${options.destination} ${sources}`;\nconst zipProcess = cp.exec(command, {\n  stdio: \"inherit\",\n  cwd: options.cwd\n});"
+    }
+  ]
+}
+```

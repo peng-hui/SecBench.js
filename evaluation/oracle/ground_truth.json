@@ -1,109 +1,55 @@
 {
-  "module_01": {
-    "category": "command-injection",
-    "module": "codecov_3.6.4",
-    "vuln_type": "Command Injection",
+  "module_30": {
+    "category": "code-injection",
+    "module": "is-my-json-valid_2.20.0",
+    "vuln_type": "Arbitrary Code Injection",
     "sink_apis": [
-      "child_process.exec",
-      "child_process.execSync",
-      "child_process.spawn",
-      "child_process.spawnSync"
+      "eval",
+      "new Function",
+      "vm.runInNewContext",
+      "vm.runInThisContext"
     ],
-    "cve": "CVE-2020-15123",
-    "fixed_version": "3.7.1",
-    "fix_commit": "https://github.com/codecov/codecov-node/commit/c0711c656686e902af2cd92d6aecc8074de4d83d",
-    "sink": "lib/codecov.js:419:7",
-    "sink_file": "lib/codecov.js",
-    "sink_line": 419,
-    "sink_col": 7
-  },
-  "module_02": {
-    "category": "prototype-pollution",
-    "module": "101_1.0.0",
-    "vuln_type": "Prototype Pollution",
-    "sink_apis": [
-      "__proto__",
-      "constructor.prototype"
-    ],
-    "cve": "CVE-2021-25943",
-    "fixed_version": "n/a",
-    "fix_commit": "n/a",
-    "sink": "index.js:32:16",
+    "cve": "",
+    "fixed_version": "2.20.3",
+    "fix_commit": "https://github.com/mafintosh/is-my-json-valid/commit/3419563687df463b4ca709a2b46be8e15d6a2b3d",
+    "sink": "index.js:172:21",
     "sink_file": "index.js",
-    "sink_line": 32,
-    "sink_col": 16
+    "sink_line": 172,
+    "sink_col": 21,
+    "sink_function": "validator"
   },
-  "module_03": {
-    "category": "redos",
-    "module": "amqp-match_0.0.0",
-    "vuln_type": "ReDoS",
-    "sink_apis": [
-      "RegExp.exec",
-      "RegExp.test",
-      "String.match",
-      "String.replace",
-      "String.search",
-      "String.split"
-    ],
+  "module_26": {
+    "category": "path-traversal",
+    "module": "api-proxy_0.0.2",
+    "vuln_type": "Path Traversal",
+    "sink_apis": ["fs.readFile", "fs.readFileSync", "fs.createReadStream"],
     "cve": "",
     "fixed_version": "n/a",
     "fix_commit": "n/a",
-    "sink": "index.js:4:17",
-    "sink_file": "index.js",
-    "sink_line": 4,
-    "sink_col": 17
+    "sink": "lib/static.js:40:9",
+    "sink_file": "lib/static.js",
+    "sink_line": 40,
+    "sink_col": 9,
+    "sink_function": "contentType"
   },
-  "module_04": {
-    "category": "command-injection",
-    "module": "connection-tester_0.2.0",
-    "vuln_type": "Command Injection",
+  "module_32": {
+    "category": "code-injection",
+    "module": "djv_2.0.0",
+    "vuln_type": "Arbitrary Code Injection",
     "sink_apis": [
-      "child_process.exec",
-      "child_process.execSync",
-      "child_process.spawn",
-      "child_process.spawnSync"
+      "eval",
+      "new Function",
+      "vm.runInNewContext",
+      "vm.runInThisContext"
     ],
-    "cve": "CVE-2020-7781",
-    "fixed_version": "0.2.1",
+    "cve": "CVE-2020-28464",
+    "fixed_version": "2.1.4",
     "fix_commit": "n/a",
-    "sink": "index.js:15:28",
-    "sink_file": "index.js",
-    "sink_line": 15,
-    "sink_col": 28
-  },
-  "module_05": {
-    "category": "command-injection",
-    "module": "command-exists_1.2.2",
-    "vuln_type": "Command Injection",
-    "sink_apis": [
-      "child_process.exec",
-      "child_process.execSync",
-      "child_process.spawn",
-      "child_process.spawnSync"
-    ],
-    "cve": "CVE-2019-10776",
-    "fixed_version": "0.22.2",
-    "fix_commit": "https://github.com/kellyselden/git-diff-apply/commit/106d61d3ae723b4257c2a13e67b95eb40a27e0b5",
-    "sink": "lib/command-exists.js:78:22",
-    "sink_file": "lib/command-exists.js",
-    "sink_line": 78,
-    "sink_col": 22
-  },
-  "module_06": {
-    "category": "prototype-pollution",
-    "module": "deep-defaults_1.0.5",
-    "vuln_type": "Prototype Pollution",
-    "sink_apis": [
-      "__proto__",
-      "constructor.prototype"
-    ],
-    "cve": "CVE-2021-25944",
-    "fixed_version": "n/a",
-    "fix_commit": "n/a",
-    "sink": "lib/index.js:16:21",
-    "sink_file": "lib/index.js",
-    "sink_line": 16,
-    "sink_col": 21
+    "sink": "lib/utils/template.js:110:15",
+    "sink_file": "lib/utils/template.js",
+    "sink_line": 110,
+    "sink_col": 15,
+    "sink_function": "tpl"
   },
   "module_07": {
     "category": "code-injection",
@@ -121,189 +67,64 @@
     "sink": "lib/serialize.js:75:22",
     "sink_file": "lib/serialize.js",
     "sink_line": 75,
-    "sink_col": 22
+    "sink_col": 22,
+    "sink_function": "unserialize"
   },
-  "module_08": {
-    "category": "redos",
-    "module": "ajv_5.2.2",
-    "vuln_type": "ReDoS",
-    "sink_apis": [
-      "RegExp.exec",
-      "RegExp.test",
-      "String.match",
-      "String.replace",
-      "String.search",
-      "String.split"
-    ],
-    "cve": "CVE-2020-15366",
-    "fixed_version": "6.12.3",
+  "module_48": {
+    "category": "path-traversal",
+    "module": "atropa-ide_0.2.2-2",
+    "vuln_type": "Path Traversal",
+    "sink_apis": ["fs.readFile", "fs.readFileSync", "fs.createReadStream"],
+    "cve": "",
+    "fixed_version": "n/a",
     "fix_commit": "n/a",
-    "sink": "util.js:143:14",
-    "sink_file": "util.js",
-    "sink_line": 143,
-    "sink_col": 14
+    "sink": "node_modules/atropa-server/requestHandlers.js:120:2",
+    "sink_file": "node_modules/atropa-server/requestHandlers.js",
+    "sink_line": 120,
+    "sink_col": 2,
+    "sink_function": "respondWithFileContents"
   },
-  "module_09": {
-    "category": "code-injection",
-    "module": "json-ptr_2.0.0",
-    "vuln_type": "Arbitrary Code Injection",
-    "sink_apis": [
-      "eval",
-      "new Function",
-      "vm.runInNewContext",
-      "vm.runInThisContext"
-    ],
-    "cve": "CVE-2020-7766",
-    "fixed_version": "2.0.0",
+  "module_50": {
+    "category": "path-traversal",
+    "module": "basic-static_2.0.2",
+    "vuln_type": "Path Traversal",
+    "sink_apis": ["fs.readFile", "fs.readFileSync", "fs.createReadStream"],
+    "cve": "",
+    "fixed_version": "n/a",
     "fix_commit": "n/a",
-    "sink": "src/util.ts:155:10",
-    "sink_file": "src/util.ts",
-    "sink_line": 155,
-    "sink_col": 10
+    "sink": "basic-static.js:121:21",
+    "sink_file": "basic-static.js",
+    "sink_line": 121,
+    "sink_col": 21,
+    "sink_function": "stream"
   },
-  "module_10": {
-    "category": "command-injection",
-    "module": "clamscan_1.2.0",
-    "vuln_type": "Command Injection",
-    "sink_apis": [
-      "child_process.exec",
-      "child_process.execSync",
-      "child_process.spawn",
-      "child_process.spawnSync"
-    ],
-    "cve": "CVE-2020-7613",
-    "fixed_version": "1.3.0",
-    "fix_commit": "https://github.com/kylefarris/clamscan/commit/5f557c970817fe8c578ec3f7ad3bcbcef4cf5538",
-    "sink": "index.js:495:36",
-    "sink_file": "index.js",
-    "sink_line": 495,
-    "sink_col": 36
-  },
-  "module_11": {
+  "module_02": {
     "category": "prototype-pollution",
-    "module": "deap_1.0.0",
+    "module": "101_1.0.0",
     "vuln_type": "Prototype Pollution",
-    "sink_apis": [
-      "__proto__",
-      "constructor.prototype"
-    ],
-    "cve": "CVE-2018-3749",
+    "sink_apis": ["__proto__", "constructor.prototype"],
+    "cve": "CVE-2021-25943",
+    "fixed_version": "n/a",
+    "fix_commit": "n/a",
+    "sink": "index.js:32:16",
+    "sink_file": "index.js",
+    "sink_line": 32,
+    "sink_col": 16,
+    "sink_function": "Keypather"
+  },
+  "module_45": {
+    "category": "prototype-pollution",
+    "module": "assign-deep_1.0.0",
+    "vuln_type": "Prototype Pollution",
+    "sink_apis": ["__proto__", "constructor.prototype"],
+    "cve": "CVE-2019-10745",
     "fixed_version": "1.0.1",
-    "fix_commit": "n/a",
-    "sink": "lib/connie-lang.js:35:28",
-    "sink_file": "lib/connie-lang.js",
-    "sink_line": 35,
-    "sink_col": 28
-  },
-  "module_12": {
-    "category": "prototype-pollution",
-    "module": "arr-flatten-unflatten_1.1.4",
-    "vuln_type": "Prototype Pollution",
-    "sink_apis": [
-      "__proto__",
-      "constructor.prototype"
-    ],
-    "cve": "CVE-2020-7713",
-    "fixed_version": "n/a",
-    "fix_commit": "n/a",
-    "sink": "unflatten.js:17:16",
-    "sink_file": "unflatten.js",
-    "sink_line": 17,
-    "sink_col": 16
-  },
-  "module_13": {
-    "category": "redos",
-    "module": "clean-css_4.1.10",
-    "vuln_type": "ReDoS",
-    "sink_apis": [
-      "RegExp.exec",
-      "RegExp.test",
-      "String.match",
-      "String.replace",
-      "String.search",
-      "String.split"
-    ],
-    "cve": "",
-    "fixed_version": "4.1.11",
-    "fix_commit": "https://github.com/jakubpawlowicz/clean-css/commit/2929bafbf8cdf7dccb24e0949c70833764fa87e3",
-    "sink": "validator.js:418:20",
-    "sink_file": "validator.js",
-    "sink_line": 418,
-    "sink_col": 20
-  },
-  "module_14": {
-    "category": "redos",
-    "module": "brace-expansion_1.1.6",
-    "vuln_type": "ReDoS",
-    "sink_apis": [
-      "RegExp.exec",
-      "RegExp.test",
-      "String.match",
-      "String.replace",
-      "String.search",
-      "String.split"
-    ],
-    "cve": "CVE-2017-18077",
-    "fixed_version": "1.1.7",
-    "fix_commit": "https://github.com/juliangruber/brace-expansion/pull/35/commits/b13381281cead487cbdbfd6a69fb097ea5e456c3",
-    "sink": "index.js:109:35",
+    "fix_commit": "https://github.com/jonschlinkert/assign-deep/commit/90bf1c551d05940898168d04066bbf15060f50cc",
+    "sink": "index.js:22:23",
     "sink_file": "index.js",
-    "sink_line": 109,
-    "sink_col": 35
-  },
-  "module_15": {
-    "category": "code-injection",
-    "module": "js-yaml_3.13.0",
-    "vuln_type": "Arbitrary Code Injection",
-    "sink_apis": [
-      "eval",
-      "new Function",
-      "vm.runInNewContext",
-      "vm.runInThisContext"
-    ],
-    "cve": "",
-    "fixed_version": "3.13.1",
-    "fix_commit": "https://github.com/nodeca/js-yaml/pull/480/commits/e18afbf1edcafb7add2c4c7b22abc8d6ebc2fa61",
-    "sink": "lib/js-yaml/type/js/function.js:70:12",
-    "sink_file": "lib/js-yaml/type/js/function.js",
-    "sink_line": 70,
-    "sink_col": 12
-  },
-  "module_16": {
-    "category": "code-injection",
-    "module": "access-policy_3.1.0",
-    "vuln_type": "Arbitrary Code Injection",
-    "sink_apis": [
-      "eval",
-      "new Function",
-      "vm.runInNewContext",
-      "vm.runInThisContext"
-    ],
-    "cve": "CVE-2020-7674",
-    "fixed_version": "n/a",
-    "fix_commit": "n/a",
-    "sink": "lib/encode.js:6:10",
-    "sink_file": "lib/encode.js",
-    "sink_line": 6,
-    "sink_col": 10
-  },
-  "module_17": {
-    "category": "command-injection",
-    "module": "async-git_1.13.1",
-    "vuln_type": "Command Injection",
-    "sink_apis": [
-      "child_process.exec",
-      "child_process.execSync",
-      "child_process.spawn",
-      "child_process.spawnSync"
-    ],
-    "cve": "CVE-2020-28490",
-    "fixed_version": "1.13.2",
-    "fix_commit": "https://github.com/omrilotan/async-git/commit/d1950a5021f4e19d92f347614be0d85ce991510d",
-    "sink": "lib/reset/index.js:11:16",
-    "sink_file": "lib/reset/index.js",
-    "sink_line": 11,
-    "sink_col": 16
+    "sink_line": 22,
+    "sink_col": 23,
+    "sink_function": "getSymbols"
   },
   "module_18": {
     "category": "redos",
@@ -323,24 +144,95 @@
     "sink": "utils.js:190:34",
     "sink_file": "utils.js",
     "sink_line": 190,
-    "sink_col": 34
+    "sink_col": 34,
+    "sink_function": "trim"
+  },
+  "module_43": {
+    "category": "prototype-pollution",
+    "module": "copy-props_2.0.4",
+    "vuln_type": "Prototype Pollution",
+    "sink_apis": ["__proto__", "constructor.prototype"],
+    "cve": "CVE-2020-28503",
+    "fixed_version": "2.0.5",
+    "fix_commit": "n/a",
+    "sink": "index.js:197:14",
+    "sink_file": "index.js",
+    "sink_line": 197,
+    "sink_col": 14,
+    "sink_function": "isObject"
+  },
+  "module_01": {
+    "category": "command-injection",
+    "module": "codecov_3.6.4",
+    "vuln_type": "Command Injection",
+    "sink_apis": [
+      "child_process.exec",
+      "child_process.execSync",
+      "child_process.spawn",
+      "child_process.spawnSync"
+    ],
+    "cve": "CVE-2020-15123",
+    "fixed_version": "3.7.1",
+    "fix_commit": "https://github.com/codecov/codecov-node/commit/c0711c656686e902af2cd92d6aecc8074de4d83d",
+    "sink": "lib/codecov.js:419:7",
+    "sink_file": "lib/codecov.js",
+    "sink_line": 419,
+    "sink_col": 7,
+    "sink_function": "execSync"
   },
   "module_19": {
     "category": "path-traversal",
     "module": "crud-file-server_0.7.0",
     "vuln_type": "Path Traversal",
-    "sink_apis": [
-      "fs.readFile",
-      "fs.readFileSync",
-      "fs.createReadStream"
-    ],
+    "sink_apis": ["fs.readFile", "fs.readFileSync", "fs.createReadStream"],
     "cve": "CVE-2018-3733",
     "fixed_version": "0.9.0",
     "fix_commit": "https://github.com/omphalos/crud-file-server/commit/4fc3b404f718abb789f4ce4272c39c7a138c7a82",
     "sink": "crud-file-server.js:170:14",
     "sink_file": "crud-file-server.js",
     "sink_line": 170,
-    "sink_col": 14
+    "sink_col": 14,
+    "sink_function": "type"
+  },
+  "module_10": {
+    "category": "command-injection",
+    "module": "clamscan_1.2.0",
+    "vuln_type": "Command Injection",
+    "sink_apis": [
+      "child_process.exec",
+      "child_process.execSync",
+      "child_process.spawn",
+      "child_process.spawnSync"
+    ],
+    "cve": "CVE-2020-7613",
+    "fixed_version": "1.3.0",
+    "fix_commit": "https://github.com/kylefarris/clamscan/commit/5f557c970817fe8c578ec3f7ad3bcbcef4cf5538",
+    "sink": "index.js:495:36",
+    "sink_file": "index.js",
+    "sink_line": 495,
+    "sink_col": 36,
+    "sink_function": "path"
+  },
+  "module_08": {
+    "category": "redos",
+    "module": "ajv_5.2.2",
+    "vuln_type": "ReDoS",
+    "sink_apis": [
+      "RegExp.exec",
+      "RegExp.test",
+      "String.match",
+      "String.replace",
+      "String.search",
+      "String.split"
+    ],
+    "cve": "CVE-2020-15366",
+    "fixed_version": "6.12.3",
+    "fix_commit": "n/a",
+    "sink": "util.js:143:14",
+    "sink_file": "util.js",
+    "sink_line": 143,
+    "sink_col": 14,
+    "sink_function": "cleanUpCode"
   },
   "module_20": {
     "category": "command-injection",
@@ -358,294 +250,22 @@
     "sink": "index.js:18:3",
     "sink_file": "index.js",
     "sink_line": 18,
-    "sink_col": 3
-  },
-  "module_21": {
-    "category": "redos",
-    "module": "ansi-html_0.0.7",
-    "vuln_type": "ReDoS",
-    "sink_apis": [
-      "RegExp.exec",
-      "RegExp.test",
-      "String.match",
-      "String.replace",
-      "String.search",
-      "String.split"
-    ],
-    "cve": "CVE-2021-23424",
-    "fixed_version": "n/a",
-    "fix_commit": "n/a",
-    "sink": "index.js:62:18",
-    "sink_file": "index.js",
-    "sink_line": 62,
-    "sink_col": 18
-  },
-  "module_22": {
-    "category": "path-traversal",
-    "module": "canvas-designer_1.2.1",
-    "vuln_type": "Path Traversal",
-    "sink_apis": [
-      "fs.readFile",
-      "fs.readFileSync",
-      "fs.createReadStream"
-    ],
-    "cve": "",
-    "fixed_version": "n/a",
-    "fix_commit": "n/a",
-    "sink": "server.js:36:8",
-    "sink_file": "server.js",
-    "sink_line": 36,
-    "sink_col": 8
-  },
-  "module_23": {
-    "category": "code-injection",
-    "module": "hot-formula-parser_3.0.0",
-    "vuln_type": "Arbitrary Code Injection",
-    "sink_apis": [
-      "eval",
-      "new Function",
-      "vm.runInNewContext",
-      "vm.runInThisContext"
-    ],
-    "cve": "CVE-2020-6836",
-    "fixed_version": "3.0.1",
-    "fix_commit": "https://github.com/handsontable/formula-parser/commit/396b089738d4bf30eb570a4fe6a188affa95cd5e",
-    "sink": "lib/grammar-parser/grammar-parser.js:258:31",
-    "sink_file": "lib/grammar-parser/grammar-parser.js",
-    "sink_line": 258,
-    "sink_col": 31
+    "sink_col": 3,
+    "sink_function": "win32"
   },
   "module_24": {
     "category": "path-traversal",
     "module": "bitty_0.1.0",
     "vuln_type": "Path Traversal",
-    "sink_apis": [
-      "fs.readFile",
-      "fs.readFileSync",
-      "fs.createReadStream"
-    ],
+    "sink_apis": ["fs.readFile", "fs.readFileSync", "fs.createReadStream"],
     "cve": "CVE-2016-10561",
     "fixed_version": "n/a",
     "fix_commit": "n/a",
     "sink": "index.js:36:10",
     "sink_file": "index.js",
     "sink_line": 36,
-    "sink_col": 10
-  },
-  "module_25": {
-    "category": "path-traversal",
-    "module": "augustine_0.2.3",
-    "vuln_type": "Path Traversal",
-    "sink_apis": [
-      "fs.readFile",
-      "fs.readFileSync",
-      "fs.createReadStream"
-    ],
-    "cve": "CVE-2017-0930",
-    "fixed_version": "n/a",
-    "fix_commit": "n/a",
-    "sink": "index.js:88:16",
-    "sink_file": "index.js",
-    "sink_line": 88,
-    "sink_col": 16
-  },
-  "module_26": {
-    "category": "path-traversal",
-    "module": "api-proxy_0.0.2",
-    "vuln_type": "Path Traversal",
-    "sink_apis": [
-      "fs.readFile",
-      "fs.readFileSync",
-      "fs.createReadStream"
-    ],
-    "cve": "",
-    "fixed_version": "n/a",
-    "fix_commit": "n/a",
-    "sink": "lib/static.js:40:9",
-    "sink_file": "lib/static.js",
-    "sink_line": 40,
-    "sink_col": 9
-  },
-  "module_27": {
-    "category": "redos",
-    "module": "ansi-regex_4.1.0",
-    "vuln_type": "ReDoS",
-    "sink_apis": [
-      "RegExp.exec",
-      "RegExp.test",
-      "String.match",
-      "String.replace",
-      "String.search",
-      "String.split"
-    ],
-    "cve": "CVE-2021-3807",
-    "fixed_version": ">=2.1.1 <3.0.1 >=4.0.0 <4.1.1 >=5.0.0 <5.0.1 >=6.0.0 <6.0.1",
-    "fix_commit": "https://github.com/chalk/ansi-regex/commit/419250fa510bf31b4cc672e76537a64f9332e1f1",
-    "sink": "index.js:13:9",
-    "sink_file": "index.js",
-    "sink_line": 13,
-    "sink_col": 9
-  },
-  "module_28": {
-    "category": "path-traversal",
-    "module": "angular-http-server_1.0.0",
-    "vuln_type": "Path Traversal",
-    "sink_apis": [
-      "fs.readFile",
-      "fs.readFileSync",
-      "fs.createReadStream"
-    ],
-    "cve": "",
-    "fixed_version": "1.4.4",
-    "fix_commit": "https://github.com/simonh1000/angular-http-server/commit/8bafc9577161469f5dea01e0b98ea9c525d063e9",
-    "sink": "angular-http-server.js:16:29",
-    "sink_file": "angular-http-server.js",
-    "sink_line": 16,
-    "sink_col": 29
-  },
-  "module_29": {
-    "category": "prototype-pollution",
-    "module": "bodymen_1.0.0",
-    "vuln_type": "Prototype Pollution",
-    "sink_apis": [
-      "__proto__",
-      "constructor.prototype"
-    ],
-    "cve": "CVE-2019-10792",
-    "fixed_version": "1.1.1",
-    "fix_commit": "https://github.com/diegohaz/bodymen/commit/5d52e8cf360410ee697afd90937e6042c3a8653b",
-    "sink": "dist/index.js:44:26",
-    "sink_file": "dist/index.js",
-    "sink_line": 44,
-    "sink_col": 26
-  },
-  "module_30": {
-    "category": "code-injection",
-    "module": "is-my-json-valid_2.20.0",
-    "vuln_type": "Arbitrary Code Injection",
-    "sink_apis": [
-      "eval",
-      "new Function",
-      "vm.runInNewContext",
-      "vm.runInThisContext"
-    ],
-    "cve": "",
-    "fixed_version": "2.20.3",
-    "fix_commit": "https://github.com/mafintosh/is-my-json-valid/commit/3419563687df463b4ca709a2b46be8e15d6a2b3d",
-    "sink": "index.js:172:21",
-    "sink_file": "index.js",
-    "sink_line": 172,
-    "sink_col": 21
-  },
-  "module_31": {
-    "category": "redos",
-    "module": "browserslist_4.16.4",
-    "vuln_type": "ReDoS",
-    "sink_apis": [
-      "RegExp.exec",
-      "RegExp.test",
-      "String.match",
-      "String.replace",
-      "String.search",
-      "String.split"
-    ],
-    "cve": "CVE-2021-23364",
-    "fixed_version": "4.16.5",
-    "fix_commit": "https://github.com/browserslist/browserslist/commit/c091916910dfe0b5fd61caad96083c6709b02d98",
-    "sink": "index.js:333:29",
-    "sink_file": "index.js",
-    "sink_line": 333,
-    "sink_col": 29
-  },
-  "module_32": {
-    "category": "code-injection",
-    "module": "djv_2.0.0",
-    "vuln_type": "Arbitrary Code Injection",
-    "sink_apis": [
-      "eval",
-      "new Function",
-      "vm.runInNewContext",
-      "vm.runInThisContext"
-    ],
-    "cve": "CVE-2020-28464",
-    "fixed_version": "2.1.4",
-    "fix_commit": "n/a",
-    "sink": "lib/utils/template.js:110:15",
-    "sink_file": "lib/utils/template.js",
-    "sink_line": 110,
-    "sink_col": 15
-  },
-  "module_33": {
-    "category": "code-injection",
-    "module": "jsen_0.6.6",
-    "vuln_type": "Arbitrary Code Injection",
-    "sink_apis": [
-      "eval",
-      "new Function",
-      "vm.runInNewContext",
-      "vm.runInThisContext"
-    ],
-    "cve": "CVE-2020-7777",
-    "fixed_version": "n/a",
-    "fix_commit": "n/a",
-    "sink": "lib/func.js:62:16",
-    "sink_file": "lib/func.js",
-    "sink_line": 62,
-    "sink_col": 16
-  },
-  "module_34": {
-    "category": "prototype-pollution",
-    "module": "deep-extend_0.5.0",
-    "vuln_type": "Prototype Pollution",
-    "sink_apis": [
-      "__proto__",
-      "constructor.prototype"
-    ],
-    "cve": "CVE-2018-3750",
-    "fixed_version": "0.5.1",
-    "fix_commit": "https://github.com/unclechu/node-deep-extend/commit/433ee51ed606f4e1867ece57b6ff5a47bebb492f",
-    "sink": "lib/deep-extend.js:117:17",
-    "sink_file": "lib/deep-extend.js",
-    "sink_line": 117,
-    "sink_col": 17
-  },
-  "module_35": {
-    "category": "code-injection",
-    "module": "mathjs_3.10.3",
-    "vuln_type": "Arbitrary Code Injection",
-    "sink_apis": [
-      "eval",
-      "new Function",
-      "vm.runInNewContext",
-      "vm.runInThisContext"
-    ],
-    "cve": "",
-    "fixed_version": "3.11.5",
-    "fix_commit": "https://github.com/josdejong/mathjs/compare/v3.10.3...v3.11.5",
-    "sink": "lib/core/function/import.js:131:9",
-    "sink_file": "lib/core/function/import.js",
-    "sink_line": 131,
-    "sink_col": 9
-  },
-  "module_36": {
-    "category": "redos",
-    "module": "charset_1.0.0",
-    "vuln_type": "ReDoS",
-    "sink_apis": [
-      "RegExp.exec",
-      "RegExp.test",
-      "String.match",
-      "String.replace",
-      "String.search",
-      "String.split"
-    ],
-    "cve": "CVE-2017-16098",
-    "fixed_version": "1.0.1",
-    "fix_commit": "n/a",
-    "sink": "charset.js:59:26",
-    "sink_file": "charset.js",
-    "sink_line": 59,
-    "sink_col": 26
+    "sink_col": 10,
+    "sink_function": "isExtendable"
   },
   "module_37": {
     "category": "redos",
@@ -665,76 +285,69 @@
     "sink": "core.js:241:12",
     "sink_file": "core.js",
     "sink_line": 241,
-    "sink_col": 12
+    "sink_col": 12,
+    "sink_function": "nativeIsFinite"
   },
-  "module_38": {
-    "category": "path-traversal",
-    "module": "asset-cache_0.0.6",
-    "vuln_type": "Path Traversal",
+  "module_12": {
+    "category": "prototype-pollution",
+    "module": "arr-flatten-unflatten_1.1.4",
+    "vuln_type": "Prototype Pollution",
+    "sink_apis": ["__proto__", "constructor.prototype"],
+    "cve": "CVE-2020-7713",
+    "fixed_version": "n/a",
+    "fix_commit": "n/a",
+    "sink": "unflatten.js:17:16",
+    "sink_file": "unflatten.js",
+    "sink_line": 17,
+    "sink_col": 16,
+    "sink_function": "curr"
+  },
+  "module_35": {
+    "category": "code-injection",
+    "module": "mathjs_3.10.3",
+    "vuln_type": "Arbitrary Code Injection",
     "sink_apis": [
-      "fs.readFile",
-      "fs.readFileSync",
-      "fs.createReadStream"
+      "eval",
+      "new Function",
+      "vm.runInNewContext",
+      "vm.runInThisContext"
     ],
     "cve": "",
-    "fixed_version": "n/a",
-    "fix_commit": "n/a",
-    "sink": "lib/asset-cache.js:31:8",
-    "sink_file": "lib/asset-cache.js",
-    "sink_line": 31,
-    "sink_col": 8
+    "fixed_version": "3.11.5",
+    "fix_commit": "https://github.com/josdejong/mathjs/compare/v3.10.3...v3.11.5",
+    "sink": "lib/core/function/import.js:131:9",
+    "sink_file": "lib/core/function/import.js",
+    "sink_line": 131,
+    "sink_col": 9,
+    "sink_function": "resolver"
   },
-  "module_39": {
-    "category": "command-injection",
-    "module": "adb-driver_0.1.8",
-    "vuln_type": "Command Injection",
-    "sink_apis": [
-      "child_process.exec",
-      "child_process.execSync",
-      "child_process.spawn",
-      "child_process.spawnSync"
-    ],
-    "cve": "CVE-2020-7636",
-    "fixed_version": "n/a",
-    "fix_commit": "n/a",
-    "sink": "build/AdbDriver.js:26:25",
-    "sink_file": "build/AdbDriver.js",
-    "sink_line": 26,
-    "sink_col": 25
+  "module_34": {
+    "category": "prototype-pollution",
+    "module": "deep-extend_0.5.0",
+    "vuln_type": "Prototype Pollution",
+    "sink_apis": ["__proto__", "constructor.prototype"],
+    "cve": "CVE-2018-3750",
+    "fixed_version": "0.5.1",
+    "fix_commit": "https://github.com/unclechu/node-deep-extend/commit/433ee51ed606f4e1867ece57b6ff5a47bebb492f",
+    "sink": "lib/deep-extend.js:117:17",
+    "sink_file": "lib/deep-extend.js",
+    "sink_line": 117,
+    "sink_col": 17,
+    "sink_function": "args"
   },
   "module_40": {
     "category": "prototype-pollution",
     "module": "brikcss-merge_1.3.0",
     "vuln_type": "Prototype Pollution",
-    "sink_apis": [
-      "__proto__",
-      "constructor.prototype"
-    ],
+    "sink_apis": ["__proto__", "constructor.prototype"],
     "cve": "",
     "fixed_version": "n/a",
     "fix_commit": "N/A",
     "sink": "merge/dist/lib/merge.js:2:1599",
     "sink_file": "merge/dist/lib/merge.js",
     "sink_line": 2,
-    "sink_col": 1599
-  },
-  "module_41": {
-    "category": "command-injection",
-    "module": "blamer_0.1.13",
-    "vuln_type": "Command Injection",
-    "sink_apis": [
-      "child_process.exec",
-      "child_process.execSync",
-      "child_process.spawn",
-      "child_process.spawnSync"
-    ],
-    "cve": "CVE-2019-10807",
-    "fixed_version": "1.0.1",
-    "fix_commit": "https://github.com/kucherenko/blamer/commit/5fada8c9b6986ecd28942b724fa682e77ce1e11c",
-    "sink": "src/vcs/git.js:24:5",
-    "sink_file": "src/vcs/git.js",
-    "sink_line": 24,
-    "sink_col": 5
+    "sink_col": 1599,
+    "sink_function": "t"
   },
   "module_42": {
     "category": "command-injection",
@@ -752,23 +365,95 @@
     "sink": "lib/bestzip.js:27:27",
     "sink_file": "lib/bestzip.js",
     "sink_line": 27,
-    "sink_col": 27
+    "sink_col": 27,
+    "sink_function": "zipProcess"
   },
-  "module_43": {
-    "category": "prototype-pollution",
-    "module": "copy-props_2.0.4",
-    "vuln_type": "Prototype Pollution",
+  "module_41": {
+    "category": "command-injection",
+    "module": "blamer_0.1.13",
+    "vuln_type": "Command Injection",
     "sink_apis": [
-      "__proto__",
-      "constructor.prototype"
+      "child_process.exec",
+      "child_process.execSync",
+      "child_process.spawn",
+      "child_process.spawnSync"
     ],
-    "cve": "CVE-2020-28503",
-    "fixed_version": "2.0.5",
+    "cve": "CVE-2019-10807",
+    "fixed_version": "1.0.1",
+    "fix_commit": "https://github.com/kucherenko/blamer/commit/5fada8c9b6986ecd28942b724fa682e77ce1e11c",
+    "sink": "src/vcs/git.js:24:5",
+    "sink_file": "src/vcs/git.js",
+    "sink_line": 24,
+    "sink_col": 5,
+    "sink_function": "exec"
+  },
+  "module_22": {
+    "category": "path-traversal",
+    "module": "canvas-designer_1.2.1",
+    "vuln_type": "Path Traversal",
+    "sink_apis": ["fs.readFile", "fs.readFileSync", "fs.createReadStream"],
+    "cve": "",
+    "fixed_version": "n/a",
     "fix_commit": "n/a",
-    "sink": "index.js:197:14",
+    "sink": "server.js:36:8",
+    "sink_file": "server.js",
+    "sink_line": 36,
+    "sink_col": 8,
+    "sink_function": "uri"
+  },
+  "module_21": {
+    "category": "redos",
+    "module": "ansi-html_0.0.7",
+    "vuln_type": "ReDoS",
+    "sink_apis": [
+      "RegExp.exec",
+      "RegExp.test",
+      "String.match",
+      "String.replace",
+      "String.search",
+      "String.split"
+    ],
+    "cve": "CVE-2021-23424",
+    "fixed_version": "n/a",
+    "fix_commit": "n/a",
+    "sink": "index.js:62:18",
     "sink_file": "index.js",
-    "sink_line": 197,
-    "sink_col": 14
+    "sink_line": 62,
+    "sink_col": 18,
+    "sink_function": "ret"
+  },
+  "module_17": {
+    "category": "command-injection",
+    "module": "async-git_1.13.1",
+    "vuln_type": "Command Injection",
+    "sink_apis": [
+      "child_process.exec",
+      "child_process.execSync",
+      "child_process.spawn",
+      "child_process.spawnSync"
+    ],
+    "cve": "CVE-2020-28490",
+    "fixed_version": "1.13.2",
+    "fix_commit": "https://github.com/omrilotan/async-git/commit/d1950a5021f4e19d92f347614be0d85ce991510d",
+    "sink": "lib/reset/index.js:11:16",
+    "sink_file": "lib/reset/index.js",
+    "sink_line": 11,
+    "sink_col": 16,
+    "sink_function": "exec"
+  },
+  "module_38": {
+    "category": "path-traversal",
+    "module": "asset-cache_0.0.6",
+    "vuln_type": "Path Traversal",
+    "sink_apis": ["fs.readFile", "fs.readFileSync", "fs.createReadStream"],
+    "cve": "",
+    "fixed_version": "n/a",
+    "fix_commit": "n/a",
+    "sink": "lib/asset-cache.js:31:8",
+    "sink_file": "lib/asset-cache.js",
+    "sink_line": 31,
+    "sink_col": 8,
+    "sink_function": "loadFile"
   },
   "module_44": {
     "category": "command-injection",
@@ -786,39 +471,370 @@
     "sink": "index.js:120:13",
     "sink_file": "index.js",
     "sink_line": 120,
-    "sink_col": 13
+    "sink_col": 13,
+    "sink_function": "sleep"
   },
-  "module_45": {
+  "module_06": {
     "category": "prototype-pollution",
-    "module": "assign-deep_1.0.0",
+    "module": "deep-defaults_1.0.5",
     "vuln_type": "Prototype Pollution",
+    "sink_apis": ["__proto__", "constructor.prototype"],
+    "cve": "CVE-2021-25944",
+    "fixed_version": "n/a",
+    "fix_commit": "n/a",
+    "sink": "lib/index.js:16:21",
+    "sink_file": "lib/index.js",
+    "sink_line": 16,
+    "sink_col": 21,
+    "sink_function": "_deepDefaults"
+  },
+  "module_15": {
+    "category": "code-injection",
+    "module": "js-yaml_3.13.0",
+    "vuln_type": "Arbitrary Code Injection",
     "sink_apis": [
-      "__proto__",
-      "constructor.prototype"
+      "eval",
+      "new Function",
+      "vm.runInNewContext",
+      "vm.runInThisContext"
     ],
-    "cve": "CVE-2019-10745",
+    "cve": "",
+    "fixed_version": "3.13.1",
+    "fix_commit": "https://github.com/nodeca/js-yaml/pull/480/commits/e18afbf1edcafb7add2c4c7b22abc8d6ebc2fa61",
+    "sink": "lib/js-yaml/type/js/function.js:70:12",
+    "sink_file": "lib/js-yaml/type/js/function.js",
+    "sink_line": 70,
+    "sink_col": 12,
+    "sink_function": "constructJavascriptFunction"
+  },
+  "module_29": {
+    "category": "prototype-pollution",
+    "module": "bodymen_1.0.0",
+    "vuln_type": "Prototype Pollution",
+    "sink_apis": ["__proto__", "constructor.prototype"],
+    "cve": "CVE-2019-10792",
+    "fixed_version": "1.1.1",
+    "fix_commit": "https://github.com/diegohaz/bodymen/commit/5d52e8cf360410ee697afd90937e6042c3a8653b",
+    "sink": "dist/index.js:44:26",
+    "sink_file": "dist/index.js",
+    "sink_line": 44,
+    "sink_col": 26,
+    "sink_function": "handler"
+  },
+  "module_36": {
+    "category": "redos",
+    "module": "charset_1.0.0",
+    "vuln_type": "ReDoS",
+    "sink_apis": [
+      "RegExp.exec",
+      "RegExp.test",
+      "String.match",
+      "String.replace",
+      "String.search",
+      "String.split"
+    ],
+    "cve": "CVE-2017-16098",
     "fixed_version": "1.0.1",
-    "fix_commit": "https://github.com/jonschlinkert/assign-deep/commit/90bf1c551d05940898168d04066bbf15060f50cc",
-    "sink": "index.js:22:23",
-    "sink_file": "index.js",
-    "sink_line": 22,
-    "sink_col": 23
+    "fix_commit": "n/a",
+    "sink": "charset.js:59:26",
+    "sink_file": "charset.js",
+    "sink_line": 59,
+    "sink_col": 26,
+    "sink_function": "headers"
   },
-  "module_46": {
-    "category": "prototype-pollution",
-    "module": "changeset_0.1.0",
-    "vuln_type": "Prototype Pollution",
+  "module_27": {
+    "category": "redos",
+    "module": "ansi-regex_4.1.0",
+    "vuln_type": "ReDoS",
     "sink_apis": [
-      "__proto__",
-      "constructor.prototype"
+      "RegExp.exec",
+      "RegExp.test",
+      "String.match",
+      "String.replace",
+      "String.search",
+      "String.split"
     ],
-    "cve": "CVE-2021-25915",
-    "fixed_version": "0.2.6",
-    "fix_commit": "https://github.com/eugeneware/changeset/commit/9e588844edbb9993b32e7366cc799262b4447f99",
-    "sink": "index.js:81:25",
+    "cve": "CVE-2021-3807",
+    "fixed_version": ">=2.1.1 <3.0.1 >=4.0.0 <4.1.1 >=5.0.0 <5.0.1 >=6.0.0 <6.0.1",
+    "fix_commit": "https://github.com/chalk/ansi-regex/commit/419250fa510bf31b4cc672e76537a64f9332e1f1",
+    "sink": "index.js:13:9",
     "sink_file": "index.js",
-    "sink_line": 81,
-    "sink_col": 25
+    "sink_line": 13,
+    "sink_col": 9,
+    "sink_function": "__file_scope__"
+  },
+  "module_16": {
+    "category": "code-injection",
+    "module": "access-policy_3.1.0",
+    "vuln_type": "Arbitrary Code Injection",
+    "sink_apis": [
+      "eval",
+      "new Function",
+      "vm.runInNewContext",
+      "vm.runInThisContext"
+    ],
+    "cve": "CVE-2020-7674",
+    "fixed_version": "n/a",
+    "fix_commit": "n/a",
+    "sink": "lib/encode.js:6:10",
+    "sink_file": "lib/encode.js",
+    "sink_line": 6,
+    "sink_col": 10,
+    "sink_function": "tmpl"
+  },
+  "module_04": {
+    "category": "command-injection",
+    "module": "connection-tester_0.2.0",
+    "vuln_type": "Command Injection",
+    "sink_apis": [
+      "child_process.exec",
+      "child_process.execSync",
+      "child_process.spawn",
+      "child_process.spawnSync"
+    ],
+    "cve": "CVE-2020-7781",
+    "fixed_version": "0.2.1",
+    "fix_commit": "n/a",
+    "sink": "index.js:15:28",
+    "sink_file": "index.js",
+    "sink_line": 15,
+    "sink_col": 28,
+    "sink_function": "shellOut"
+  },
+  "module_05": {
+    "category": "command-injection",
+    "module": "command-exists_1.2.2",
+    "vuln_type": "Command Injection",
+    "sink_apis": [
+      "child_process.exec",
+      "child_process.execSync",
+      "child_process.spawn",
+      "child_process.spawnSync"
+    ],
+    "cve": "CVE-2019-10776",
+    "fixed_version": "0.22.2",
+    "fix_commit": "https://github.com/kellyselden/git-diff-apply/commit/106d61d3ae723b4257c2a13e67b95eb40a27e0b5",
+    "sink": "lib/command-exists.js:78:22",
+    "sink_file": "lib/command-exists.js",
+    "sink_line": 78,
+    "sink_col": 22,
+    "sink_function": "stdout"
+  },
+  "module_28": {
+    "category": "path-traversal",
+    "module": "angular-http-server_1.0.0",
+    "vuln_type": "Path Traversal",
+    "sink_apis": ["fs.readFile", "fs.readFileSync", "fs.createReadStream"],
+    "cve": "",
+    "fixed_version": "1.4.4",
+    "fix_commit": "https://github.com/simonh1000/angular-http-server/commit/8bafc9577161469f5dea01e0b98ea9c525d063e9",
+    "sink": "angular-http-server.js:16:29",
+    "sink_file": "angular-http-server.js",
+    "sink_line": 16,
+    "sink_col": 29,
+    "sink_function": "possibleFilename"
+  },
+  "module_39": {
+    "category": "command-injection",
+    "module": "adb-driver_0.1.8",
+    "vuln_type": "Command Injection",
+    "sink_apis": [
+      "child_process.exec",
+      "child_process.execSync",
+      "child_process.spawn",
+      "child_process.spawnSync"
+    ],
+    "cve": "CVE-2020-7636",
+    "fixed_version": "n/a",
+    "fix_commit": "n/a",
+    "sink": "build/AdbDriver.js:26:25",
+    "sink_file": "build/AdbDriver.js",
+    "sink_line": 26,
+    "sink_col": 25,
+    "sink_function": "binFile"
+  },
+  "module_11": {
+    "category": "prototype-pollution",
+    "module": "deap_1.0.0",
+    "vuln_type": "Prototype Pollution",
+    "sink_apis": ["__proto__", "constructor.prototype"],
+    "cve": "CVE-2018-3749",
+    "fixed_version": "1.0.1",
+    "fix_commit": "n/a",
+    "sink": "lib/connie-lang.js:35:28",
+    "sink_file": "lib/connie-lang.js",
+    "sink_line": 35,
+    "sink_col": 28,
+    "sink_function": "__unknown__"
+  },
+  "module_49": {
+    "category": "path-traversal",
+    "module": "aso-server_0.4.3",
+    "vuln_type": "Path Traversal",
+    "sink_apis": ["fs.readFile", "fs.readFileSync", "fs.createReadStream"],
+    "cve": "",
+    "fixed_version": "n/a",
+    "fix_commit": "n/a",
+    "sink": "server.js:88:17",
+    "sink_file": "server.js",
+    "sink_line": 88,
+    "sink_col": 17,
+    "sink_function": "contents"
+  },
+  "module_23": {
+    "category": "code-injection",
+    "module": "hot-formula-parser_3.0.0",
+    "vuln_type": "Arbitrary Code Injection",
+    "sink_apis": [
+      "eval",
+      "new Function",
+      "vm.runInNewContext",
+      "vm.runInThisContext"
+    ],
+    "cve": "CVE-2020-6836",
+    "fixed_version": "3.0.1",
+    "fix_commit": "https://github.com/handsontable/formula-parser/commit/396b089738d4bf30eb570a4fe6a188affa95cd5e",
+    "sink": "lib/grammar-parser/grammar-parser.js:258:31",
+    "sink_file": "lib/grammar-parser/grammar-parser.js",
+    "sink_line": 258,
+    "sink_col": 31,
+    "sink_function": "arr"
+  },
+  "module_25": {
+    "category": "path-traversal",
+    "module": "augustine_0.2.3",
+    "vuln_type": "Path Traversal",
+    "sink_apis": ["fs.readFile", "fs.readFileSync", "fs.createReadStream"],
+    "cve": "CVE-2017-0930",
+    "fixed_version": "n/a",
+    "fix_commit": "n/a",
+    "sink": "index.js:88:16",
+    "sink_file": "index.js",
+    "sink_line": 88,
+    "sink_col": 16,
+    "sink_function": "type"
+  },
+  "module_09": {
+    "category": "code-injection",
+    "module": "json-ptr_2.0.0",
+    "vuln_type": "Arbitrary Code Injection",
+    "sink_apis": [
+      "eval",
+      "new Function",
+      "vm.runInNewContext",
+      "vm.runInThisContext"
+    ],
+    "cve": "CVE-2020-7766",
+    "fixed_version": "2.0.0",
+    "fix_commit": "n/a",
+    "sink": "src/util.ts:155:10",
+    "sink_file": "src/util.ts",
+    "sink_line": 155,
+    "sink_col": 10,
+    "sink_function": "compilePointerDereference"
+  },
+  "module_31": {
+    "category": "redos",
+    "module": "browserslist_4.16.4",
+    "vuln_type": "ReDoS",
+    "sink_apis": [
+      "RegExp.exec",
+      "RegExp.test",
+      "String.match",
+      "String.replace",
+      "String.search",
+      "String.split"
+    ],
+    "cve": "CVE-2021-23364",
+    "fixed_version": "4.16.5",
+    "fix_commit": "https://github.com/browserslist/browserslist/commit/c091916910dfe0b5fd61caad96083c6709b02d98",
+    "sink": "index.js:333:29",
+    "sink_file": "index.js",
+    "sink_line": 333,
+    "sink_col": 29,
+    "sink_function": "match"
+  },
+  "module_14": {
+    "category": "redos",
+    "module": "brace-expansion_1.1.6",
+    "vuln_type": "ReDoS",
+    "sink_apis": [
+      "RegExp.exec",
+      "RegExp.test",
+      "String.match",
+      "String.replace",
+      "String.search",
+      "String.split"
+    ],
+    "cve": "CVE-2017-18077",
+    "fixed_version": "1.1.7",
+    "fix_commit": "https://github.com/juliangruber/brace-expansion/pull/35/commits/b13381281cead487cbdbfd6a69fb097ea5e456c3",
+    "sink": "index.js:109:35",
+    "sink_file": "index.js",
+    "sink_line": 109,
+    "sink_col": 35,
+    "sink_function": "range"
+  },
+  "module_03": {
+    "category": "redos",
+    "module": "amqp-match_0.0.0",
+    "vuln_type": "ReDoS",
+    "sink_apis": [
+      "RegExp.exec",
+      "RegExp.test",
+      "String.match",
+      "String.replace",
+      "String.search",
+      "String.split"
+    ],
+    "cve": "",
+    "fixed_version": "n/a",
+    "fix_commit": "n/a",
+    "sink": "index.js:4:17",
+    "sink_file": "index.js",
+    "sink_line": 4,
+    "sink_col": 17,
+    "sink_function": "match"
+  },
+  "module_33": {
+    "category": "code-injection",
+    "module": "jsen_0.6.6",
+    "vuln_type": "Arbitrary Code Injection",
+    "sink_apis": [
+      "eval",
+      "new Function",
+      "vm.runInNewContext",
+      "vm.runInThisContext"
+    ],
+    "cve": "CVE-2020-7777",
+    "fixed_version": "n/a",
+    "fix_commit": "n/a",
+    "sink": "lib/func.js:62:16",
+    "sink_file": "lib/func.js",
+    "sink_line": 62,
+    "sink_col": 16,
+    "sink_function": "first"
+  },
+  "module_13": {
+    "category": "redos",
+    "module": "clean-css_4.1.10",
+    "vuln_type": "ReDoS",
+    "sink_apis": [
+      "RegExp.exec",
+      "RegExp.test",
+      "String.match",
+      "String.replace",
+      "String.search",
+      "String.split"
+    ],
+    "cve": "",
+    "fixed_version": "4.1.11",
+    "fix_commit": "https://github.com/jakubpawlowicz/clean-css/commit/2929bafbf8cdf7dccb24e0949c70833764fa87e3",
+    "sink": "validator.js:418:20",
+    "sink_file": "validator.js",
+    "sink_line": 418,
+    "sink_col": 20,
+    "sink_function": "isTime"
   },
   "module_47": {
     "category": "code-injection",
@@ -836,57 +852,21 @@
     "sink": "dist/DocumentMatcher.js:419:23",
     "sink_file": "dist/DocumentMatcher.js",
     "sink_line": 419,
-    "sink_col": 23
+    "sink_col": 23,
+    "sink_function": "$where"
   },
-  "module_48": {
-    "category": "path-traversal",
-    "module": "atropa-ide_0.2.2-2",
-    "vuln_type": "Path Traversal",
-    "sink_apis": [
-      "fs.readFile",
-      "fs.readFileSync",
-      "fs.createReadStream"
-    ],
-    "cve": "",
-    "fixed_version": "n/a",
-    "fix_commit": "n/a",
-    "sink": "node_modules/atropa-server/requestHandlers.js:120:2",
-    "sink_file": "node_modules/atropa-server/requestHandlers.js",
-    "sink_line": 120,
-    "sink_col": 2
-  },
-  "module_49": {
-    "category": "path-traversal",
-    "module": "aso-server_0.4.3",
-    "vuln_type": "Path Traversal",
-    "sink_apis": [
-      "fs.readFile",
-      "fs.readFileSync",
-      "fs.createReadStream"
-    ],
-    "cve": "",
-    "fixed_version": "n/a",
-    "fix_commit": "n/a",
-    "sink": "server.js:88:17",
-    "sink_file": "server.js",
-    "sink_line": 88,
-    "sink_col": 17
-  },
-  "module_50": {
-    "category": "path-traversal",
-    "module": "basic-static_2.0.2",
-    "vuln_type": "Path Traversal",
-    "sink_apis": [
-      "fs.readFile",
-      "fs.readFileSync",
-      "fs.createReadStream"
-    ],
-    "cve": "",
-    "fixed_version": "n/a",
-    "fix_commit": "n/a",
-    "sink": "basic-static.js:121:21",
-    "sink_file": "basic-static.js",
-    "sink_line": 121,
-    "sink_col": 21
+  "module_46": {
+    "category": "prototype-pollution",
+    "module": "changeset_0.1.0",
+    "vuln_type": "Prototype Pollution",
+    "sink_apis": ["__proto__", "constructor.prototype"],
+    "cve": "CVE-2021-25915",
+    "fixed_version": "0.2.6",
+    "fix_commit": "https://github.com/eugeneware/changeset/commit/9e588844edbb9993b32e7366cc799262b4447f99",
+    "sink": "index.js:81:25",
+    "sink_file": "index.js",
+    "sink_line": 81,
+    "sink_col": 25,
+    "sink_function": "apply"
   }
 }

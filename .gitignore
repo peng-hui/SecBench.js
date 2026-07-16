@@ -104,3 +104,14 @@ dist
 # TernJS port file
 .tern-port
 .DS_Store
+
+# SecBench.js — large generated benchmark directories
+evaluation/static-benchmark/
+evaluation/static-benchmark-full/
+evaluation/__pycache__/
+__pycache__/
+
+# External / unrelated repos checked out locally
+SecJS-Benchmark/
+cybergym/
+openevolve/

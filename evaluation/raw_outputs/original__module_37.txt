@@ -1,0 +1,18 @@
+```json
+{
+  "package": "checkit@0.7.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "ReDoS",
+      "sink_api": "RegExp.prototype.test",
+      "file": "core.js",
+      "function_name": "runRule",
+      "vulnerable_lines": [240, 241, 417],
+      "confidence": 0.85,
+      "description": "When a field is validated with the 'ipv6' rule, the attacker-controlled value is passed straight to Checkit.Regex.ipv6.test(value), and the ipv6 regex contains nested quantifiers and backreference-based alternations that cause catastrophic backtracking on crafted strings, letting an attacker hang the event loop via a single validation call.",
+      "snippet": "else if (Checkit.Regex[rule]) {\n    result = Checkit.Regex[rule].test(params[0]);\n}\n// ...\nipv6: /^((?=.*::)(?!.*::.+::)(::)?([\\dA-F]{1,4}:(:|\\b)|){5}|([\\dA-F]{1,4}:){6})((([\\dA-F]{1,4}((?!\\3)::|:\\b|$))|(?!\\2\\3)){2}|(((2[0-4]|1\\d|[1-9])?\\d|25[0-5])\\.?\\b){4})$/i"
+    }
+  ]
+}
+```

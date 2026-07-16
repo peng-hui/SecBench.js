@@ -1,0 +1,20 @@
+Confirmed prototype pollution via `JSON.parse`-derived `__proto__` key.
+
+```json
+{
+  "package": "deep-defaults@1.0.5",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "lib/index.js",
+      "function_name": "_deepDefaults",
+      "vulnerable_lines": [14, 15, 16, 17, 18],
+      "confidence": 0.97,
+      "description": "When src is attacker-controlled (e.g. via JSON.parse of user input) and contains a \"__proto__\" key with an object value, _.each iterates it as an own enumerable property; since dest[\"__proto__\"] (Object.prototype) is not undefined, the code recurses into _deepDefaults(dest[\"__proto__\"], v), which then assigns v's keys directly onto Object.prototype, polluting all objects application-wide.",
+      "snippet": "_.each(src, function(v, k) {\n    if(_.isUndefined(dest[k])) {\n        dest[k] = v;\n    } else if(_.isPlainObject(v)) {\n        _deepDefaults(dest[k], v);\n    }\n});"
+    }
+  ]
+}
+```

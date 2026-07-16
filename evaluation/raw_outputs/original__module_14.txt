@@ -1,0 +1,18 @@
+```json
+{
+  "package": "brace-expansion@1.1.6",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "ReDoS",
+      "sink_api": "RegExp.test",
+      "file": "index.js",
+      "function_name": "expand",
+      "vulnerable_lines": [109],
+      "confidence": 0.9,
+      "description": "User-controlled brace-expansion input passed through expandTop/expand reaches the catastrophic-backtracking regex /^(.*,)+(.+)?$/ tested against the braced body, allowing an attacker-supplied string (e.g. many repeated characters ending without a closing brace) to cause exponential-time regex evaluation and hang the process.",
+      "snippet": "var isOptions = /^(.*,)+(.+)?$/.test(m.body);"
+    }
+  ]
+}
+```

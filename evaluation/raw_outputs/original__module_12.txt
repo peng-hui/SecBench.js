@@ -1,0 +1,18 @@
+```json
+{
+  "package": "arr-flatten-unflatten@1.1.4",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "unflatten.js",
+      "function_name": "unflatten",
+      "vulnerable_lines": [13, 17],
+      "confidence": 0.95,
+      "description": "unflatten() rebuilds a nested object from a flat key map by splitting dotted/bracket key segments with a regex and walking/creating nested properties via `curr[prop]`, so a key like \"__proto__.polluted\" causes `curr = curr[\"__proto__\"]` to resolve to Object.prototype and the final `curr[prop] = obj[p]` assignment pollutes the global Object.prototype for all objects in the process.",
+      "snippet": "while ((m = regex.exec(p))) {\n  curr = curr[prop] || (curr[prop] = m[2] ? [] : {});\n  prop = m[2] || m[1];\n}\ncurr[prop] = obj[p];"
+    }
+  ]
+}
+```

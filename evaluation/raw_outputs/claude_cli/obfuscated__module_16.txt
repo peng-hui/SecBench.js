@@ -1,0 +1,18 @@
+```json
+{
+  "package": "access-policy@3.1.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "ReDoS",
+      "sink_api": "RegExp.test",
+      "file": "lib/resources.js",
+      "function_name": "filterPaths",
+      "vulnerable_lines": [1],
+      "confidence": 0.75,
+      "description": "createRegExp builds a RegExp from a policy statement's resource pattern (escaping only '/' and '*') and filterPaths then runs regex.test() against the user-supplied input.resource path, letting an attacker-influenced pattern with repeated wildcard segments (e.g. many '*' before a required suffix) trigger catastrophic backtracking on crafted input strings.",
+      "snippet": "function createRegExp(pattern){pattern=pattern.replace(/\\//g,'\\/');pattern=pattern.replace(/\\*/g,'.*?');return new RegExp('^'+pattern+'$');} function filterPaths(paths,input){paths=typeof paths==='string'?[paths]:paths;return paths.some(function(p){var re=createRegExp(p);return re.test(input);});}"
+    }
+  ]
+}
+```

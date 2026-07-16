@@ -1,0 +1,18 @@
+```json
+{
+  "package": "adb-driver@0.1.8",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.exec",
+      "file": "build/AdbDriver.js",
+      "function_name": "execADBCommand",
+      "vulnerable_lines": [17, 26],
+      "confidence": 0.9,
+      "description": "The exported execADBCommand function passes a caller-supplied command string directly to child_process.exec (via a shell), so any untrusted data concatenated into the ADB command (e.g. a device serial, package name, or file path) can inject arbitrary shell commands.",
+      "snippet": "function execADBCommand(command, option) {\n    let execCmd = command;\n    ...\n    child_process_1.exec(execCmd, option || { stdio: 'inherit' }, (err, stdout, stderr) => { ... });\n}"
+    }
+  ]
+}
+```

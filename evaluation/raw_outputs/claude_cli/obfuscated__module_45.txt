@@ -1,0 +1,18 @@
+```json
+{
+  "package": "assign-deep@1.0.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "index.js",
+      "function_name": "assign",
+      "vulnerable_lines": [1],
+      "confidence": 0.97,
+      "description": "The exported `assign` function recursively merges source objects into the target using `Object.keys()` without filtering `__proto__`/`constructor`/`prototype`, so a source object such as `JSON.parse('{\"__proto__\":{\"polluted\":true}}')` causes `assign(target[key], args[i][key])` to recurse into and mutate `Object.prototype`, polluting all objects application-wide.",
+      "snippet": "for(const _0x18ad2c of Object['keys'](_0x775089[_0xfb3782])){isObject(_0x17ef2d[_0x18ad2c])&&isObject(_0x775089[_0xfb3782][_0x18ad2c])?assign(_0x17ef2d[_0x18ad2c],_0x775089[_0xfb3782][_0x18ad2c]):_0x17ef2d[_0x18ad2c]=_0x775089[_0xfb3782][_0x18ad2c];}"
+    }
+  ]
+}
+```

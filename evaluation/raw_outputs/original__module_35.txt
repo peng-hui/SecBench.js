@@ -1,0 +1,18 @@
+```json
+{
+  "package": "mathjs@3.10.3",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "lib/expression/node/utils/assign.js",
+      "function_name": "assign",
+      "vulnerable_lines": [38],
+      "confidence": 0.95,
+      "description": "The expression parser's `assign` helper writes `object[index.getObjectProperty()] = value` without denying dangerous keys like `__proto__`, `constructor`, or `prototype`, so a user-controlled string passed to `math.eval()` (e.g. `b = {}; b[\"__proto__\"][\"hacked\"] = 1` or `a = {}; a.constructor.prototype.polluted = \"yes\"`) pollutes `Object.prototype` for the entire process; verified working against the installed package.",
+      "snippet": "else if (typeof object === 'object') {\n  if (!index.isObjectProperty()) {\n    throw TypeError('Cannot apply a numeric index as object property');\n  }\n  object[index.getObjectProperty()] = value;\n  return object;\n}"
+    }
+  ]
+}
+```

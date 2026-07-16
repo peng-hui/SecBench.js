@@ -1,0 +1,18 @@
+```json
+{
+  "package": "js-yaml@3.13.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "lib/js-yaml/loader.js",
+      "function_name": "storeMappingPair",
+      "vulnerable_lines": [1],
+      "confidence": 0.95,
+      "description": "In storeMappingPair (js-yaml's internal storeMapEntry), a YAML mapping key from user-controlled YAML input is coerced with String(keyNode) and assigned directly as result[keyNode] = valueNode with no check that keyNode is '__proto__', so a crafted document like '__proto__:\\n  polluted: true' pollutes Object.prototype when parsed with yaml.safeLoad/load (CVE-2019-11837, fixed in 3.13.1).",
+      "snippet": "_0x5004c3=String(_0x5004c3); _0x5df047===null&&(_0x5df047={}); ... _0x5df047[_0x5004c3]=_0x10f72d, delete _0x141181[_0x5004c3]; return _0x5df047;"
+    }
+  ]
+}
+```

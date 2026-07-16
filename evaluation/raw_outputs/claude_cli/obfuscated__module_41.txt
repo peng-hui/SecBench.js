@@ -1,0 +1,30 @@
+Verified via a live PoC: passing `filename = "/tmp/nonexistent; touch /tmp/pwned_by_blamer; echo"` produced the exec command `git blame -w pwned_by_blamer; echo`, proving the semicolon breaks out of the intended command (blocked only by the sandbox lacking `/bin/sh`, not by any sanitization in blamer). Same pattern in `svn.js`.
+
+```json
+{
+  "package": "blamer@0.1.13",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.exec",
+      "file": "src/vcs/git.js",
+      "function_name": "__file_scope__",
+      "vulnerable_lines": [1],
+      "confidence": 0.97,
+      "description": "The exported function builds a shell command by concatenating the caller-supplied filename (via path.basename) and revisionRange directly into a string passed to child_process.exec, letting shell metacharacters in either argument execute arbitrary commands.",
+      "snippet": "exec('git blame ' + revisionRange + ' ' + basename, {cwd: dirname, maxBuffer: 1024*1024}, function(error, stdout, stderr) {...})"
+    },
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.exec",
+      "file": "src/vcs/svn.js",
+      "function_name": "__file_scope__",
+      "vulnerable_lines": [1],
+      "confidence": 0.95,
+      "description": "The exported function concatenates the caller-supplied filename (via path.basename) and revision argument directly into a shell string passed to child_process.exec, allowing command injection via shell metacharacters.",
+      "snippet": "exec('svn blame ' + basename + ' ' + revision, {cwd: dirname, maxBuffer: 1024*1024}, function(error, stdout, stderr) {...})"
+    }
+  ]
+}
+```

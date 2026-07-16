@@ -1,0 +1,18 @@
+```json
+{
+  "package": "copy-props@2.0.4",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "index.js",
+      "function_name": "_setDeep",
+      "vulnerable_lines": [185, 186, 197, 201, 202, 204],
+      "confidence": 0.95,
+      "description": "copy-props deep-copies keys from a source object into a destination object by splitting dotted key chains (e.g. '__proto__.polluted') and walking/assigning through obj[key] in _setDeep without blacklisting '__proto__', 'constructor', or 'prototype', so an attacker-controlled src object (or fromto mapping) with a key chain like '__proto__.polluted' lets copy(src, dst, ...) write arbitrary properties onto Object.prototype, polluting all objects in the application.",
+      "snippet": "function _setDeep(obj, keyElems, depth, valueCreator) {\n  var key = keyElems.shift();\n  if (!keyElems.length) {\n    var value = valueCreator(obj, key, depth);\n    ...\n    obj[key] = value;\n    return;\n  }\n  if (!isPlainObject(obj[key])) {\n    obj[key] = {};\n  }\n  _setDeep(obj[key], keyElems, depth + 1, valueCreator);\n}"
+    }
+  ]
+}
+```

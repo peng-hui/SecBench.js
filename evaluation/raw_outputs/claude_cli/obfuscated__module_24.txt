@@ -1,0 +1,20 @@
+Confirmed: `bitty@0.1.0`'s `index.js` (all logic packed onto line 3) implements a static file handler that joins the raw, attacker-controlled `req.url` directly onto the configured directory and reads it with `fs.readFile`/`fs.exists`, with no sanitization of `../` sequences — classic path traversal.
+
+```json
+{
+  "package": "bitty@0.1.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.readFile",
+      "file": "index.js",
+      "function_name": "file",
+      "vulnerable_lines": [3],
+      "confidence": 0.9,
+      "description": "The HTTP request handler builds the served file path via path.join(program.directory, req.url) without sanitizing '../' sequences, allowing a remote client to read arbitrary files outside the served directory (e.g. GET /../../../../etc/passwd).",
+      "snippet": "function file(req,res){var filePath=path.join(program.directory,req.url);fs.exists(filePath,function(exists){exists?fs.readFile(filePath,function(err,data){...}):(res.writeHead(404),res.write('404'),res.end());});}"
+    }
+  ]
+}
+```

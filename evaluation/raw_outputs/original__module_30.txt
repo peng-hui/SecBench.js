@@ -1,0 +1,20 @@
+Confirmed by execution: the process timed out (exit 124) validating a 30-character string against `pattern: '^(a+)+$'`, proving catastrophic backtracking / ReDoS.
+
+```json
+{
+  "package": "is-my-json-valid@2.20.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "ReDoS",
+      "sink_api": "RegExp.test",
+      "file": "index.js",
+      "function_name": "visit",
+      "vulnerable_lines": [124, 128, 391, 392, 394],
+      "confidence": 0.95,
+      "description": "The schema's user-supplied `pattern`/`patternProperties` string is compiled directly into a RegExp with no complexity checks (patterns() at line 128) and then executed via .test() against validated data (line 394), so a malicious schema pattern like '^(a+)+$' causes catastrophic backtracking and hangs the process when validating attacker-influenced input; confirmed experimentally (process timeout on a 30-char string).",
+      "snippet": "var patterns = function(p) {\n  if (reversePatterns[p]) return reversePatterns[p]\n  var n = gensym('pattern')\n  scope[n] = new RegExp(p)\n  reversePatterns[p] = n\n  return n\n}\n...\nif (node.pattern) {\n  var p = patterns(node.pattern)\n  if (type !== 'string') validate('if (%s) {', types.string(name))\n  validate('if (!(%s.test(%s))) {', p, name)\n  error('pattern mismatch')\n  validate('}')\n  if (type !== 'string') validate('}')\n}"
+    }
+  ]
+}
+```

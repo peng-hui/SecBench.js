@@ -1,0 +1,18 @@
+```json
+{
+  "package": "bodymen@1.0.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "ReDoS",
+      "sink_api": "RegExp",
+      "file": "node_modules/rich-param/dist/index.js",
+      "function_name": "value",
+      "vulnerable_lines": [206, 207],
+      "confidence": 0.75,
+      "description": "When a schema param is typed as RegExp, the request-body value (req.body -> bodymen middleware -> Schema.validate/parse -> Param.value) is passed unsanitized into `new RegExp(_value, 'i')`, letting an attacker supply an arbitrary, potentially catastrophic-backtracking pattern that is compiled and later executed via `.test()`/`.match()` against other data, enabling ReDoS.",
+      "snippet": "if (options.type.name === 'RegExp') {\n  _value = new RegExp(_value, 'i');\n}"
+    }
+  ]
+}
+```

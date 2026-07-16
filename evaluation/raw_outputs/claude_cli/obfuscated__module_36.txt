@@ -1,0 +1,20 @@
+The vulnerable line is where `CHARTSET_RE.exec(_0x7612bf)` is invoked on the untrimmed, unbounded `content-type` header/string (single line, since heavily minified — this corresponds to the `charset` function body on line 1).
+
+```json
+{
+  "package": "charset@1.0.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "ReDoS",
+      "sink_api": "RegExp.exec",
+      "file": "lib/charset.js",
+      "function_name": "charset",
+      "vulnerable_lines": [1],
+      "confidence": 0.95,
+      "description": "The charset() function runs the unbounded regex CHARTSET_RE = /(?:charset|encoding)\\s*=\\s*['\"]? *([\\w\\-]+)/i directly against an attacker-controlled Content-Type header (or string argument) with no length restriction, and the nested/adjacent \\s* and space* quantifiers cause catastrophic backtracking (confirmed quadratic blowup: ~4.8s for a 200KB crafted header), allowing a remote attacker who controls a response/request Content-Type header to cause a denial of service.",
+      "snippet": "var CHARTSET_RE=/(?:charset|encoding)\\s*=\\s*['\"]? *([\\w\\-]+)/i; ... _0x972837=CHARTSET_RE['exec'](_0x7612bf);"
+    }
+  ]
+}
+```

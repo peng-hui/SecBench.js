@@ -1,0 +1,21 @@
+```javascript
+const sleep = require("sleep");
+
+// Simulates attacker-controlled input (e.g. a request parameter) reaching sleep()
+const attackerControlledSeconds = 3;
+
+console.log("Server event loop alive, ticking every 100ms...");
+const heartbeat = setInterval(() => {
+  console.log("tick", Date.now());
+}, 100);
+
+console.log("Before sleep():", Date.now());
+// sleep() calls a native, fully synchronous blocking call (usleep in a busy loop).
+// Because the duration is attacker-controlled and unbounded, this freezes the
+// ENTIRE Node.js process/event loop for that duration - a trivial Denial of Service:
+// no timers, no I/O, no other requests can be served while this runs.
+sleep.sleep(attackerControlledSeconds);
+console.log("After sleep():", Date.now());
+
+clearInterval(heartbeat);
+```

@@ -1,0 +1,20 @@
+This confirms axios 0.21.0's known ReDoS vulnerability (CVE-2021-3749): HTTP response headers (attacker-controlled when a malicious/compromised server responds) are split into lines and passed to `utils.trim()`, which uses the vulnerable regex pattern later fixed in 0.21.2.
+
+```json
+{
+  "package": "axios@0.21.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "ReDoS",
+      "sink_api": "String.prototype.replace with /^\\s*/ and /\\s*$/ regex",
+      "file": "lib/utils.js",
+      "function_name": "trim",
+      "vulnerable_lines": [189, 190],
+      "confidence": 0.85,
+      "description": "HTTP response header lines (attacker-controlled when the server or a MITM crafts the response) are passed through parseHeaders() to utils.trim(), whose regex-based whitespace stripping is vulnerable to catastrophic backtracking on crafted long whitespace-padded input (CVE-2021-3749, fixed in axios 0.21.2 by switching to native String.trim()).",
+      "snippet": "function trim(str) {\n  return str.replace(/^\\s*/, '').replace(/\\s*$/, '');\n}"
+    }
+  ]
+}
+```

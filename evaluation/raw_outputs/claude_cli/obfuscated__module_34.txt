@@ -1,0 +1,18 @@
+```json
+{
+  "package": "deep-extend@0.5.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "lib/deep-extend.js",
+      "function_name": "deepExtend",
+      "vulnerable_lines": [27],
+      "confidence": 0.97,
+      "description": "deepExtend merges Object.keys(source) into the target without excluding '__proto__', so a malicious source object like JSON.parse('{\"__proto__\":{\"polluted\":true}}') passed as a merge argument lets an attacker write arbitrary properties onto Object.prototype (CVE-2018-3750, fixed in 0.5.1).",
+      "snippet": "Object['keys'](_0x55cf58)['forEach'](function(_0x36689c){ _0x18c47b=_0x19ae64[_0x36689c],_0x2fa6c7=_0x55cf58[_0x36689c]; ... _0x19ae64[_0x36689c]=deepExtend(_0x18c47b,_0x2fa6c7); });"
+    }
+  ]
+}
+```

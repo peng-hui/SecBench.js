@@ -1,0 +1,18 @@
+```json
+{
+  "package": "jsen@0.6.6",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "lib/jsen.js",
+      "function_name": "build",
+      "vulnerable_lines": [1],
+      "confidence": 0.97,
+      "description": "The public validator.build(obj) method (exposed at lib/jsen.js, offset ~33397) recursively walks schema.properties and assigns data[key] = value without filtering __proto__/constructor/prototype keys, so a JSON schema whose properties object contains a genuine own '__proto__' key (created via JSON.parse) lets an attacker-controlled schema pollute Object.prototype for the whole process, verified via a working PoC (jsen({...schema with properties.__proto__.properties.polluted.default}).build({}) results in ({}).polluted === 'yes').",
+      "snippet": "function build(schema,obj,mode,resolver,marker){ ... obj===undefined&&schema.hasOwnProperty('default')&&(obj=clone(schema['default'])); ... keys=Object.keys(schema['properties']); for(i=0;i<keys.length;i++){ key=keys[i], child=build(schema['properties'][key],obj[key],mode,resolver); child!==undefined&&(obj[key]=child); } ... } validate['build']=function(obj,opts){ return build(schema, opts&&opts.clone===false?obj:clone(obj), opts&&opts.additionalProperties, resolver); }"
+    }
+  ]
+}
+```

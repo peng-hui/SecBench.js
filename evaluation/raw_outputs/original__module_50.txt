@@ -1,0 +1,16 @@
+{
+  "package": "basic-static@2.0.2",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.createReadStream",
+      "file": "basic-static.js",
+      "function_name": "basicStatic",
+      "vulnerable_lines": [167, 121],
+      "confidence": 0.95,
+      "description": "The request URL's pathname is joined with rootDir via path.join without stripping '..' segments or verifying the resolved path stays within rootDir, so a request like GET /../../../../etc/passwd lets an attacker read arbitrary files outside the served directory via fs.createReadStream in serveFile.",
+      "snippet": "const basePath = path.join(rootDir, url.parse(req.url).pathname);\n...\nconst stream = fs.createReadStream(filePath);"
+    }
+  ]
+}

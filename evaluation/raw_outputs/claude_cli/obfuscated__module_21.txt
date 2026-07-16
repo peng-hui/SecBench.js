@@ -1,0 +1,20 @@
+Confirmed exponential blowup (n=20→5ms, n=24→74ms, n=28→1.2s, n=32→19.4s) in `ansiHTML()`'s `.replace(/\033\[(\d+)*m/g, ...)` call — a classic nested-quantifier ReDoS (CVE-2021-23424).
+
+```json
+{
+  "package": "ansi-html@0.0.7",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "ReDoS",
+      "sink_api": "String.prototype.replace",
+      "file": "index.js",
+      "function_name": "ansiHTML",
+      "vulnerable_lines": [1],
+      "confidence": 0.95,
+      "description": "User-controlled ANSI text passed to the exported ansiHTML() function is matched against the regex /\\033\\[(\\d+)*m/g, whose nested quantifier (\\d+)* causes catastrophic backtracking on crafted input like '\\x1b[' + '4'.repeat(32) + '\\x1bA', letting an attacker hang the process (verified: 19+ seconds for 32 repeated digits).",
+      "snippet": "_0x1ba198=_0x11f200['replace'](/\\033\\[(\\d+)*m/g, function(_0xad1f57,_0x349d2a){ ... })"
+    }
+  ]
+}
+```

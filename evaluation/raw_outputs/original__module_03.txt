@@ -1,0 +1,18 @@
+```json
+{
+  "package": "amqp-match@0.0.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "ReDoS",
+      "sink_api": "RegExp / String.prototype.search",
+      "file": "index.js",
+      "function_name": "match",
+      "vulnerable_lines": [3, 4],
+      "confidence": 0.85,
+      "description": "The 'expected' AMQP routing pattern is converted into a regex where '#' becomes the nested-quantifier group ([^.]+\\.?)+, and this attacker-influenced regex is then run via .search() against 'actual', allowing catastrophic backtracking (ReDoS) on crafted routing keys/patterns.",
+      "snippet": "var regexString = '^' + expected.replace(/\\*/g, '([^.]+)').replace(/#/g, '([^.]+\\.?)+') + '$';\n  return actual.search(regexString) !== -1;"
+    }
+  ]
+}
+```

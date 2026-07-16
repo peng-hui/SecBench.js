@@ -1,0 +1,18 @@
+```json
+{
+  "package": "crud-file-server@0.7.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.readFile",
+      "file": "crud-file-server.js",
+      "function_name": "cleanUrl",
+      "vulnerable_lines": [4, 5, 6, 7, 8],
+      "confidence": 0.97,
+      "description": "cleanUrl's sanitizer loop `while(url.indexOf('..').length > 0)` calls `.length` on a Number (indexOf returns an index, not a string), which is always undefined/falsy, so the loop body that strips '..' never runs; a request URL like GET /../../../../etc/passwd therefore passes through untouched and relativePath (built from the un-sanitized url) is passed straight to fs.readFile/fs.stat/fs.createWriteStream/fs.unlink/fs.rmdir/fs.rename in handleRequest, giving an attacker arbitrary file read, write, or delete outside the served directory.",
+      "snippet": "var cleanUrl = function(url) {\n\turl = decodeURIComponent(url);\n\twhile(url.indexOf('..').length > 0) { url = url.replace('..', ''); }\n\treturn url;\n};\n...\nvar relativePath = vpath && url.indexOf(vpath) == 0 ?\n\tpath + url.slice(vpath.length + 1, url.length):\n\tpath + url;\n...\nfs.readFile(relativePath, function(err, data) { ... });"
+    }
+  ]
+}
+```

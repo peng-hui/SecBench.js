@@ -1,0 +1,3 @@
+no active tools used. Waiting for background task completion.
+no active tools used. Waiting for background task completion.
+{"package": "negative-array@3.0.0", "vulnerable": false, "vulnerabilities": []}

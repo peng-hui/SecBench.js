@@ -1,0 +1,38 @@
+```json
+{
+  "package": "async-git@1.13.1",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.exec",
+      "file": "lib/modified/index.js",
+      "function_name": "modified",
+      "vulnerable_lines": [21],
+      "confidence": 0.95,
+      "description": "The user-supplied 'path' argument to modified(path) is concatenated unquoted and unescaped directly into a shell command string that is passed to child_process.exec via async-execute, letting an attacker pass a path like '; rm -rf ~ #' to execute arbitrary shell commands.",
+      "snippet": "const ts = await exec(`git log -1 --format=\"%at\" -- ${path}`);"
+    },
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.exec",
+      "file": "lib/reset/index.js",
+      "function_name": "reset",
+      "vulnerable_lines": [11, 15],
+      "confidence": 0.7,
+      "description": "The 'destination' argument to reset(destination) is interpolated into a shell command executed via async-execute/child_process.exec; JSON.stringify() only wraps it in double quotes, which bash still expands for command substitution (e.g. destination = '$(malicious command)'), allowing arbitrary command execution.",
+      "snippet": "return await exec(`git reset ${JSON.stringify(destination)} ${hard ? '--hard' : ''}`);"
+    },
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.exec",
+      "file": "lib/tag/index.js",
+      "function_name": "tag",
+      "vulnerable_lines": [19, 20],
+      "confidence": 0.65,
+      "description": "The 'tag' argument passed to tag(tag) is embedded via JSON.stringify into a shell command executed through async-execute/child_process.exec; double-quoted command substitution (e.g. tag = '$(malicious command)') still executes in bash, enabling command injection.",
+      "snippet": "await exec(`git tag -a ${JSON.stringify(tag)} -m \"${await message}\"`);\n\tawait exec(`git push origin ${JSON.stringify(`refs/tags/${tag}`)}`);"
+    }
+  ]
+}
+```

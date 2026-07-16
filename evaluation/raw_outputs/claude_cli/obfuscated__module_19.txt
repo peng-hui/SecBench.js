@@ -1,0 +1,20 @@
+Found the vulnerability: `cleanUrl`'s traversal guard is broken (`indexOf('..')['length']>0`, always `undefined`), so `../` sequences pass straight through into filesystem calls built from the request path.
+
+```json
+{
+  "package": "crud-file-server@0.7.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.readFile",
+      "file": "crud-file-server.js",
+      "function_name": "handleRequest",
+      "vulnerable_lines": [1],
+      "confidence": 0.95,
+      "description": "The cleanUrl() sanitizer's loop condition calls indexOf('..') and then reads .length on the resulting number (always undefined), so the while loop never executes and '..' segments are never stripped from the decoded request path, letting an attacker supply a URL like /vpath/../../etc/passwd that is concatenated into the filesystem path and passed unchecked to fs.stat/fs.readFile/fs.createWriteStream/fs.rename/fs.unlink/fs.rmdir/fs.mkdir, enabling arbitrary file read, write, or deletion outside the intended served directory.",
+      "snippet": "cleanUrl=function(url){url=decodeURIComponent(url);while(url.indexOf('..')['length']>0x0){url=url.replace('..','');}return url;}; ... fs['readFile'](_0x4db671,function(err,data){...})"
+    }
+  ]
+}
+```

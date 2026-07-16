@@ -1,0 +1,18 @@
+```json
+{
+  "package": "api-proxy@0.0.2",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.readFile",
+      "file": "lib/static.js",
+      "function_name": "writeStatic",
+      "vulnerable_lines": [9, 10, 40],
+      "confidence": 0.9,
+      "description": "The raw request.url (only stripped of query/fragment) is joined onto the static root with Path.join without collapsing or rejecting '../' sequences, so an attacker can request e.g. '/../../../../etc/passwd' to escape the 'www' root and have FS.readFile in writeFile() disclose arbitrary files on the filesystem.",
+      "snippet": "var url = request.url.replace(/[?#][\\s\\S]*/,'');\nvar filepath = Path.join(root,url);\n...\nFS.readFile(filepath,'binary', function(err,tmp){ response.write(tmp); response.end(); });"
+    }
+  ]
+}
+```

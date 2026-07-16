@@ -1,0 +1,18 @@
+```json
+{
+  "package": "changeset@0.1.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "index.js",
+      "function_name": "apply",
+      "vulnerable_lines": [73, 74, 75, 78, 79, 80, 81],
+      "confidence": 0.95,
+      "description": "The apply() function walks an attacker-controlled changes array and assigns values via ptr[prop] = ch.value without checking for '__proto__' or 'constructor.prototype' keys, so a crafted change like {type:'put', key:['__proto__','polluted'], value:'x'} pollutes Object.prototype for all objects in the application.",
+      "snippet": "keys.forEach(function (prop, i) {\n  if (!(prop in ptr)) {\n    ptr[prop] = {};\n  }\n  if (i < len - 1) {\n    ptr = ptr[prop];\n  } else {\n    ptr[prop] = ch.value;\n  }\n});"
+    }
+  ]
+}
+```

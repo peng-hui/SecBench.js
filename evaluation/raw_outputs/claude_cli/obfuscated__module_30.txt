@@ -1,0 +1,18 @@
+```json
+{
+  "package": "is-my-json-valid@2.20.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "ReDoS",
+      "sink_api": "RegExp.prototype.test",
+      "file": "index.js",
+      "function_name": "visit",
+      "vulnerable_lines": [1],
+      "confidence": 0.8,
+      "description": "The 'pattern' and 'patternProperties' keywords from a JSON Schema are compiled directly into `new RegExp(pattern)` with no safety/backtracking check (safe-regex is only a devDependency, never invoked at runtime), and the resulting regex's `.test()` is run against attacker-supplied JSON data inside every generated validate() function, so a schema (or dynamically-built schema) containing a catastrophic-backtracking pattern lets an attacker crash/hang the process by supplying a crafted long input string.",
+      "snippet": "var patterncompilers = function (regex) { if (patterns[regex]) return patterns[regex]; var key = gensym('re'); ctx[key] = new RegExp(regex); patterns[regex] = key; return key; }; /* ... */ if (node.pattern) { var p = patterncompilers(node.pattern); if (types !== 'string') validate('if (%s) {', types.string(name)); validate('if (!%s.test(%s)) {', p, name); error('pattern mismatch'); validate('}'); if (types !== 'string') validate('}'); }"
+    }
+  ]
+}
+```

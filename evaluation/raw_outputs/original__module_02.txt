@@ -1,0 +1,20 @@
+I have enough to finalize the JSON output.
+
+```json
+{
+  "package": "101@1.0.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "keypather.set (recursive property assignment / __proto__)",
+      "file": "set.js",
+      "function_name": "setKeypaths",
+      "vulnerable_lines": [56, 57, 58, 59, 60, 61, 62],
+      "confidence": 0.9,
+      "description": "When set(obj, setObj) or the two-arg (key, val) form is called with an attacker-controlled key such as '__proto__.polluted', setKeypaths iterates Object.keys(setObj) and passes the raw keypath into keypather.set(obj, keypath, val), which splits on '.' and force-creates/traverses each segment (including __proto__) without filtering dangerous keys, letting an attacker pollute Object.prototype for every object in the process.",
+      "snippet": "function setKeypaths (obj, setObj) {\n  Object.keys(setObj).forEach(function (keypath) {\n    var val = setObj[keypath];\n    keypather.set(obj, keypath, val);\n  });\n  return obj;\n}"
+    }
+  ]
+}
+```

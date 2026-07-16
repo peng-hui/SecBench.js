@@ -1,0 +1,18 @@
+```json
+{
+  "package": "changeset@0.1.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "index.js",
+      "function_name": "apply",
+      "vulnerable_lines": [1],
+      "confidence": 0.92,
+      "description": "The apply() function walks a diff's key path array (attacker-controlled if a change object such as {type:'put', key:['__proto__','polluted'], value:...} is applied) and does `!(k in current) && (current[k] = {})` then `current[k] = change.value` without filtering '__proto__'/'constructor'/'prototype', allowing an attacker-supplied key path to pollute Object.prototype for every object in the process.",
+      "snippet": "keyPath.forEach(function(k, i) { !(k in current) && (current[k] = {}); i < len - 1 ? current = current[k] : current[k] = change.value; });"
+    }
+  ]
+}
+```

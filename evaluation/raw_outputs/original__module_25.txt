@@ -1,0 +1,20 @@
+Confirmed: the request path is taken straight from `url.parse(req.url).pathname` with no sanitization of `..` segments before being passed to `fs.existsSync`/`fs.statSync`/`fs.readFileSync`, enabling path traversal to read arbitrary files.
+
+```json
+{
+  "package": "augustine@0.2.3",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.readFileSync",
+      "file": "index.js",
+      "function_name": "requestListener",
+      "vulnerable_lines": [11, 13, 20, 26, 88],
+      "confidence": 0.95,
+      "description": "The HTTP request's URL pathname is parsed and used directly as a filesystem path (with only the leading slash stripped) without stripping '..' segments or confining it to a root directory, so a request like GET /../../../../etc/passwd reaches fs.existsSync/fs.statSync/fs.readFileSync and lets an attacker read arbitrary files on the server's filesystem.",
+      "snippet": "const parsedUrl = url.parse(req.url);\nlet path = parsedUrl && parsedUrl.pathname.slice(1);\n...\nif (!fs.existsSync(path)) { ... }\nconst stats = fs.statSync(path);\n...\nres.write(fs.readFileSync(path, { flag: 'rs+' }));"
+    }
+  ]
+}
+```

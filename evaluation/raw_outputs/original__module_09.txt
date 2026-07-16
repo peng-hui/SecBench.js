@@ -1,0 +1,18 @@
+```json
+{
+  "package": "json-ptr@2.0.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Arbitrary Code Injection",
+      "sink_api": "Function (new Function)",
+      "file": "dist/util.js",
+      "function_name": "compilePointerDereference",
+      "vulnerable_lines": [150, 155, 156, 157, 158, 159],
+      "confidence": 0.97,
+      "description": "JsonPointer.get()/has() build the dereference path from decodePtrInit/decodePointer(Segments) and pass each segment into compilePointerDereference, which interpolates the raw segment string into a `new Function` source body escaping only backslashes (not single quotes), so a path segment containing `'` lets an attacker break out of the string literal and inject arbitrary JavaScript that executes with full host privileges (e.g. child_process.execSync).",
+      "snippet": "function compilePointerDereference(path) {\n    let body = \"if (typeof(it) !== 'undefined'\";\n    ...\n    body = path.reduce((body, _, i) => {\n        return body + \" && \\n\\ttypeof((it = it['\" + replace(path[i] + '', '\\\\', '\\\\\\\\') + \"'])) !== 'undefined'\";\n    }, \"if (typeof(it) !== 'undefined'\");\n    body = body + ') {\\n\\treturn it;\\n }';\n    return new Function('it', body);\n}"
+    }
+  ]
+}
+```

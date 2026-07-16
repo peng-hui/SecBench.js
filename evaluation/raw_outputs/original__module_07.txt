@@ -1,0 +1,20 @@
+Confirmed: this is the classic `node-serialize` 0.0.3 arbitrary code execution vulnerability (CVE-2017-5941) at line 75, where `unserialize()` calls `eval()` on any string property prefixed with `_$$ND_FUNC$$_` in attacker-supplied serialized JSON.
+
+```json
+{
+  "package": "node-serialize@0.0.3",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Arbitrary Code Injection",
+      "sink_api": "eval",
+      "file": "lib/serialize.js",
+      "function_name": "exports.unserialize",
+      "vulnerable_lines": [75],
+      "confidence": 0.98,
+      "description": "unserialize() JSON.parse's an attacker-controlled string and then eval()s any property value beginning with the '_$$ND_FUNC$$_' marker, letting an attacker who controls the serialized payload (e.g. from a cookie or request body) execute arbitrary JavaScript/OS commands via a crafted IIFE payload like '_$$ND_FUNC$$_function(){require(\"child_process\").exec(...)}()'.",
+      "snippet": "obj[key] = eval('(' + obj[key].substring(FUNCFLAG.length) + ')');"
+    }
+  ]
+}
+```

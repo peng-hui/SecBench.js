@@ -1,0 +1,18 @@
+```json
+{
+  "package": "bitty@0.1.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.readFile",
+      "file": "index.js",
+      "function_name": "file",
+      "vulnerable_lines": [31, 32, 34, 36],
+      "confidence": 0.95,
+      "description": "The raw, unsanitized req.url from any incoming HTTP request is joined with the server's base directory via path.join and passed to fs.readFile, allowing an attacker to send a URL containing '../' sequences to read arbitrary files outside the served directory.",
+      "snippet": "function file(req, res) {\n  var filepath = path.join(program.directory, req.url);\n\n  fs.exists(filepath, function(exists) {\n    if (exists) {\n      fs.readFile(filepath, function(error, buffer) {"
+    }
+  ]
+}
+```

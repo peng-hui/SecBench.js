@@ -1,0 +1,18 @@
+```json
+{
+  "package": "browserslist@4.16.4",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "ReDoS",
+      "sink_api": "RegExp.test",
+      "file": "index.js",
+      "function_name": "find",
+      "vulnerable_lines": [472, 473, 474, 476, 477, 480, 491, 492, 493, 494],
+      "confidence": 0.85,
+      "description": "User-supplied browser query strings passed to browserslist() flow through parse()/doMatch() into find(), which repeatedly builds growing substrings via string.substr(-n, n) and tests them against the `and`/`or` regexes in a loop, causing quadratic-time algorithmic complexity (CVE-2021-23364) that lets a crafted query string cause a denial of service.",
+      "snippet": "function find (string, predicate) {\n  for (var n = 1, max = string.length; n <= max; n++) {\n    var parsed = string.substr(-n, n)\n    if (predicate(parsed, n, max)) {\n      return string.slice(0, -n)\n    }\n  }\n  return ''\n}\n\nfunction doMatch (string, qs) {\n  var or = /^(?:,\\s*|\\s+or\\s+)(.*)/i\n  var and = /^\\s+and\\s+(.*)/i\n  return find(string, function (parsed, n, max) {\n    if (and.test(parsed)) { ... }\n    else if (or.test(parsed)) { ... }\n  })\n}"
+    }
+  ]
+}
+```

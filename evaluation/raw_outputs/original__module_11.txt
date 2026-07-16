@@ -1,0 +1,40 @@
+No consuming code beyond the package itself; the vulnerability is in the library's exported merge functions.
+
+```json
+{
+  "package": "deap@1.0.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "lib/deap.js",
+      "function_name": "deepExtend",
+      "vulnerable_lines": [54, 55, 56, 57, 58, 59, 60],
+      "confidence": 0.95,
+      "description": "deap's exported entry point (index.js re-exports lib.extend, which is deepExtend) recursively copies keys from an attacker-controlled source object into a target via Object.keys(b).forEach without excluding '__proto__', 'constructor', or 'prototype', so a JSON-parsed payload like {\"__proto__\":{\"polluted\":true}} recurses into Object.prototype and pollutes it for every object in the process.",
+      "snippet": "function deepExtend(a, b /*, [b2..n] */) {\n\tslice.call(arguments, 1).forEach(function(b) {\n\t\tObject.keys(b).forEach(function(p) {\n\t\t\tif(typeOf(b[p]) === 'object' && typeOf(a[p]) === 'object')\n\t\t\t\tdeepExtend(a[p], b[p]);\n\t\t\telse\n\t\t\t\ta[p] = deepClone(b[p]);\n\t\t});\n\t});\n\treturn a;\n}"
+    },
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "lib/deap.js",
+      "function_name": "deepUpdate",
+      "vulnerable_lines": [75, 78, 79, 84, 85, 89, 90],
+      "confidence": 0.75,
+      "description": "deepUpdate similarly iterates Object.keys(b) and recurses/assigns into a[p] without filtering '__proto__', allowing prototype pollution when p is a hasOwnProperty match on Object.prototype (e.g. via toString) combined with nested attacker objects.",
+      "snippet": "function deepUpdate(a, b /*, [b2..n] */) {\n\tslice.call(arguments, 1).forEach(function(b) {\n\t\tObject.keys(b).forEach(function(p) {\n\t\t\tif(a.hasOwnProperty(p)) {\n\t\t\t\t...\n\t\t\t\tif(tb === 'object' && ta === 'object')\n\t\t\t\t\tdeepUpdate(ap, bp);\n\t\t\t\telse\n\t\t\t\t\ta[p] = deepClone(bp);\n\t\t\t}\n\t\t});\n\t});\n\treturn a;\n}"
+    },
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "lib/deap.js",
+      "function_name": "deepMerge",
+      "vulnerable_lines": [106, 109, 113, 114, 116, 117],
+      "confidence": 0.7,
+      "description": "deepMerge also walks Object.keys(b) unfiltered and recurses into a[p]/assigns a[p] = deepClone(bp), so a crafted '__proto__' key in the source object pollutes Object.prototype the same way as deepExtend.",
+      "snippet": "function deepMerge(a, b /*, [b2..n] */) {\n\tslice.call(arguments, 1).forEach(function(b) {\n\t\t...\n\t\tif(tb === 'object' && ta === 'object')\n\t\t\tdeepMerge(ap, bp);\n\t\telse if(!a.hasOwnProperty(p))\n\t\t\ta[p] = deepClone(bp);\n\t});\n\treturn a;\n}"
+    }
+  ]
+}
+```

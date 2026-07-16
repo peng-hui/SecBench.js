@@ -1,0 +1,7 @@
+API Error: Sonnet 5's safeguards flagged this message for a cybersecurity topic. If your work requires this access, you can apply for an exemption: https://claude.com/form/cyber-use-case?token=Rqrl3MLRZLWzHgXmnXSKzwPojkkii5j4wG66RlM0Qhkjo291e_gD96AQemF_zcloxjKNXD4t-ZIMog9-JxLHzexTncDyfKM3CV7lzcoNEGs8tpONDII8ZQQK2sp4WkpyuYf6LpYNvg
+
+Try rephrasing the request in a new session or change your model.
+
+Learn more: https://support.claude.com/en/articles/8106465
+
+Request ID: req_011CcniPkAKnWtwAZL3Bue68

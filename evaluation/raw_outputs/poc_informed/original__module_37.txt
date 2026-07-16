@@ -1,0 +1,46 @@
+Confirmed working from the correct working directory.
+
+```javascript
+// PoC: lodash's _createRound.js (node_modules/lodash/_createRound.js) uses
+// nativeIsFinite(number) to decide whether it is safe to shift `number` into
+// exponential notation before rounding:
+//
+//   if (precision && nativeIsFinite(number)) {
+//     var pair = (toString(number) + 'e').split('e'),
+//         value = func(pair[0] + 'e' + (+pair[1] + precision));
+//     pair = (toString(value) + 'e').split('e');
+//     return +(pair[0] + 'e' + (+pair[1] - precision));
+//   }
+//
+// The nativeIsFinite guard only validates the *input* `number`. It never
+// re-checks the intermediate `value` after the exponent has been shifted by
+// `precision`. When the shifted exponent exceeds Number's ~1.8e308 range,
+// `value` silently overflows to Infinity. The final line then builds the
+// string "Infinitye<exp>" and coerces it with `+(...)`, which is not a valid
+// numeric literal, so it silently resolves to NaN.
+//
+// Result: a perfectly finite, legitimate input silently turns into NaN
+// instead of a rounded number (or a thrown error) — a numeric-integrity
+// bug reachable through the public _.round / _.ceil / _.floor APIs that can
+// corrupt downstream calculations, bypass numeric validation, or defeat
+// range/limit checks that assume `_.round(x, p)` returns a real number.
+
+const _ = require("lodash");
+
+const input = Number.MAX_VALUE; // 1.7976931348623157e+308, a finite number
+const precision = 20;           // modest, attacker-controlled precision
+
+const result = _.round(input, precision);
+
+console.log("input:", input);
+console.log("_.round(input, %d) =", precision, result);
+
+if (Number.isNaN(result)) {
+  console.log(
+    "TRIGGERED: nativeIsFinite() in _createRound.js failed to catch the " +
+    "post-shift overflow to Infinity, corrupting a finite input into NaN."
+  );
+} else {
+  console.log("not triggered");
+}
+```

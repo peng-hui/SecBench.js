@@ -1,0 +1,18 @@
+```json
+{
+  "package": "djv@2.0.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Arbitrary Code Injection",
+      "sink_api": "Function constructor (new Function)",
+      "file": "lib/utils/template.js",
+      "function_name": "restore",
+      "vulnerable_lines": [108, 110],
+      "confidence": 0.95,
+      "description": "JSON Schema property keys (e.g. from schema.properties, schema.patternProperties, schema.required) are interpolated unescaped directly into a JavaScript source string built up by validators like lib/validators/properties.js (line 17: `if (%s.hasOwnProperty(\"${propertyKey}\")) {` and line 20: `['${propertyKey}']`) and lib/validators/patternProperties.js, and that source string is then compiled and executed via `new Function('schema', source)(schema)` in restore(), so an attacker who controls the JSON schema passed to env.addSchema()/env.validate() can break out of the string/array-index context and inject arbitrary JavaScript that executes when the generated validator runs.",
+      "snippet": "function restore(source, schema, { inner } = {}) {\n  const tpl = new Function('schema', source)(schema);\n  ...\n}\n\n// lib/validators/properties.js\ntpl(`if (%s.hasOwnProperty(\"${propertyKey}\")) {`, tpl.data);\ntpl.data.push(`['${propertyKey}']`);"
+    }
+  ]
+}
+```

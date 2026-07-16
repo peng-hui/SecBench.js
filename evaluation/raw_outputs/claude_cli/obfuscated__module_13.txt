@@ -1,0 +1,18 @@
+```json
+{
+  "package": "clean-css@4.1.10",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "ReDoS",
+      "sink_api": "RegExp.prototype.test",
+      "file": "lib/optimizer/validator.js",
+      "function_name": "isFunction",
+      "vulnerable_lines": [1],
+      "confidence": 0.9,
+      "description": "CSS property values from an untrusted stylesheet passed to CleanCss().minify() flow through level-2 property-merging logic (lib/optimizer/level-2/can-override.js: unit/time/areSameFunction) into validator.js's isFunction(), which tests them against functionAnyRegex built from '^((var\\(--[^)]+\\))|([A-Z]+(-|[A-Z]|[0-9])+\\(.*?\\))|(-(-|[A-Z]|[0-9])+\\(.*?\\)))$' — the adjacent overlapping quantified groups ([A-Z]+ followed by (-|[A-Z]|[0-9])+) cause catastrophic backtracking on a crafted unterminated value (e.g. a long run of letters with no closing parenthesis), letting an attacker cause CPU exhaustion / denial of service via a malicious stylesheet.",
+      "snippet": "functionNoVendorRegexStr='[A-Z]+(\\-|[A-Z]|[0-9])+\\(.*?\\)', functionVendorRegexStr='\\-(\\-|[A-Z]|[0-9])+\\(.*?\\)', functionAnyRegex=new RegExp('^'+functionAnyRegexStr+'$','i'); function isFunction(v){ return functionAnyRegex.test(v); }"
+    }
+  ]
+}
+```

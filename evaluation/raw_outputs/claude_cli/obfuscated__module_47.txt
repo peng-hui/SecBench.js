@@ -1,0 +1,18 @@
+```json
+{
+  "package": "marsdb@0.6.11",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "lib/DocumentModifier.js",
+      "function_name": "findModTarget",
+      "vulnerable_lines": [1],
+      "confidence": 0.9,
+      "description": "Collection.update()/upsert() passes user-controlled modifier objects (e.g. {$set: {'__proto__.polluted': 'x'}}) straight into DocumentModifier.modify(), which splits the key on '.' and walks the target via findModTarget without denylisting '__proto__' or 'constructor', so the terminal MODIFIERS['$set'](target,key,value) assignment writes onto Object.prototype and pollutes it globally.",
+      "snippet": "var findModTarget=function(doc,path,opts){...for(...){var key=path[i];...if(!(key in doc)){...}...doc=doc[key];}}; ... MODIFIERS={'$set':function(target,key,value){...target[key]=value;}, ...}"
+    }
+  ]
+}
+```

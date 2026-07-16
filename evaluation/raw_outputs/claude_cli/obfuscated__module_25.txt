@@ -1,0 +1,18 @@
+```json
+{
+  "package": "augustine@0.2.3",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.readFileSync",
+      "file": "index.js",
+      "function_name": "__file_scope__",
+      "vulnerable_lines": [1],
+      "confidence": 0.95,
+      "description": "The HTTP request URL's pathname (attacker-controlled via req.url) is stripped of its leading slash and used directly (without normalization or sanitization of '../' sequences) as the file path passed to fs.existsSync, fs.statSync, and fs.readFileSync, allowing an attacker to read arbitrary files outside the served directory via requests like GET /../../../../etc/passwd.",
+      "snippet": "const _0x213390=url['parse'](_0x56b7f7['url']);let _0x5b26c0=_0x213390&&_0x213390['pathname']['slice'](0x1); ... if(!fs['existsSync'](_0x5b26c0)) ... const _0x21d12b=fs['statSync'](_0x5b26c0); ... _0x1d7cf5['write'](fs['readFileSync'](_0x5b26c0,{'flag':'rs+'}))"
+    }
+  ]
+}
+```

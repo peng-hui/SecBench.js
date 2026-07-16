@@ -1,0 +1,18 @@
+```json
+{
+  "package": "adb-driver@0.1.8",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.exec",
+      "file": "build/AdbDriver.js",
+      "function_name": "execADBCommand",
+      "vulnerable_lines": [1],
+      "confidence": 0.9,
+      "description": "execADBCommand accepts a caller-supplied command string, only rewrites the first whitespace-separated token (the binary path) while leaving the rest untouched, and passes the resulting string directly to child_process.exec which spawns a shell, so any shell metacharacters (e.g. `; rm -rf /` or `$(...)`) in the untrusted command argument are executed.",
+      "snippet": "function execADBCommand(_0x36e3d5,_0x4360bc){let _0x1175e2=_0x36e3d5; ... return new Promise((_0x1eec9a,_0x447349)=>{child_process_1['exec'](_0x1175e2,_0x4360bc||{'stdio':'inherit'},(_0xfc3776,_0x4f76e2,_0x405ac0)=>{_0xfc3776&&_0x447349(_0xfc3776),_0x1eec9a(_0x4f76e2);});})}"
+    }
+  ]
+}
+```

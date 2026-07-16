@@ -1,0 +1,18 @@
+```json
+{
+  "package": "asset-cache@0.0.6",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.readFile",
+      "file": "lib/asset-cache.js",
+      "function_name": "loadFile",
+      "vulnerable_lines": [1],
+      "confidence": 0.95,
+      "description": "handleRequest passes the raw, unsanitized req.url directly into loadFile, which does path.join(config.dir, url) and calls fs.stat/fs.readFile on the result, allowing an attacker to send a URL like '/../../../../etc/passwd' to read arbitrary files outside the configured asset directory.",
+      "snippet": "var loadFile=function(_0xf31cdb,_0x7c39,_0x39bea4){var _0x5cc9f9=a0_0x502aa6;_0xf31cdb=path[_0x5cc9f9(0x1b7)](config['dir'],_0xf31cdb),fs[_0x5cc9f9(0x1c6)](_0xf31cdb,function(_0x329c29,_0x43ca38){...fs[_0x2e0cc5(0x1c4)](_0xf31cdb,function(_0xfb4c71,_0x53cede){_0x39bea4(_0xfb4c71,_0xfb4c71?null:_0x53cede,![],_0x452e6f);});});}; // called via handleRequest(req,res){ loadFile(req.url, req.headers['if-none-match'], ...) }"
+    }
+  ]
+}
+```

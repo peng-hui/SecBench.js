@@ -1,0 +1,18 @@
+```json
+{
+  "package": "@brikcss/merge@1.3.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "dist/lib/merge.js",
+      "function_name": "Merge.objects",
+      "vulnerable_lines": [1],
+      "confidence": 0.9,
+      "description": "Merge.objects iterates Object.keys(source) and recursively assigns target[key] = source[key] (and recurses into Merge.objects/Merge.arrays for nested objects/arrays) without ever excluding the key \"__proto__\", so a merged source object such as JSON.parse('{\"__proto__\":{\"polluted\":true}}') will write through to Object.prototype and pollute all objects in the application.",
+      "snippet": "Merge['objects']=(_0x4cc6f3={},_0x4812b0,{arrayStrategy:_0x563290,ignore:_0x5bcc5e=[],parent:_0x117e6d=''}={})=>(Object['keys'](_0x4812b0)['forEach'](function(_0x42a10a){const _0x380cff=_0x4812b0[_0x42a10a],_0x1c1dfa=_joinPath(_0x117e6d,_0x42a10a); ... _0x4cc6f3[_0x42a10a]=_0x380cff;}),_0x4cc6f3)"
+    }
+  ]
+}
+```

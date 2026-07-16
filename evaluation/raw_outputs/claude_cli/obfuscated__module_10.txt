@@ -1,0 +1,18 @@
+```json
+{
+  "package": "clamscan@1.2.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.exec",
+      "file": "index.js",
+      "function_name": "_is_clamav_binary",
+      "vulnerable_lines": [1],
+      "confidence": 0.8,
+      "description": "The configurable scanner binary path (this.settings[clamdscan|clamscan].path, set via user-supplied options passed to NodeClam.init()/reset()) is concatenated with ' --version' and passed to child_process.exec (via the promisified cp_exec), so a path value containing shell metacharacters (e.g. '/usr/bin/clamdscan; malicious_cmd') is executed as a shell command instead of being treated as a literal executable path.",
+      "snippet": "const path = this['settings'][scanner]['path'] || null; const clam_cmd = { 'clamdscan': path + ' --version', 'clamscan': path + ' --version' }; await fs_access(path, fs.constants.R_OK); const { stdout } = await cp_exec(clam_cmd[scanner]);"
+    }
+  ]
+}
+```

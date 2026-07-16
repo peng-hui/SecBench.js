@@ -1,0 +1,18 @@
+```json
+{
+  "package": "brace-expansion@1.1.6",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "ReDoS",
+      "sink_api": "RegExp.test",
+      "file": "index.js",
+      "function_name": "expand",
+      "vulnerable_lines": [1],
+      "confidence": 0.9,
+      "description": "In expand(), the pattern string passed to brace-expansion (e.g. via minimatch/glob from user-controlled paths or glob patterns) is tested against the catastrophically backtracking regex /^(.*,)+(.+)?$/ on the balanced-match body, allowing an attacker-supplied string to cause exponential-time regex evaluation and hang the process.",
+      "snippet": "var _0x30414e=/^(.*,)+(.+)?$/[_0x4efbb9(0x10c)](_0x3e0677[_0x4efbb9(0x105)]); // i.e. /^(.*,)+(.+)?$/.test(balanced.body)"
+    }
+  ]
+}
+```

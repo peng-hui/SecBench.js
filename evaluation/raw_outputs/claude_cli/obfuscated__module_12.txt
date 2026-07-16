@@ -1,0 +1,20 @@
+Confirmed: `unflatten()` in unflatten.js does not filter `__proto__`/`constructor`/`prototype` keys when rebuilding the object from dotted-path keys, allowing prototype pollution when it processes attacker-controlled flattened keys (e.g. `"__proto__.polluted"`).
+
+```json
+{
+  "package": "arr-flatten-unflatten@1.1.4",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "unflatten.js",
+      "function_name": "unflatten",
+      "vulnerable_lines": [1],
+      "confidence": 0.95,
+      "description": "unflatten() rebuilds nested objects from a flat key-value map by splitting keys on '.' and '[n]' without filtering '__proto__', 'constructor', or 'prototype' segments, so a key like \"__proto__.polluted\" walks into Object.prototype and lets an attacker set arbitrary properties on it, polluting all objects.",
+      "snippet": "let _0x1dd267=_0x21fd10,_0x333d2e='',_0x202a6c={};while(_0x202a6c=_0x246a73.exec(_0x5071bf)){_0x1dd267=_0x1dd267[_0x333d2e]||(_0x1dd267[_0x333d2e]=_0x202a6c[2]?[]:{}),_0x333d2e=_0x202a6c[2]||_0x202a6c[1];}_0x1dd267[_0x333d2e]=_0x1430af[_0x5071bf];"
+    }
+  ]
+}
+```

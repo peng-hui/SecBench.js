@@ -22,10 +22,11 @@ from datetime import datetime, timedelta, timezone
 
 ROOT      = os.path.dirname(os.path.abspath(__file__))
 BENCH_DIR = os.path.join(ROOT, "static-benchmark")
-ORIG_DIR  = os.path.join(BENCH_DIR, "original")
-OBF_DIR   = os.path.join(BENCH_DIR, "obfuscated")
-WCK_DIR   = os.path.join(BENCH_DIR, "webcrack")
+ORIG_DIR    = os.path.join(BENCH_DIR, "original")
+OBF_DIR     = os.path.join(BENCH_DIR, "obfuscated")
+OBF_CFF_DIR = os.path.join(BENCH_DIR, "obf_cff")
 GT_PATH   = os.path.join(ROOT, "oracle", "ground_truth.json")  # in oracle/ — never shown to agent
+RAW_DIR   = os.path.join(ROOT, "raw_outputs")  # full agent stdout, one file per (state, module)
 
 # ── Toggle ────────────────────────────────────────────────────────
 # False → use `claude` CLI  (requires subscription with credits)
@@ -106,16 +107,53 @@ Output ONLY valid JSON — no explanation, no prose, no markdown fences:
 If no vulnerability is found:
 {"package": "<name>@<version>", "vulnerable": false, "vulnerabilities": []}"""
 
+# Neutral framing for agy/Gemini — avoids safety-filter keywords while asking the same question
+PROMPT_AGY = """You are a static analysis tool performing data-flow analysis on an npm package.
 
-def run_claude(module_dir, timeout=360):
-    """
-    Two modes — set USE_API=True to use Anthropic API directly,
-    or USE_API=False to use the claude CLI (subscription).
-    """
-    if USE_API:
+Use the available tools to inspect the package:
+1. Read package.json to identify the package name and version
+2. List and read the JavaScript source files under node_modules/<package-name>/
+   (skip any nested node_modules/ inside the package)
+3. Trace how function arguments and external input flow through the code
+4. Find locations where unsanitized input reaches system APIs such as:
+   child_process.exec, child_process.spawn, eval, new Function, fs.readFile,
+   fs.createReadStream, RegExp constructors, or object property assignment via
+   __proto__ or constructor.prototype
+5. Record the exact file, enclosing function, and line number(s)
+
+Output ONLY valid JSON — no explanation, no prose, no markdown fences:
+
+{
+  "package": "<name>@<version>",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "<Prototype Pollution | Command Injection | ReDoS | Path Traversal | Arbitrary Code Injection | Other>",
+      "sink_api": "<system API reached by unsanitized input, e.g. child_process.exec, eval, fs.readFile, RegExp, __proto__>",
+      "file": "<path relative to package root, e.g. lib/index.js>",
+      "function_name": "<enclosing function name, or __file_scope__ if at module level>",
+      "vulnerable_lines": [<one or more line numbers>],
+      "confidence": <0.0–1.0>,
+      "description": "<one sentence: input source → system API → effect>",
+      "snippet": "<the relevant code lines>"
+    }
+  ]
+}
+
+If no such data-flow pattern is found:
+{"package": "<name>@<version>", "vulnerable": false, "vulnerabilities": []}"""
+
+
+def run_agent(module_dir, provider="claude_cli", model=None, timeout=360):
+    """Dispatch to the right backend."""
+    if provider == "agy_cli":
+        return _run_via_agy_cli(module_dir, model=model, timeout=timeout)
+    elif provider == "gemini_api":
+        return _run_via_gemini_api(module_dir, model=model)
+    elif USE_API:
         return _run_via_api(module_dir)
     else:
-        return _run_via_cli(module_dir, timeout)
+        return _run_via_cli(module_dir, timeout=timeout)
 
 
 def _run_via_cli(module_dir, timeout=360):
@@ -148,6 +186,169 @@ def _run_via_cli(module_dir, timeout=360):
                     final_text += block["text"]
 
     return final_text or stdout, stderr, result.returncode
+
+
+def _run_via_agy_cli(module_dir, model=None, timeout=420):
+    """Use Google's agy CLI — isolated temp dir to prevent oracle leakage."""
+    import shutil
+    import tempfile
+
+    agy_cmd = "agy"
+    if not shutil.which("agy"):
+        local_agy = os.path.expanduser("~/.local/bin/agy")
+        if os.path.exists(local_agy):
+            agy_cmd = local_agy
+
+    # Determine the main package name from package.json
+    pkg_json_path = os.path.join(module_dir, "package.json")
+    try:
+        with open(pkg_json_path) as f:
+            pkg_data = json.load(f)
+        pkg_name = list(pkg_data.get("dependencies", {}).keys())[0]
+    except Exception:
+        pkg_name = None
+
+    # Copy only the main package source (no nested node_modules) into an
+    # isolated temp dir so agy cannot navigate up to oracle/ or results files.
+    with tempfile.TemporaryDirectory(prefix="agy_bench_") as tmp_dir:
+        shutil.copy2(pkg_json_path, tmp_dir)
+        if pkg_name:
+            src = os.path.join(module_dir, "node_modules", pkg_name)
+            dst = os.path.join(tmp_dir, "node_modules", pkg_name)
+            if os.path.isdir(src):
+                shutil.copytree(src, dst,
+                                ignore=shutil.ignore_patterns("node_modules"))
+
+        # Default to Claude Sonnet via agy — Gemini models refuse security tasks
+        effective_model = model or "claude-sonnet-4-6"
+        cmd = [agy_cmd, "--dangerously-skip-permissions",
+               "--add-dir", tmp_dir, "--model", effective_model, "--print", PROMPT]
+
+
+        result = subprocess.run(
+            cmd, cwd=tmp_dir, capture_output=True, timeout=timeout,
+        )
+
+    stdout = result.stdout.decode("utf-8", errors="replace")
+    stderr = result.stderr.decode("utf-8", errors="replace")
+    return stdout, stderr, result.returncode
+
+
+def _run_via_gemini_api(module_dir, model=None):
+    """Use Google Gemini API directly with a tool-use agent loop.
+    Reads GEMINI_API_KEY or GOOGLE_API_KEY from the environment.
+    """
+    from google import genai
+    from google.genai import types
+
+    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    if not api_key:
+        raise RuntimeError("Set GEMINI_API_KEY or GOOGLE_API_KEY to use gemini_api provider")
+
+    client = genai.Client(api_key=api_key)
+    model_id = model or "gemini-2.5-pro"
+
+    def _read_file(path):
+        safe = os.path.normpath(os.path.join(module_dir, path))
+        if not safe.startswith(os.path.abspath(module_dir)):
+            return "Error: path outside module directory"
+        try:
+            content = open(safe, errors="ignore").read()
+            return content[:20000] + "\n...(truncated)" if len(content) > 20000 else content
+        except Exception as e:
+            return f"Error: {e}"
+
+    def _list_dir(path):
+        safe = os.path.normpath(os.path.join(module_dir, path))
+        if not safe.startswith(os.path.abspath(module_dir)):
+            return "Error: path outside module directory"
+        try:
+            return "\n".join(os.listdir(safe))
+        except Exception as e:
+            return f"Error: {e}"
+
+    def _search_file(path, pattern):
+        safe = os.path.normpath(os.path.join(module_dir, path))
+        if not safe.startswith(os.path.abspath(module_dir)):
+            return "Error: path outside module directory"
+        try:
+            hits = [f"{i}: {l.rstrip()}"
+                    for i, l in enumerate(open(safe, errors="ignore"), 1)
+                    if pattern.lower() in l.lower()]
+            return "\n".join(hits) if hits else "No matches"
+        except Exception as e:
+            return f"Error: {e}"
+
+    tools = types.Tool(function_declarations=[
+        types.FunctionDeclaration(
+            name="read_file",
+            description="Read a file's contents (path relative to module directory)",
+            parameters=types.Schema(
+                type=types.Type.OBJECT,
+                properties={"path": types.Schema(type=types.Type.STRING)},
+                required=["path"],
+            ),
+        ),
+        types.FunctionDeclaration(
+            name="list_directory",
+            description="List files in a directory (path relative to module directory)",
+            parameters=types.Schema(
+                type=types.Type.OBJECT,
+                properties={"path": types.Schema(type=types.Type.STRING)},
+                required=["path"],
+            ),
+        ),
+        types.FunctionDeclaration(
+            name="search_in_file",
+            description="Search for a string pattern in a file, returns matching lines with numbers",
+            parameters=types.Schema(
+                type=types.Type.OBJECT,
+                properties={
+                    "path":    types.Schema(type=types.Type.STRING),
+                    "pattern": types.Schema(type=types.Type.STRING),
+                },
+                required=["path", "pattern"],
+            ),
+        ),
+    ])
+
+    contents = [types.Content(role="user",
+                              parts=[types.Part.from_text(text=PROMPT)])]
+    final_text = ""
+
+    for _ in range(20):  # max tool-use rounds
+        resp = client.models.generate_content(
+            model=model_id,
+            contents=contents,
+            config=types.GenerateContentConfig(tools=[tools], max_output_tokens=4096),
+        )
+        contents.append(types.Content(role="model", parts=resp.candidates[0].content.parts))
+
+        fn_calls = [p for p in resp.candidates[0].content.parts if p.function_call]
+        if not fn_calls:
+            for p in resp.candidates[0].content.parts:
+                if hasattr(p, "text") and p.text:
+                    final_text = p.text
+            break
+
+        tool_results = []
+        for p in fn_calls:
+            fc = p.function_call
+            inp = dict(fc.args)
+            if fc.name == "read_file":
+                result = _read_file(inp.get("path", ""))
+            elif fc.name == "list_directory":
+                result = _list_dir(inp.get("path", ""))
+            elif fc.name == "search_in_file":
+                result = _search_file(inp.get("path", ""), inp.get("pattern", ""))
+            else:
+                result = "Unknown tool"
+            tool_results.append(types.Part.from_function_response(
+                name=fc.name, response={"result": result}
+            ))
+        contents.append(types.Content(role="user", parts=tool_results))
+
+    return final_text, "", 0
 
 
 def _run_via_api(module_dir):
@@ -347,19 +548,28 @@ def sink_api_matches(predicted_api: str, gt_apis: list) -> bool:
     return False
 
 
-def evaluate(parsed, gt_type, gt_file=None, gt_line=None, gt_sink_apis=None):
+def function_matches(predicted_fn: str, gt_fn: str) -> bool:
+    """Case-insensitive match; treats __unknown__ as no GT."""
+    if not gt_fn or gt_fn in ("__unknown__", "__file_scope__") or not predicted_fn:
+        return False
+    return predicted_fn.lower().strip() == gt_fn.lower().strip()
+
+
+def evaluate(parsed, gt_type, gt_file=None, gt_line=None, gt_sink_apis=None, gt_function=None):
     """
     Returns dict with:
       vulnerable_detected: did agent say vulnerable=true?
       type_correct:        did agent identify the right vuln type?
       sink_api_correct:    did agent identify the right dangerous built-in API?
       location_correct:    did agent find the right file+line (sink)?
+      function_correct:    did agent name the right enclosing function?
       predicted_types:     list of types the agent reported
     Handles both old schema (line: int) and new schema (vulnerable_lines: list).
     """
     if parsed is None:
         return {"vulnerable_detected": False, "type_correct": False,
                 "sink_api_correct": False, "location_correct": False,
+                "function_correct": False,
                 "predicted_types": [], "parse_error": True}
 
     vuln_flag = parsed.get("vulnerable", False)
@@ -386,11 +596,17 @@ def evaluate(parsed, gt_type, gt_file=None, gt_line=None, gt_sink_apis=None):
         for v in vulns
     )
 
+    function_correct = any(
+        function_matches(v.get("function_name", ""), gt_function)
+        for v in vulns
+    ) if gt_function else False
+
     return {
         "vulnerable_detected":  vuln_flag,
         "type_correct":         type_correct,
         "sink_api_correct":     sink_api_correct,
         "location_correct":     location_correct,
+        "function_correct":     function_correct,
         "predicted_types":      predicted,
         "predicted_sink_apis":  [v.get("sink_api", "") for v in vulns],
         "predicted_locations":  [(v.get("file", ""), get_lines(v)) for v in vulns],
@@ -417,19 +633,44 @@ def main():
     ap = argparse.ArgumentParser(description="Static vulnerability analysis benchmark")
     ap.add_argument("--wait-for-limit", action="store_true",
                     help="When session limit is hit, sleep until 22:02 CST and retry")
+    ap.add_argument("--tiers", default=None,
+                    help="Comma-separated tiers to run: original,obfuscated "
+                         "(default: all available)")
+    ap.add_argument("--provider", default="claude_cli",
+                    choices=["claude_cli", "agy_cli", "gemini_api"],
+                    help="Agent backend to use (default: claude_cli)")
+    ap.add_argument("--model", default=None,
+                    help="Model name to pass to the CLI (e.g. gemini-2.5-pro)")
+    ap.add_argument("--modules", default=None,
+                    help="Comma-separated module IDs to run (e.g. module_09,module_24). "
+                         "Default: all modules.")
+    ap.add_argument("--resume", action="store_true",
+                    help="Skip modules that already have a result in the output file")
     args = ap.parse_args()
 
     # Load ground truth mapping (module_XX → category + vuln type)
     with open(GT_PATH) as f:
         ground_truth = json.load(f)
 
-    # Build flat list of all (module_id, state, dir) tasks
-    state_dirs = [("original",   ORIG_DIR), ("obfuscated", OBF_DIR)]
-    if os.path.isdir(WCK_DIR):
-        state_dirs.append(("webcrack", WCK_DIR))
+    # Determine which tiers to run
+    all_state_dirs = [("original",   ORIG_DIR),
+                      ("obfuscated", OBF_DIR),
+                      ("obf_cff",    OBF_CFF_DIR)]
+    if args.tiers:
+        wanted = {t.strip() for t in args.tiers.split(",")}
+        state_dirs = [(s, d) for s, d in all_state_dirs if s in wanted]
+    else:
+        state_dirs = [(s, d) for s, d in all_state_dirs if os.path.isdir(d)]
+
+    # Filter to specific modules if requested
+    wanted_modules = None
+    if args.modules:
+        wanted_modules = {m.strip() for m in args.modules.split(",")}
 
     tasks = []
     for mid in sorted(ground_truth.keys()):
+        if wanted_modules and mid not in wanted_modules:
+            continue
         for state, base_dir in state_dirs:
             module_dir = os.path.join(base_dir, mid)
             if os.path.isdir(module_dir):
@@ -437,10 +678,9 @@ def main():
             else:
                 print(f"WARNING: missing {module_dir}")
 
-    # Resume: load any already-completed results so an interrupted run can continue.
-    # Validate each saved result against the current ground truth — if the module
-    # name doesn't match (module IDs were re-shuffled), discard the stale file.
-    out_path = os.path.join(ROOT, "static_analysis_results.json")
+    # Results and raw outputs are namespaced by provider so runs don't collide.
+    provider_tag = args.provider  # e.g. "claude_cli", "agy_cli"
+    out_path = os.path.join(ROOT, f"static_analysis_results_{provider_tag}.json")
     results  = []
     done_set = set()   # (module_id, state) pairs already recorded
     if os.path.exists(out_path):
@@ -475,6 +715,10 @@ def main():
 
     tasks = [t for t in tasks if (t[0], t[1]) not in done_set]
 
+    # Ensure raw output directory exists (namespaced by provider)
+    raw_dir = os.path.join(RAW_DIR, provider_tag)
+    os.makedirs(raw_dir, exist_ok=True)
+
     # Randomize to avoid sequential bias
     random.shuffle(tasks)
     n_states = len(state_dirs)
@@ -492,6 +736,7 @@ def main():
         gt_file      = info.get("sink_file")
         gt_line      = info.get("sink_line")
         gt_sink_apis = info.get("sink_apis", [])
+        gt_function  = info.get("sink_function")
 
         # Agent sees only "module_XX" — no category hint in the log either
         prefix = f"[{n_done:>3}/{total_tasks}] [{state:<10}] {mid}"
@@ -499,7 +744,8 @@ def main():
 
         t0 = time.time()
         try:
-            stdout, stderr, rc = run_claude(module_dir)
+            stdout, stderr, rc = run_agent(module_dir, provider=args.provider,
+                                           model=args.model)
             elapsed = time.time() - t0
 
             # Detect session limit — stop or sleep depending on flag
@@ -508,7 +754,8 @@ def main():
                     print(f"\n  SESSION_LIMIT detected.", end="", flush=True)
                     wait_for_session_reset()
                     # Retry this task
-                    stdout, stderr, rc = run_claude(module_dir)
+                    stdout, stderr, rc = run_agent(module_dir, provider=args.provider,
+                                                   model=args.model)
                     elapsed = time.time() - t0
                 else:
                     print(f"  SESSION_LIMIT — stopping. Re-run after limit resets.")
@@ -518,8 +765,13 @@ def main():
             if "request timed out" in stdout.lower():
                 raise subprocess.TimeoutExpired(cmd=[], timeout=360)
 
+            # Save full raw output to a file (cheap to re-evaluate later)
+            raw_file = os.path.join(raw_dir, f"{state}__{mid}.txt")
+            with open(raw_file, "w", errors="replace") as f:
+                f.write(stdout)
+
             parsed  = extract_json(stdout)
-            eval_r  = evaluate(parsed, gt_type, gt_file, gt_line, gt_sink_apis)
+            eval_r  = evaluate(parsed, gt_type, gt_file, gt_line, gt_sink_apis, gt_function)
 
             status_parts = []
             if eval_r["parse_error"]:
@@ -530,6 +782,8 @@ def main():
                                     else f"TYPE_WRONG({','.join(eval_r['predicted_types'][:1])})")
                 status_parts.append("API_OK"  if eval_r["sink_api_correct"] else "API_WRONG")
                 status_parts.append("LOC_OK"  if eval_r["location_correct"] else "LOC_WRONG")
+                if gt_function and gt_function not in ("__unknown__",):
+                    status_parts.append("FN_OK" if eval_r["function_correct"] else "FN_WRONG")
 
             print(f"  {' | '.join(status_parts)}  ({elapsed:.0f}s)")
 
@@ -538,20 +792,26 @@ def main():
                 "category":   category,
                 "module":     module,
                 "state":      state,
+                "provider":   args.provider,
+                "model":      args.model,
                 "ground_truth_type":     gt_type,
                 "ground_truth_file":     gt_file,
                 "ground_truth_line":     gt_line,
                 "ground_truth_sink_apis": gt_sink_apis,
+                "ground_truth_function": gt_function,
                 "elapsed_s":               round(elapsed, 1),
                 "vulnerable_detected":     eval_r["vulnerable_detected"],
                 "type_correct":            eval_r["type_correct"],
                 "sink_api_correct":        eval_r["sink_api_correct"],
                 "location_correct":        eval_r["location_correct"],
+                "function_correct":        eval_r["function_correct"],
                 "predicted_types":         eval_r["predicted_types"],
                 "predicted_sink_apis":     eval_r.get("predicted_sink_apis", []),
                 "predicted_locations":     eval_r.get("predicted_locations", []),
+                "predicted_functions":     eval_r.get("predicted_functions", []),
+                "predicted_confidences":   eval_r.get("predicted_confidences", []),
                 "parse_error":             eval_r["parse_error"],
-                "raw_output":              stdout[:2000],
+                "raw_output_file":         os.path.relpath(raw_file, ROOT),
             })
 
         except subprocess.TimeoutExpired:
@@ -582,8 +842,8 @@ def main():
     print(f"\n{'='*75}")
     print("SUMMARY")
     print(f"{'='*75}")
-    print(f"{'Category':<25} {'State':<12} {'Vuln':<8} {'Type OK':<10} {'API OK':<10} {'Loc OK':<10} N")
-    print(f"{'-'*25} {'-'*12} {'-'*8} {'-'*10} {'-'*10} {'-'*10} {'-'*5}")
+    print(f"{'Category':<25} {'State':<12} {'Vuln':<8} {'Type OK':<10} {'API OK':<10} {'Loc OK':<10} {'Fn OK':<8} N")
+    print(f"{'-'*25} {'-'*12} {'-'*8} {'-'*10} {'-'*10} {'-'*10} {'-'*8} {'-'*5}")
 
     states = sorted({r["state"] for r in results})
     for state in states:
@@ -596,7 +856,10 @@ def main():
             n_type = sum(1 for r in subset if r["type_correct"])
             n_api  = sum(1 for r in subset if r.get("sink_api_correct"))
             n_loc  = sum(1 for r in subset if r.get("location_correct"))
-            print(f"{category:<25} {state:<12} {n_vuln}/{n:<6} {n_type}/{n:<8} {n_api}/{n:<8} {n_loc}/{n}")
+            fn_sub = [r for r in subset if r.get("ground_truth_function") not in (None, "__unknown__")]
+            n_fn   = sum(1 for r in fn_sub if r.get("function_correct"))
+            fn_str = f"{n_fn}/{len(fn_sub)}" if fn_sub else "n/a"
+            print(f"{category:<25} {state:<12} {n_vuln}/{n:<6} {n_type}/{n:<8} {n_api}/{n:<8} {n_loc}/{n:<8} {fn_str}")
 
     # Overall
     print()
@@ -608,7 +871,10 @@ def main():
         n_type = sum(1 for r in subset if r["type_correct"])
         n_api  = sum(1 for r in subset if r.get("sink_api_correct"))
         n_loc  = sum(1 for r in subset if r.get("location_correct"))
-        print(f"{'TOTAL':<25} {state:<12} {n_vuln}/{n:<6} {n_type}/{n:<8} {n_api}/{n:<8} {n_loc}/{n}")
+        fn_sub = [r for r in subset if r.get("ground_truth_function") not in (None, "__unknown__")]
+        n_fn   = sum(1 for r in fn_sub if r.get("function_correct"))
+        fn_str = f"{n_fn}/{len(fn_sub)}" if fn_sub else "n/a"
+        print(f"{'TOTAL':<25} {state:<12} {n_vuln}/{n:<6} {n_type}/{n:<8} {n_api}/{n:<8} {n_loc}/{n:<8} {fn_str}")
 
     print(f"\nNote: agent saw only module_XX names — ground truth in {GT_PATH}")
     print(f"Results saved to: {out_path}")

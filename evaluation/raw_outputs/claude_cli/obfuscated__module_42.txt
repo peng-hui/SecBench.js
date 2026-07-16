@@ -1,0 +1,20 @@
+The nativeZip function in `lib/bestzip.js` builds a shell command string by concatenating unescaped `destination` and `source` values directly into a `zip --quiet --recurse-paths <dest> <source>` command, then executes it with `child_process.exec`. Since `source`/`destination` are attacker-influenced (CLI args or API caller-supplied paths) and never sanitized or escaped, shell metacharacters (`;`, `` ` ``, `$()`, `&&`, etc.) in either value let an attacker inject arbitrary shell commands.
+
+```json
+{
+  "package": "bestzip@2.1.6",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.exec",
+      "file": "lib/bestzip.js",
+      "function_name": "nativeZip",
+      "vulnerable_lines": [1],
+      "confidence": 0.9,
+      "description": "nativeZip builds a shell command by string-concatenating unescaped destination and source values and passes it to cp.exec, so shell metacharacters in either value (attacker-controlled via the CLI args or the public zip() API) result in arbitrary command execution.",
+      "snippet": "const source = Array.isArray(opts.source) ? opts.source.join(' ') : opts.source; const cmd = 'zip --quiet --recurse-paths ' + opts.destination + ' ' + source; const child = cp.exec(cmd, {stdio: 'inherit', cwd: opts.cwd});"
+    }
+  ]
+}
+```

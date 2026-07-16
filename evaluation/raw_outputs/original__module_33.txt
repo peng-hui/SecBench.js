@@ -1,0 +1,28 @@
+```json
+{
+  "package": "jsen@0.6.6",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Arbitrary Code Injection",
+      "sink_api": "Function",
+      "file": "lib/func.js",
+      "function_name": "compile",
+      "vulnerable_lines": [56, 57, 62],
+      "confidence": 0.85,
+      "description": "jsen compiles a JSON schema into a validator by string-concatenating attacker-influenced schema content (e.g. property names used in `required`/`properties`/`dependencies`) and then executing that string via `Function.apply(null, keys.concat(src))`; the escaping helper `encodeStr` (lib/jsen.js:26-28) only escapes literal double-quote characters and ignores pre-existing backslashes, so a schema key ending in `\\\"` neutralizes the escaping, lets the generated string literal be closed early, and allows injected JavaScript from the schema to run inside the compiled validator function.",
+      "snippet": "builder.compile = function (scope) {\n    var src = 'return (' + builder.toSource() + ')',\n        ...\n    return Function.apply(null, keys.concat(src)).apply(null, vals);\n};"
+    },
+    {
+      "type": "Arbitrary Code Injection",
+      "sink_api": "String concatenation into generated source (feeds lib/func.js Function sink)",
+      "file": "lib/jsen.js",
+      "function_name": "encodeStr",
+      "vulnerable_lines": [26, 27, 30, 35, 269],
+      "confidence": 0.8,
+      "description": "encodeStr() only replaces `\"` with `\\\"` and does not first escape backslashes, so appendToPath()/keywords.required() embed schema-controlled property names into the generated validator source with broken quote-escaping, letting a crafted property name (e.g. containing `\\\"`) break out of the string literal and inject arbitrary code that is later executed by the Function constructor in lib/func.js.",
+      "snippet": "function encodeStr(str) {\n    return '\"' + str.replace(STR_ESCAPE_EXPR, '\\\\$1') + '\"';\n}"
+    }
+  ]
+}
+```

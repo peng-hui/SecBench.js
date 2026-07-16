@@ -1,0 +1,18 @@
+```json
+{
+  "package": "js-yaml@3.13.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Arbitrary Code Injection",
+      "sink_api": "Function",
+      "file": "lib/js-yaml/type/js/function.js",
+      "function_name": "constructJavascriptFunction",
+      "vulnerable_lines": [70, 75],
+      "confidence": 0.9,
+      "description": "yaml.load() (loader.js:134,1580) defaults to DEFAULT_FULL_SCHEMA, which registers the !!js/function YAML tag; parsing untrusted YAML containing a !!js/function scalar causes constructJavascriptFunction to build and return an attacker-controlled function via `new Function(...)`, achieving arbitrary code execution when the returned document's function is later invoked.",
+      "snippet": "return new Function(params, source.slice(body[0] + 1, body[1] - 1));"
+    }
+  ]
+}
+```

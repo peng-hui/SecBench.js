@@ -1,0 +1,28 @@
+```json
+{
+  "package": "arpping@2.0.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.exec",
+      "file": "index.js",
+      "function_name": "ping",
+      "vulnerable_lines": [1],
+      "confidence": 0.95,
+      "description": "The ping() method builds a shell command by concatenating the unsanitized ip string from the caller-supplied ip array directly into a child_process.exec() call, letting an attacker inject shell metacharacters (e.g. `; rm -rf /` or `$(cmd)`) into the ip value to execute arbitrary commands.",
+      "snippet": "exec('ping '+flag+' '+this['timeout']+' '+ip, (err, stdout, stderr) => { ... })"
+    },
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.exec",
+      "file": "index.js",
+      "function_name": "arp",
+      "vulnerable_lines": [1],
+      "confidence": 0.9,
+      "description": "The internal arp lookup function concatenates each unsanitized ip string (from discover/searchByIpAddress input) directly into an exec('arp '+ip) call, allowing shell command injection via crafted ip values.",
+      "snippet": "exec('arp '+ip, (err, stdout, stderr) => { ... })"
+    }
+  ]
+}
+```

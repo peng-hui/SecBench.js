@@ -1,0 +1,18 @@
+```json
+{
+  "package": "canvas-designer@1.2.1",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.readFile",
+      "file": "server.js",
+      "function_name": "serverHandler",
+      "vulnerable_lines": [7, 8, 13, 23, 36],
+      "confidence": 0.95,
+      "description": "The HTTP request URL pathname is concatenated with the current working directory via path.join without sanitizing '../' sequences, letting a remote client craft a request like GET /../../../../etc/passwd to make fs.lstatSync/fs.readFile read and return arbitrary files outside the server root.",
+      "snippet": "var uri = url.parse(request.url).pathname,\n    filename = path.join(process.cwd(), uri);\n...\nfs.readFile(filename, 'binary', function(err, file) { ... response.write(file, 'binary'); ... });"
+    }
+  ]
+}
+```

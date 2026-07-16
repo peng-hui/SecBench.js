@@ -1,0 +1,30 @@
+Confirmed the package details. The vulnerability is a clear arbitrary file read / path traversal (plus SSRF) in `getFileContents.jsn`, where the user-controlled `fileLocation` parameter flows unsanitized into `fs.readFileSync`.
+
+```json
+{
+  "package": "atropa-ide@0.2.2-2",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.readFileSync",
+      "file": "getFileContents.jsn",
+      "function_name": "__file_scope__",
+      "vulnerable_lines": [86],
+      "confidence": 0.95,
+      "description": "The 'fileLocation' parameter is parsed directly from the raw GET query string or POST body via querystring.parse with no sanitization or path restriction, then passed straight to fs.readFileSync, letting an attacker read arbitrary files on the server filesystem via path traversal (e.g. fileLocation=../../../../etc/passwd).",
+      "snippet": "outputFile = fs.readFileSync(body.fileLocation, 'utf8');\n                    fileExists();"
+    },
+    {
+      "type": "Other",
+      "sink_api": "http.get / https.get",
+      "file": "getFileContents.jsn",
+      "function_name": "getUrlContents",
+      "vulnerable_lines": [49, 50, 52],
+      "confidence": 0.7,
+      "description": "When 'fileLocation' starts with 'http', the server fetches the attacker-supplied URL server-side and returns its contents, enabling Server-Side Request Forgery against internal/private network resources.",
+      "snippet": "function getUrlContents (url) {\n    var http = getFetcher(url);\n    var out = '';\n    http.get(url, function (res) { ... });\n}"
+    }
+  ]
+}
+```

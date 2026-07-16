@@ -1,0 +1,18 @@
+```json
+{
+  "package": "assign-deep@1.0.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "index.js",
+      "function_name": "assign",
+      "vulnerable_lines": [18, 19, 20, 22],
+      "confidence": 0.95,
+      "description": "The recursive assign() function iterates Object.keys() of a source object without excluding '__proto__', 'constructor', or 'prototype', so a crafted payload like assign({}, JSON.parse('{\"__proto__\":{\"polluted\":\"yes\"}}')) recurses into Object.prototype and permanently pollutes it for all objects in the process.",
+      "snippet": "for (const key of Object.keys(args[i])) {\n  if (isObject(target[key]) && isObject(args[i][key])) {\n    assign(target[key], args[i][key]);\n  } else {\n    target[key] = args[i][key];\n  }\n}"
+    }
+  ]
+}
+```

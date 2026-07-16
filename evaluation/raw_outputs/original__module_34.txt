@@ -1,0 +1,18 @@
+```json
+{
+  "package": "deep-extend@0.5.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "lib/deep-extend.js",
+      "function_name": "deepExtend",
+      "vulnerable_lines": [104, 116, 117, 136, 137],
+      "confidence": 0.95,
+      "description": "deepExtend iterates Object.keys(obj) and assigns target[key] = val (or recurses into deepExtend(src, val)) without excluding the '__proto__', 'constructor', or 'prototype' keys, so a merge source built from attacker-controlled JSON (e.g. '{\"__proto__\":{\"polluted\":true}}') pollutes Object.prototype for every object in the process.",
+      "snippet": "Object.keys(obj).forEach(function (key) {\n\tsrc = target[key];\n\tval = obj[key];\n\t...\n\t} else if (typeof val !== 'object' || val === null) {\n\t\ttarget[key] = val;\n\t\treturn;\n\t...\n\t} else {\n\t\ttarget[key] = deepExtend(src, val);\n\t\treturn;\n\t}\n});"
+    }
+  ]
+}
+```

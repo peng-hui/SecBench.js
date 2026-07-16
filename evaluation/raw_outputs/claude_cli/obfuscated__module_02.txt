@@ -1,0 +1,28 @@
+```json
+{
+  "package": "101@1.0.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "keypather.set (unsanitized bracket-notation property assignment)",
+      "file": "set.js",
+      "function_name": "set",
+      "vulnerable_lines": [1],
+      "confidence": 0.92,
+      "description": "The exported set(obj, keypath, val) function forwards an attacker-controlled dot/bracket keypath string directly to keypather's set(), which splits the keypath and assigns obj[key]=val at each segment without excluding '__proto__', 'constructor', or 'prototype', letting an attacker call set(target, '__proto__.polluted', true) to pollute Object.prototype.",
+      "snippet": "function set(str,val,obj){...}else return keypaths={},keypather['set'](keypaths,val,obj),setKeypaths(str,keypaths); ... function setKeypaths(obj,keypaths){return Object.keys(keypaths).forEach(function(key){var val=keypaths[key];keypather['set'](obj,key,val);}),obj;}"
+    },
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "Object property assignment (obj[key] = val)",
+      "file": "../keypather/index.js",
+      "function_name": "Keypather.prototype.set / handleKey / createPath",
+      "vulnerable_lines": [1],
+      "confidence": 0.9,
+      "description": "keypather's set()/handleKey()/createPath() traverse a caller-supplied dot-separated keypath and perform raw obj[key]=val assignments with no denylist for '__proto__'/'constructor.prototype', so any code in this package (e.g. 101's set.js) that passes untrusted keys reaches this sink and can pollute Object.prototype.",
+      "snippet": "Keypather.prototype.set=function(obj,keypath,val){...var lastKey=this.getLastKey(),lastObj=this.getLastObj(arguments,true);return lastObj[lastKey]=val,val;}"
+    }
+  ]
+}
+```

@@ -1,0 +1,18 @@
+```json
+{
+  "package": "access-policy@3.1.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Arbitrary Code Injection",
+      "sink_api": "eval",
+      "file": "lib/encode.js",
+      "function_name": "template",
+      "vulnerable_lines": [4, 6],
+      "confidence": 0.9,
+      "description": "encode() JSON.stringify()s the caller-supplied policy `statements` and hands the resulting string to a `template()` helper that eval()s it as a JS template literal, so any `${...}` sequence embedded in a statement's action/resource/restriction string (attacker-controlled policy content) is executed as arbitrary JavaScript when index.js's testResource() calls encode(statements, context).",
+      "snippet": "function template(literal, data) {\n  var tmpl = literal.replace(/(\\$\\{)/gm, '$1data.');\n  return eval('`' + tmpl + '`');\n}"
+    }
+  ]
+}
+```

@@ -1,0 +1,28 @@
+```json
+{
+  "package": "codecov@3.6.4",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.execSync",
+      "file": "lib/codecov.js",
+      "function_name": "upload",
+      "vulnerable_lines": [393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 419],
+      "confidence": 0.95,
+      "description": "CLI/env-controlled options args.options['gcov-root'], args.options['gcov-exec'], and args.options['gcov-args'] are concatenated into a shell command string ('find ' + gcov-root + ... + '-exec ' + gcov-exec + ' ' + gcov-args + ' {} +') and passed to execSync(gcov); validator.escape() only encodes HTML-special characters (&<>\"'/) not shell metacharacters (;, |, `, $()), so an attacker who controls these CLI flags (or the -r/--gcov-root, --gcov-exec, --gcov-args arguments in CI configs fed by untrusted PRs) can inject arbitrary shell commands.",
+      "snippet": "gcov =\n  'find ' +\n  (args.options['gcov-root'] || root) +\n  \" -type f -name '*.gcno' \" +\n  gcg +\n  ' -exec ' +\n  (validator.escape(args.options['gcov-exec']) || 'gcov') +\n  ' ' +\n  (validator.escape(args.options['gcov-args']) || '') +\n  ' {} +'\n...\nexecSync(gcov)"
+    },
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.execSync",
+      "file": "lib/codecov.js",
+      "function_name": "upload",
+      "vulnerable_lines": [356, 480],
+      "confidence": 0.8,
+      "description": "The user-supplied --root option (args.options.root) is resolved and concatenated unescaped into a 'find <root> ...' shell string executed via execSync, allowing command injection through the root path argument.",
+      "snippet": "var root = path.resolve(args.options.root || query.root || '.')\n...\n_files = execSync('find ' + root + ' ' + patterns + more_patterns)"
+    }
+  ]
+}
+```

@@ -1,0 +1,20 @@
+Confirmed: `testSync` builds a shell command by string-interpolating unsanitized `host`, `port`, and `connectTimeout` and executes it via `child_process.execSync`. This is a known command injection vulnerability in connection-tester.
+
+```json
+{
+  "package": "connection-tester@0.2.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Command Injection",
+      "sink_api": "child_process.execSync",
+      "file": "index.js",
+      "function_name": "testSync",
+      "vulnerable_lines": [13, 15],
+      "confidence": 0.97,
+      "description": "The host, port, and connectTimeout parameters passed to ConnectionTester.test() are concatenated unsanitized into a shell command string via util.format and executed with shell.execSync, allowing an attacker who controls the host argument (e.g. 'localhost; rm -rf /') to inject arbitrary shell commands.",
+      "snippet": "const cmd = util.format('\"%s\" \"%s\" %s %s %s', nodeBinary, scriptPath, host, port, connectTimeout);\n\nconst shellOut = shell.execSync(cmd).toString();"
+    }
+  ]
+}
+```

@@ -1,0 +1,18 @@
+```json
+{
+  "package": "copy-props@2.0.4",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Prototype Pollution",
+      "sink_api": "__proto__",
+      "file": "index.js",
+      "function_name": "_setDeep",
+      "vulnerable_lines": [1],
+      "confidence": 0.95,
+      "description": "copyProps() recursively walks the source object's keys (via each-props) and writes them into the destination with _setDeep(), which splits a dotted key chain and assigns dest[key]=value at each level without ever rejecting '__proto__' or 'constructor.prototype', so a source object containing a '__proto__' key (or a fromto mapping targeting it) lets an attacker pollute Object.prototype.",
+      "snippet": "function _setDeep(dest,keys,depth,func){var key=keys.shift();if(!keys.length){var res=func(dest,key,depth);if(res===undefined)return;if(isPlainObject(res)){if(isPlainObject(dest[key]))return;}dest[key]=res;return;}!isPlainObject(dest[key])&&(dest[key]={});_setDeep(dest[key],keys,depth+1,func);}"
+    }
+  ]
+}
+```

@@ -1,0 +1,38 @@
+```json
+{
+  "package": "aso-server@0.4.3",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.readFileSync",
+      "file": "server.js",
+      "function_name": "writeFileContents",
+      "vulnerable_lines": [83, 88],
+      "confidence": 0.95,
+      "description": "The URL path segment after '/f/' is taken from req.url, decoded with decodeURI, and passed unsanitized as 'path' to fs.readFileSync, letting an attacker request e.g. '/f/../../../../etc/passwd' to read arbitrary files on the host filesystem.",
+      "snippet": "const writeFileContents = (res, path, dotCommand) => {\n  if (path == '') {\n    path = '/';\n  }\n  try {\n    let contents = fs.readFileSync(path);\n    res.writeHead(200);\n    return res.end(contents);\n  } catch (e) { ... }\n}"
+    },
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.statSync",
+      "file": "server.js",
+      "function_name": "writeFileInfo",
+      "vulnerable_lines": [106, 111],
+      "confidence": 0.85,
+      "description": "The same unsanitized user-controlled 'value' from the URL is passed to fs.statSync in writeFileInfo, allowing attackers to probe existence/metadata of arbitrary files outside the served directory.",
+      "snippet": "const writeFileInfo = (res, path) => {\n  if (path == '') { path = '/'; }\n  try {\n    let stats = fs.statSync(path);\n    res.writeHead(200);\n    return res.end(JSON.stringify(stats));\n  } catch (e) { ... }\n}"
+    },
+    {
+      "type": "Path Traversal",
+      "sink_api": "fs.readdirSync",
+      "file": "server.js",
+      "function_name": "getDirFiles",
+      "vulnerable_lines": [128, 131],
+      "confidence": 0.8,
+      "description": "The unsanitized user-controlled 'value' from the URL (routed via writeDirFiles) is passed to fs.readdirSync, allowing directory listing of arbitrary paths outside the served directory.",
+      "snippet": "const getDirFiles = (path) => {\n  let files;\n  try {\n    files = fs.readdirSync(path);\n  } catch (e) { ... }\n  ...\n}"
+    }
+  ]
+}
+```

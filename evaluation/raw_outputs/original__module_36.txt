@@ -1,0 +1,3 @@
+```json
+{"package": "charset@1.0.0", "vulnerable": false, "vulnerabilities": []}
+```

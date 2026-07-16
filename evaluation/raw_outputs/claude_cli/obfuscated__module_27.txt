@@ -1,0 +1,18 @@
+```json
+{
+  "package": "ansi-regex@4.1.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "ReDoS",
+      "sink_api": "RegExp.exec (new RegExp)",
+      "file": "index.js",
+      "function_name": "module.exports",
+      "vulnerable_lines": [1],
+      "confidence": 0.9,
+      "description": "The exported factory builds a RegExp from a pattern containing nested quantifiers (e.g. `(?:\\d{1,4}(?:;\\d{0,4})*)?`) that is then used to test/match attacker-controlled strings (e.g. terminal/log output), causing catastrophic backtracking and denial of service (CVE-2021-3807).",
+      "snippet": "const _0x1cdbd3=['[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)','(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))'].join('|'); return new RegExp(_0x1cdbd3, options.onlyFirst ? undefined : 'g');"
+    }
+  ]
+}
+```

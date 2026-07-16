@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 /**
  * Oracle harness — wraps a tool-generated PoC snippet with the appropriate
  * oracle and returns { triggered, evidence, timedOut }.
@@ -19,20 +19,20 @@
  *   });
  */
 
-const crypto  = require('crypto');
-const fs      = require('fs');
-const os      = require('os');
-const path    = require('path');
-const { spawnSync } = require('child_process');
+const crypto = require("crypto");
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+const { spawnSync } = require("child_process");
 
 const ORACLE_DIR = __dirname;
 
 const DEFAULT_TIMEOUT = {
-  'prototype-pollution': 10000,
-  'redos':               10000,
-  'command-injection':   10000,
-  'code-injection':      10000,
-  'path-traversal':      30000,
+  "prototype-pollution": 10000,
+  redos: 10000,
+  "command-injection": 10000,
+  "code-injection": 10000,
+  "path-traversal": 30000,
 };
 
 // ---------------------------------------------------------------------------
@@ -41,18 +41,25 @@ const DEFAULT_TIMEOUT = {
 
 // Files the harness itself writes into packageDir — exclude from the checksum
 // so they don't register as PoC-driven modifications.
-const HARNESS_TEMPS = new Set(['_oracle_runner.js', '_oracle_poc.js', '_llm_poc.js']);
+const HARNESS_TEMPS = new Set([
+  "_oracle_runner.js",
+  "_oracle_poc.js",
+  "_llm_poc.js",
+]);
 
 /**
  * Recursively hash all files under `dir` (sorted for determinism).
  * Returns a hex digest, or null if the directory can't be read.
  */
 function checksumDir(dir) {
-  const h = crypto.createHash('sha256');
+  const h = crypto.createHash("sha256");
   function walk(d) {
     let entries;
-    try { entries = fs.readdirSync(d, { withFileTypes: true }); }
-    catch (_) { return; }
+    try {
+      entries = fs.readdirSync(d, { withFileTypes: true });
+    } catch (_) {
+      return;
+    }
     entries.sort((a, b) => a.name.localeCompare(b.name));
     for (const e of entries) {
       if (HARNESS_TEMPS.has(e.name)) continue;
@@ -60,13 +67,15 @@ function checksumDir(dir) {
       if (e.isDirectory()) {
         walk(full);
       } else if (e.isFile()) {
-        h.update(e.name + '\0');
-        try { h.update(fs.readFileSync(full)); } catch (_) {}
+        h.update(e.name + "\0");
+        try {
+          h.update(fs.readFileSync(full));
+        } catch (_) {}
       }
     }
   }
   walk(dir);
-  return h.digest('hex');
+  return h.digest("hex");
 }
 
 // ---------------------------------------------------------------------------
@@ -77,7 +86,7 @@ function run(opts) {
   const { vulnClass, snippet, packageDir } = opts;
   const timeout = opts.timeout || DEFAULT_TIMEOUT[vulnClass] || 10000;
 
-  if (vulnClass === 'path-traversal') {
+  if (vulnClass === "path-traversal") {
     return _runPathTraversal(opts, timeout);
   }
   return _runInProcess(vulnClass, snippet, packageDir, timeout);
@@ -90,47 +99,68 @@ function run(opts) {
 // ---------------------------------------------------------------------------
 
 function _runInProcess(vulnClass, snippet, packageDir, timeout) {
-  const absDir     = path.resolve(packageDir);
+  const absDir = path.resolve(packageDir);
   const oraclePath = path.join(ORACLE_DIR, `${vulnClass}.js`);
-  const runnerFile = path.join(absDir, '_oracle_runner.js');
+  const runnerFile = path.join(absDir, "_oracle_runner.js");
   // Use a signal file so the PoC's own stdout/stderr never corrupts the result.
-  const signalFile = path.join(os.tmpdir(), `oracle_${vulnClass}_${process.pid}_${Date.now()}.json`);
-  try { fs.unlinkSync(signalFile); } catch (_) {}
+  const signalFile = path.join(
+    os.tmpdir(),
+    `oracle_${vulnClass}_${process.pid}_${Date.now()}.json`
+  );
+  try {
+    fs.unlinkSync(signalFile);
+  } catch (_) {}
 
   const hashBefore = checksumDir(absDir);
 
-  fs.writeFileSync(runnerFile, _buildRunner(vulnClass, snippet, oraclePath, signalFile));
+  fs.writeFileSync(
+    runnerFile,
+    _buildRunner(vulnClass, snippet, oraclePath, signalFile)
+  );
 
   const proc = spawnSync(process.execPath, [runnerFile], {
-    cwd:      absDir,
+    cwd: absDir,
     timeout,
-    encoding: 'utf8',
+    encoding: "utf8",
   });
 
-  try { fs.unlinkSync(runnerFile); } catch (_) {}
+  try {
+    fs.unlinkSync(runnerFile);
+  } catch (_) {}
 
-  const hashAfter        = checksumDir(absDir);
-  const modifiedPackage  = hashBefore !== hashAfter;
-  const timedOut         = proc.signal === 'SIGTERM' || proc.status === null;
+  const hashAfter = checksumDir(absDir);
+  const modifiedPackage = hashBefore !== hashAfter;
+  const timedOut = proc.signal === "SIGTERM" || proc.status === null;
 
-  if (vulnClass === 'redos' && timedOut) {
-    return { triggered: true, evidence: 'execution timed out', timedOut: true, modifiedPackage };
+  if (vulnClass === "redos" && timedOut) {
+    return {
+      triggered: true,
+      evidence: "execution timed out",
+      timedOut: true,
+      modifiedPackage,
+    };
   }
 
   try {
-    const result = JSON.parse(fs.readFileSync(signalFile, 'utf8'));
-    try { fs.unlinkSync(signalFile); } catch (_) {}
+    const result = JSON.parse(fs.readFileSync(signalFile, "utf8"));
+    try {
+      fs.unlinkSync(signalFile);
+    } catch (_) {}
     return { ...result, timedOut, modifiedPackage };
   } catch (_) {
-    return { triggered: false, timedOut, modifiedPackage,
-             error: proc.stderr.slice(0, 300) || 'runner wrote no signal' };
+    return {
+      triggered: false,
+      timedOut,
+      modifiedPackage,
+      error: proc.stderr.slice(0, 300) || "runner wrote no signal",
+    };
   }
 }
 
 // Builds the runner script that wraps the tool's snippet with oracle hooks.
 function _buildRunner(vulnClass, snippet, oraclePath, signalFile) {
   // Result is written to signalFile, not stdout — the PoC may write anything to stdout.
-  if (vulnClass === 'redos') {
+  if (vulnClass === "redos") {
     return `\
 'use strict';
 const fs = require('fs');
@@ -168,10 +198,13 @@ oracle.install();  // no canary — fires on any sink invocation
 // ---------------------------------------------------------------------------
 
 function _runPathTraversal({ snippet, packageDir, webRoot }, timeout) {
-  const absDir     = path.resolve(packageDir);
-  const hookFile   = path.join(ORACLE_DIR, 'path-traversal.js');
-  const snippetFile = path.join(absDir, '_oracle_poc.js');
-  const signalFile  = path.join(os.tmpdir(), `oracle_pt_${process.pid}_${Date.now()}.json`);
+  const absDir = path.resolve(packageDir);
+  const hookFile = path.join(ORACLE_DIR, "path-traversal.js");
+  const snippetFile = path.join(absDir, "_oracle_poc.js");
+  const signalFile = path.join(
+    os.tmpdir(),
+    `oracle_pt_${process.pid}_${Date.now()}.json`
+  );
 
   const hashBefore = checksumDir(absDir);
 
@@ -181,33 +214,49 @@ function _runPathTraversal({ snippet, packageDir, webRoot }, timeout) {
   // assignments are inherited by child processes spawned with exec/spawn.
   const wrapper = `\
 'use strict';
-process.env.NODE_OPTIONS    = ${j('--require ' + hookFile)};
-process.env.ORACLE_WEB_ROOT = ${j(path.resolve(webRoot || packageDir))};
+// Set env vars before requiring the hook (hook reads them at load time)
+process.env.ORACLE_WEB_ROOT    = ${j(path.resolve(webRoot || packageDir))};
 process.env.ORACLE_SIGNAL_FILE = ${j(signalFile)};
+// Require the hook directly so it patches fs in THIS process (setting NODE_OPTIONS
+// at runtime is too late — Node.js only reads it at startup).
+// Also set NODE_OPTIONS so any child processes spawned by the snippet inherit the hook.
+require(${j(hookFile)});
+process.env.NODE_OPTIONS = ${j("--require " + hookFile)};
 ${snippet}
 `;
   fs.writeFileSync(snippetFile, wrapper);
-  try { fs.unlinkSync(signalFile); } catch (_) {}
+  try {
+    fs.unlinkSync(signalFile);
+  } catch (_) {}
 
   const proc = spawnSync(process.execPath, [snippetFile], {
-    cwd:     absDir,
-    env:     { ...process.env, ORACLE_SIGNAL_FILE: signalFile },
+    cwd: absDir,
+    env: { ...process.env, ORACLE_SIGNAL_FILE: signalFile },
     timeout,
-    encoding: 'utf8',
+    encoding: "utf8",
   });
 
-  try { fs.unlinkSync(snippetFile); } catch (_) {}
+  try {
+    fs.unlinkSync(snippetFile);
+  } catch (_) {}
 
-  const hashAfter       = checksumDir(absDir);
+  const hashAfter = checksumDir(absDir);
   const modifiedPackage = hashBefore !== hashAfter;
-  const timedOut        = proc.signal === 'SIGTERM' || proc.status === null;
+  const timedOut = proc.signal === "SIGTERM" || proc.status === null;
 
   try {
-    const signal = JSON.parse(fs.readFileSync(signalFile, 'utf8'));
-    try { fs.unlinkSync(signalFile); } catch (_) {}
+    const signal = JSON.parse(fs.readFileSync(signalFile, "utf8"));
+    try {
+      fs.unlinkSync(signalFile);
+    } catch (_) {}
     return { ...signal, timedOut, modifiedPackage };
   } catch (_) {
-    return { triggered: false, timedOut, modifiedPackage, error: 'no signal written by hook' };
+    return {
+      triggered: false,
+      timedOut,
+      modifiedPackage,
+      error: "no signal written by hook",
+    };
   }
 }
 
@@ -215,6 +264,8 @@ ${snippet}
 // Helpers
 // ---------------------------------------------------------------------------
 
-function j(v) { return JSON.stringify(v); }
+function j(v) {
+  return JSON.stringify(v);
+}
 
 module.exports = { run };

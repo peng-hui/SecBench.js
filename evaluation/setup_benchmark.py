@@ -45,7 +45,14 @@ import tempfile
 ROOT       = os.path.dirname(os.path.abspath(__file__))
 BENCH_ROOT = os.path.normpath(os.path.join(ROOT, "..", "benchmark"))
 
-TIERS = ["original", "obfuscated", "webcrack"]
+TIERS = ["original", "obfuscated", "obf_cff"]
+
+# Extra flags per obfuscation tier (on top of javascript-obfuscator defaults)
+OBF_FLAGS = {
+    "obfuscated": [],
+    "obf_cff":    ["--control-flow-flattening", "true",
+                   "--control-flow-flattening-threshold", "1"],
+}
 
 SELECTED = {
     "prototype-pollution": [
@@ -154,14 +161,12 @@ def find_js_files(pkg_dir):
     return js_files
 
 
-def obfuscate_file(path):
+def obfuscate_file(path, extra_flags=None):
     fd, tmp = tempfile.mkstemp(suffix=".js")
     os.close(fd)
     try:
-        r = subprocess.run(
-            ["javascript-obfuscator", path, "--output", tmp],
-            capture_output=True, text=True, timeout=60,
-        )
+        cmd = ["javascript-obfuscator", path, "--output", tmp] + (extra_flags or [])
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
         if r.returncode == 0:
             shutil.move(tmp, path)
             return True
@@ -173,9 +178,9 @@ def obfuscate_file(path):
             os.remove(tmp)
 
 
-def obfuscate_pkg(pkg_dir):
+def obfuscate_pkg(pkg_dir, extra_flags=None):
     js_files = find_js_files(pkg_dir)
-    n_ok = sum(1 for f in js_files if obfuscate_file(f))
+    n_ok = sum(1 for f in js_files if obfuscate_file(f, extra_flags))
     return n_ok, len(js_files)
 
 
@@ -336,21 +341,28 @@ def main():
                 os.path.join(tier_paths["obfuscated"], "node_modules", pkg_name))
             print(f"  obf({n_ok}/{n_total})✓", end="", flush=True)
 
-        if "webcrack" in tiers:
-            # webcrack tier = obfuscated → webcrack; copy from src (clean), then obf+wck
-            copy_module(src, tier_paths["webcrack"], pkg_name)
-            obfuscate_pkg(os.path.join(tier_paths["webcrack"], "node_modules", pkg_name))
-            wck_ok, wck_fail = webcrack_pkg(
-                os.path.join(tier_paths["webcrack"], "node_modules", pkg_name))
-            print(f"  wck({wck_ok}/{wck_ok+wck_fail})✓", end="", flush=True)
+        if "obf_cff" in tiers:
+            copy_module(src, tier_paths["obf_cff"], pkg_name)
+            flags = OBF_FLAGS["obf_cff"]
+            n_ok, n_total = obfuscate_pkg(
+                os.path.join(tier_paths["obf_cff"], "node_modules", pkg_name), flags)
+            print(f"  cff({n_ok}/{n_total})✓", end="", flush=True)
+
 
         print()
         ok += 1
 
-    # Save ground truth
-    os.makedirs(os.path.dirname(gt_path), exist_ok=True)
-    with open(gt_path, "w") as f:
-        json.dump(mapping, f, indent=2)
+    # Save ground truth — skip if --resume and no new modules were added
+    # (avoids accidentally reshuffling the module→package mapping)
+    save_gt = True
+    if args.resume and os.path.exists(gt_path):
+        existing_keys = set(json.load(open(gt_path)).keys())
+        if set(mapping.keys()) == existing_keys:
+            save_gt = False  # nothing new; preserve existing GT as-is
+    if save_gt:
+        os.makedirs(os.path.dirname(gt_path), exist_ok=True)
+        with open(gt_path, "w") as f:
+            json.dump(mapping, f, indent=2)
 
     bench_name = os.path.basename(bench_dir)
     print(f"\n{'='*60}")
