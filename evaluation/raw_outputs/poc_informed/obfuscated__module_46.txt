@@ -1,1 +1,1 @@
-Not logged in · Please run /login
+API Error: Unable to connect to API (ConnectionRefused)

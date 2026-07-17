@@ -1,3 +1,0 @@
-API Error: Sonnet 5 has safety measures that flagged this message for a cybersecurity topic. To learn about the Cyber Verification Program and apply for access, visit our help center: https://support.claude.com/en/articles/14604842-real-time-cyber-safeguards-on-claude.
-
-Request ID: req_011Ccp8joZpXEAUWAUsbKFh3

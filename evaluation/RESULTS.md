@@ -4,6 +4,8 @@ Benchmark studying how JavaScript obfuscation affects LLM-based vulnerability de
 50 real-world npm packages, each containing a known CVE, evaluated on two tasks:
 **static analysis** (describe the vulnerability) and **dynamic PoC generation** (write an exploit).
 
+**Interactive failure browser** — [`failure_browser.html`](failure_browser.html) — shows all 50 modules with pass/fail chips across every metric, npm links, and the raw model trajectories for failed cases. Open it in a browser to filter by category or failure type and inspect what the model predicted.
+
 ---
 
 ## Benchmark Dataset
@@ -86,10 +88,9 @@ Valid = modules where Claude produced runnable code (excludes `NO_CODE` / `TIMEO
 | ReDoS               | 8 / 10 (80%)      | 6 / 10 (60%)       | 5 / 7 (71%)         | 2 / 3 (67%)           |
 | **Total**           | **39 / 49 (79%)** | **39 / 48 (81%)**  | **34 / 41 (82%)**   | **12 / 14 (86%)**     |
 
-> **Note on completeness:** `NO_CODE` counts reflect Claude CLI session-limit hits during
-> the run, not model capability. Blind runs are nearly complete (1 NO_CODE each);
-> informed/obfuscated has more gaps (32 NO_CODE) and will be updated when the resume run
-> finishes.
+> **Note on completeness:** `NO_CODE` entries reflect Claude CLI session-rate-limit hits,
+> not model capability. Blind runs are nearly complete (≤1 NO_CODE each); informed runs
+> have more NO_CODE gaps (32 in the obfuscated tier) from rate-limit interruptions.
 
 Key findings:
 

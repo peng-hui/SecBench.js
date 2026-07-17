@@ -1,1 +1,1 @@
-You've hit your session limit · resets 10:30am (Asia/Shanghai)
+API Error: Unable to connect to API (ConnectionRefused)

